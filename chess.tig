@@ -238,9 +238,72 @@ let
        function isBlack(p : piece) : bool =
            p.color = BLACK
 
-       /* TODO: IMPLEMENT THIS */
+       /****************************************
+             Helpers for Legal Move Checks
+	****************************************/
+	
+       /* Check if two coordinates are on the same diagonal. */
        function isDiagonal(fromC : coordinate, toC : coordinate) : bool =
-           1
+           let var dx := abs(fromC.file - toC.file)
+	       var dy := abs(fromC.rank - toC.rank)
+	   in
+	       (dx = dy) & (dx <> 0)
+	   end
+	   
+       function noPiecesBetweenHorizontally (b : board, fromC : coordinate, toC : coordinate) : bool =
+           let var low := if fromC.file <= toC.file then fromC.file else toC.file
+	       var high := if fromC.file <= toC.file then toC.file else fromC.file	       
+	       var rank := fromC.rank /* Invariant: fromC.rank = toC.rank */ 
+	       var res := 1
+	   in
+               for file := (low + 1) to (high - 1) do
+	           if getPiece(b, coordinate{file=file, rank=rank}) <> EMPTY
+		       then (res := 0; break);
+	       res
+	   end
+
+       function noPiecesBetweenVertically (b : board, fromC : coordinate, toC : coordinate) : bool =
+           let var low := if fromC.rank <= toC.rank then fromC.rank else toC.rank
+	       var high := if fromC.rank <= toC.rank then toC.rank else fromC.rank	       
+	       var file := fromC.file /* Invariant: fromC.file = toC.file */ 
+	       var res := 1
+	   in
+               for rank := (low + 1) to (high - 1) do
+	           if getPiece(b, coordinate{file=file, rank=rank}) <> EMPTY
+		       then (res := 0; break);
+	       res
+	   end
+
+       function noPiecesBetweenDiagonally (b : board, fromC : coordinate, toC : coordinate) : bool =
+           let var lowRank := (if fromC.rank <= toC.rank then fromC.rank else toC.rank) + 1
+	       var highRank := (if fromC.rank <= toC.rank then toC.rank else fromC.rank) - 1
+	       var lowFile := (if fromC.file <= toC.file then fromC.file else toC.file) + 1
+	       var highFile := (if fromC.file <= toC.file then toC.file else fromC.file) - 1
+
+	       var res := 1
+	   in
+               while lowRank <> highRank do
+	           (if getPiece(b, coordinate{file=lowFile, rank=lowRank}) <> EMPTY
+		       then (res :=0; break);
+		    lowRank := lowRank + 1;
+		    lowFile := lowFile + 1);
+		    
+	       res 
+	   end
+	   
+
+       function canSeeSquare(b : board, fromC : coordinate, toC : coordinate) : bool =
+           if fromC = toC then 0   /* Pieces can't move to themselves */
+	   else
+	       let var horizontal := fromC.rank = toC.rank
+	           var vertical   := fromC.file = toC.file
+		   var diagonal   := isDiagonal(fromC, toC)
+	       in
+	           if       horizontal then noPiecesBetweenHorizontally(b, fromC, toC)
+		   else if  vertical   then noPiecesBetweenVertically(b, fromC, toC)
+		   else if  diagonal   then noPiecesBetweenDiagonally(b, fromC, toC)
+		   else 0
+	       end
 
 
        /****************************************
@@ -311,10 +374,8 @@ let
                else if (pFrom.color = pTo.color) then 0
 
                /* FAIL: From piece is not a knight, and can't see dest. square */
-	       /* TODO: IMPLEMENT THIS 
 	       else if (isKnight(pFrom) = 0 &
 	                canSeeSquare(b, fromC, toC) = 0)  then 0
-               */			
  
                /* FAIL: Moving gets YOUR king killed */
 	       /* TODO: IMPLEMENT THIS 
