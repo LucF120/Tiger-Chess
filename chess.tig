@@ -1,0 +1,220 @@
+let
+    /**********************
+          Color Constants  
+    ***********************/ 
+    var WHITE := 0
+    var BLACK := 0
+
+    /***********************
+          Piece Constants  
+    ************************/ 
+
+    var PAWN := 0
+    var ROOK := 1
+    var KNIGHT := 2
+    var BISHOP := 3
+    var QUEEN := 4
+    var KING := 5
+
+
+    /***********************
+          Types   
+    ************************/
+    type bool = int 
+    type coordinate = {file: int, rank: int}
+    type piece = {color: int, piece: int}
+
+    type row = array of piece    
+    type board = array of row
+
+    type game = {board: board, whiteKingLoc: coordinate, blackKingLoc: coordinate}
+
+    /****************************
+        Piece Constants
+    ****************************/
+
+     var EMPTY := piece{color=-1, piece=-1}
+     
+     var WHITE_PAWN := piece{color=WHITE, piece=PAWN}
+     var WHITE_ROOK := piece{color=WHITE, piece=ROOK}
+     var WHITE_KNIGHT := piece{color=WHITE, piece=KNIGHT}
+     var WHITE_BISHOP := piece{color=WHITE, piece=BISHOP}
+     var WHITE_QUEEN := piece{color=WHITE, piece=QUEEN}
+     var WHITE_KING := piece{color=WHITE, piece=KING}
+     
+     var BLACK_PAWN := piece{color=BLACK, piece=PAWN}
+     var BLACK_ROOK := piece{color=BLACK, piece=ROOK}
+     var BLACK_KNIGHT := piece{color=BLACK, piece=KNIGHT}
+     var BLACK_BISHOP := piece{color=BLACK, piece=BISHOP}
+     var BLACK_QUEEN := piece{color=BLACK, piece=QUEEN}
+     var BLACK_KING := piece{color=BLACK, piece=KING}
+
+     
+    /****************************
+           Coordinate Constants
+     ***************************/
+     var A1 := coordinate{file=0, rank=0}
+     var A2 := coordinate{file=0, rank=1}
+     var A3 := coordinate{file=0, rank=2}
+     var A4 := coordinate{file=0, rank=3}
+     var A5 := coordinate{file=0, rank=4}
+     var A6 := coordinate{file=0, rank=5}
+     var A7 := coordinate{file=0, rank=6}
+     var A8 := coordinate{file=0, rank=7}
+
+     var B1 := coordinate{file=1, rank=0}
+     var B2 := coordinate{file=1, rank=1}
+     var B3 := coordinate{file=1, rank=2}
+     var B4 := coordinate{file=1, rank=3}
+     var B5 := coordinate{file=1, rank=4}
+     var B6 := coordinate{file=1, rank=5}
+     var B7 := coordinate{file=1, rank=6}
+     var B8 := coordinate{file=1, rank=7}
+     
+     var C1 := coordinate{file=2, rank=0}
+     var C2 := coordinate{file=2, rank=1}
+     var C3 := coordinate{file=2, rank=2}
+     var C4 := coordinate{file=2, rank=3}
+     var C5 := coordinate{file=2, rank=4}
+     var C6 := coordinate{file=2, rank=5}
+     var C7 := coordinate{file=2, rank=6}
+     var C8 := coordinate{file=2, rank=7}
+         
+     var D1 := coordinate{file=3, rank=0}
+     var D2 := coordinate{file=3, rank=1}
+     var D3 := coordinate{file=3, rank=2}
+     var D4 := coordinate{file=3, rank=3}
+     var D5 := coordinate{file=3, rank=4}
+     var D6 := coordinate{file=3, rank=5}
+     var D7 := coordinate{file=3, rank=6}
+     var D8 := coordinate{file=3, rank=7}
+     
+     var E1 := coordinate{file=4, rank=0}
+     var E2 := coordinate{file=4, rank=1}
+     var E3 := coordinate{file=4, rank=2}
+     var E4 := coordinate{file=4, rank=3}
+     var E5 := coordinate{file=4, rank=4}
+     var E6 := coordinate{file=4, rank=5}
+     var E7 := coordinate{file=4, rank=6}
+     var E8 := coordinate{file=4, rank=7}
+     
+     var F1 := coordinate{file=5, rank=0}
+     var F2 := coordinate{file=5, rank=1}
+     var F3 := coordinate{file=5, rank=2}
+     var F4 := coordinate{file=5, rank=3}
+     var F5 := coordinate{file=5, rank=4}
+     var F6 := coordinate{file=5, rank=5}
+     var F7 := coordinate{file=5, rank=6}
+     var F8 := coordinate{file=5, rank=7}
+     
+     var G1 := coordinate{file=6, rank=0}
+     var G2 := coordinate{file=6, rank=1}
+     var G3 := coordinate{file=6, rank=2}
+     var G4 := coordinate{file=6, rank=3}
+     var G5 := coordinate{file=6, rank=4}
+     var G6 := coordinate{file=6, rank=5}
+     var G7 := coordinate{file=6, rank=6}
+     var G8 := coordinate{file=6, rank=7}
+     
+     var H1 := coordinate{file=7, rank=0}
+     var H2 := coordinate{file=7, rank=1}
+     var H3 := coordinate{file=7, rank=2}
+     var H4 := coordinate{file=7, rank=3}
+     var H5 := coordinate{file=7, rank=4}
+     var H6 := coordinate{file=7, rank=5}
+     var H7 := coordinate{file=7, rank=6}
+     var H8 := coordinate{file=7, rank=7}
+
+     /* Checks if file and rank are equal to a coordiante */ 
+     function isSquare (file : int, rank : int, square : coordinate) : bool =
+         if (file = square.file & rank = square.rank)
+	     then 1
+	     else 0
+
+     /* Initializes the board at the beginning of the game
+        - White pawns on the 2nd rank, black pawns on the 7th rank
+	- Rank 1 contains white: rook, knight, bishop, queen, king, bishop, knight, rook
+	- Rank 8 contains black: rook, knight, bishop, queen, king, bishop, knight, rook
+     */ 
+     function initBoard () : board =
+             /* Need to make the rows here so they dont point to same object */
+         let var r0 := row [8] of EMPTY
+	     var r1 := row [8] of WHITE_PAWN
+	     var r2 := row [8] of EMPTY
+	     var r3 := row [8] of EMPTY
+	     var r4 := row [8] of EMPTY
+	     var r5 := row [8] of EMPTY
+	     var r6 := row [8] of BLACK_PAWN
+	     var r7 := row [8] of EMPTY
+	     
+	     var b := board [8] of r0
+	 in
+	     /* Make each row a unique array */ 
+	     b[1] := r1;
+	     b[2] := r2;
+	     b[3] := r3;
+	     b[4] := r4;
+	     b[5] := r5;
+	     b[6] := r6;
+	     b[7] := r7;
+
+ 	     /* Insert major pieces at correct location
+	        Note: Pawns already were initialized.
+              */ 
+	     for rank := 0 to 7 do
+	         for file := 0 to 7 do	
+		     if (rank = 0) then 
+		           (if     (file = 0 | file=7) then b[rank][file] := WHITE_ROOK
+			   else if (file = 1 | file=6) then b[rank][file] := WHITE_KNIGHT
+		           else if (file = 2 | file=5) then b[rank][file] := WHITE_BISHOP
+		     	   else if (file = 3)          then b[rank][file] := WHITE_QUEEN
+			   else if (file = 4)          then b[rank][file] := WHITE_KING)
+	             else if (rank = 7) then
+		           (if     (file = 0 | file=7) then b[rank][file] := BLACK_ROOK
+			   else if (file = 1 | file=6) then b[rank][file] := BLACK_KNIGHT
+		           else if (file = 2 | file=5) then b[rank][file] := BLACK_BISHOP
+		     	   else if (file = 3)          then b[rank][file] := BLACK_QUEEN
+			   else if (file = 4)          then b[rank][file] := BLACK_KING);
+			   
+             b 	/* Returns the updated board */ 
+	 end
+
+       function printPiece (p : piece) =
+           if      p = WHITE_PAWN   then print("WP")
+	   else if p = WHITE_ROOK   then print("WR")
+	   else if p = WHITE_KNIGHT then print("WN")
+	   else if p = WHITE_BISHOP then print("WB")
+	   else if p = WHITE_QUEEN  then print("WQ")
+	   else if p = WHITE_KING   then print("WK")
+	   else if p = BLACK_PAWN   then print("BP")
+	   else if p = BLACK_ROOK   then print("BR")
+	   else if p = BLACK_KNIGHT then print("BN")
+	   else if p = BLACK_BISHOP then print("BB")
+	   else if p = BLACK_QUEEN  then print("BQ")
+	   else if p = BLACK_KING   then print("BK")
+	   else print ("  ")
+	   
+       function printBoard (b : board) =
+           let var rank := 7
+	   in 
+             while rank >= 0 do	     
+	       (print("\n\n------------------------------------------\n");
+	        print("| ");
+	        for file := 0 to 7 do
+	           let var p := b[rank][file]
+		   in
+		       printPiece(p);
+		       print(" | ")
+		   end;	
+	       print("\n");
+	       rank := rank - 1);
+	     print("------------------------------------------\n\n")
+	   end 
+		   
+in
+     let var b := initBoard()
+     in
+         printBoard(b)
+     end 
+end
+  	
