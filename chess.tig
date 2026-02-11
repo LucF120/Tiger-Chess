@@ -27,7 +27,12 @@ let
     type row = array of piece    
     type board = array of row
 
-    type game = {board: board, whiteKingLoc: coordinate, blackKingLoc: coordinate}
+    type game = {board: board,
+                 turn: int,
+		 whiteKingLoc: coordinate,
+                 blackKingLoc: coordinate,
+		 enPassantable: piece,
+		 fiftyMoveCounter: int}
 
     /****************************
         Piece Constants
@@ -137,53 +142,70 @@ let
 	     then 1
 	     else 0
 
-     /* Initializes the board at the beginning of the game
-        - White pawns on the 2nd rank, black pawns on the 7th rank
-	- Rank 1 contains white: rook, knight, bishop, queen, king, bishop, knight, rook
-	- Rank 8 contains black: rook, knight, bishop, queen, king, bishop, knight, rook
-     */ 
-     function initBoard () : board =
-             /* Need to make the rows here so they dont point to same object */
-         let var r0 := row [8] of EMPTY
-	     var r1 := row [8] of WHITE_PAWN
-	     var r2 := row [8] of EMPTY
-	     var r3 := row [8] of EMPTY
-	     var r4 := row [8] of EMPTY
-	     var r5 := row [8] of EMPTY
-	     var r6 := row [8] of BLACK_PAWN
-	     var r7 := row [8] of EMPTY
-	     
-	     var b := board [8] of r0
-	 in
-	     /* Make each row a unique array */ 
-	     b[1] := r1;
-	     b[2] := r2;
-	     b[3] := r3;
-	     b[4] := r4;
-	     b[5] := r5;
-	     b[6] := r6;
-	     b[7] := r7;
+     /* Initially,
+        - the pieces are on their starting squares,
+        - it is white's turn. The kings are on e1 and e8,
+	- no pawn moved 2 squares last turn (thus nothing can be captured via
+            en passant)
+	- the fifty move counter starts at 0
+     */
+     function initGame() : game =
+     let 
+         /* Initializes the board at the beginning of the game
+	    - White pawns on the 2nd rank, black pawns on the 7th rank
+	    - Rank 1 contains white: rook, knight, bishop, queen, king, bishop, knight, rook
+	    - Rank 8 contains black: rook, knight, bishop, queen, king, bishop, knight, rook
+	 */ 
+	 function initBoard () : board =
+		 /* Need to make the rows here so they dont point to same object */
+	     let var r0 := row [8] of EMPTY
+		 var r1 := row [8] of WHITE_PAWN
+		 var r2 := row [8] of EMPTY
+		 var r3 := row [8] of EMPTY
+		 var r4 := row [8] of EMPTY
+		 var r5 := row [8] of EMPTY
+		 var r6 := row [8] of BLACK_PAWN
+		 var r7 := row [8] of EMPTY
 
- 	     /* Insert major pieces at correct location
-	        Note: Pawns already were initialized.
-              */ 
-	     for rank := 0 to 7 do
-	         for file := 0 to 7 do	
-		     if (rank = 0) then 
-		           (if     (file = 0 | file=7) then b[rank][file] := WHITE_ROOK
-			   else if (file = 1 | file=6) then b[rank][file] := WHITE_KNIGHT
-		           else if (file = 2 | file=5) then b[rank][file] := WHITE_BISHOP
-		     	   else if (file = 3)          then b[rank][file] := WHITE_QUEEN
-			   else if (file = 4)          then b[rank][file] := WHITE_KING)
-	             else if (rank = 7) then
-		           (if     (file = 0 | file=7) then b[rank][file] := BLACK_ROOK
-			   else if (file = 1 | file=6) then b[rank][file] := BLACK_KNIGHT
-		           else if (file = 2 | file=5) then b[rank][file] := BLACK_BISHOP
-		     	   else if (file = 3)          then b[rank][file] := BLACK_QUEEN
-			   else if (file = 4)          then b[rank][file] := BLACK_KING);
-			   
-             b 	/* Returns the updated board */ 
-	 end
+		 var b := board [8] of r0
+	     in
+		 /* Make each row a unique array */ 
+		 b[1] := r1;
+		 b[2] := r2;
+		 b[3] := r3;
+		 b[4] := r4;
+		 b[5] := r5;
+		 b[6] := r6;
+		 b[7] := r7;
+
+		 /* Insert major pieces at correct location
+		    Note: Pawns already were initialized.
+		  */ 
+		 for rank := 0 to 7 do
+		     for file := 0 to 7 do	
+			 if (rank = 0) then 
+			       (if     (file = 0 | file=7) then b[rank][file] := WHITE_ROOK
+			       else if (file = 1 | file=6) then b[rank][file] := WHITE_KNIGHT
+			       else if (file = 2 | file=5) then b[rank][file] := WHITE_BISHOP
+			       else if (file = 3)          then b[rank][file] := WHITE_QUEEN
+			       else if (file = 4)          then b[rank][file] := WHITE_KING)
+			 else if (rank = 7) then
+			       (if     (file = 0 | file=7) then b[rank][file] := BLACK_ROOK
+			       else if (file = 1 | file=6) then b[rank][file] := BLACK_KNIGHT
+			       else if (file = 2 | file=5) then b[rank][file] := BLACK_BISHOP
+			       else if (file = 3)          then b[rank][file] := BLACK_QUEEN
+			       else if (file = 4)          then b[rank][file] := BLACK_KING);
+
+		 b 	/* Returns the updated board */ 
+	     end
+           in
+	       game{board=initBoard(),
+	            turn=WHITE,
+		    whiteKingLoc=E1,
+		    blackKingLoc=E8,
+		    enPassantable=EMPTY,
+		    fiftyMoveCounter=0}
+	   end 
 
 
        function printMove(fromC : coordinate, toC : coordinate) =
@@ -203,8 +225,9 @@ let
 	   end
 	       
 	
-       function printBoard (b : board) =
-           let var rank := 7
+       function printBoard (g : game) =
+           let var b := g.board  
+	       var rank := 7
 	   
 	       /* Emulators for MIPS R2000 don't seem to support unicode sadly */ 
                function printPiece (p : piece) =
@@ -387,8 +410,9 @@ let
            0
 
 	   
-       function legalMove(b : board, fromC : coordinate, toC : coordinate) : bool =
-           let var pFrom := getPiece(b, fromC)
+       function legalMove(g : game, fromC : coordinate, toC : coordinate) : bool =
+           let var b := g.board
+	       var pFrom := getPiece(b, fromC)
 	       var pTo   := getPiece(b, toC)
 	   in
 	       /* FAIL: From square is empty */ 
@@ -431,32 +455,36 @@ let
        function setPiece(b : board, c : coordinate, p : piece) =
            b[c.rank][c.file] := p
 	   
-       function move(b : board, fromC : coordinate, toC : coordinate)=
-           if legalMove(b, fromC, toC)
-	       then let var p := getPiece(b, fromC)
-	            in
-                        setPiece(b, toC, p);
-		        setPiece(b, fromC, EMPTY);
-			printMove(fromC, toC);
-			printBoard(b)			
-		    end
-           else (print("\nInvalid Move: You ");
-	         printMove(fromC, toC))
+       function move(g : game, fromC : coordinate, toC : coordinate) =
+           let var b := g.board
+	   in 
+               if legalMove(g, fromC, toC)
+	           then let var p := getPiece(b, fromC)
+	              in
+                         setPiece(b, toC, p);
+		         setPiece(b, fromC, EMPTY);
+			 printMove(fromC, toC);
+			 printBoard(g)			
+		      end
+               else (print("\nInvalid Move: You ");
+             	     printMove(fromC, toC))
+            end 
 		        
 		   
 in
-     let var b := initBoard()
+     let var g := initGame()
      in     
-         printBoard(b);
-	 move(b, E2, E4);
-	 move(b, E7, E5);
-	 move(b, B1, C3);
+         printBoard(g);
+	 move(g, E2, E4);
+	 move(g, E7, E5);
+	 move(g, B1, C3);
 	 
-	 /* Illegal moves */
-	 move(b, F1, H3);
-	 move(b, E4, E5);
-	 move(b, D1, D3);
-	 move(b, D1, B1)
+	 /* Illegal moves
+	 ******************/
+	 move(g, F1, H3);
+	 move(g, E4, E5);
+	 move(g, D1, D3);
+	 move(g, D1, G1)
 	 /****************/
      end 
 end
