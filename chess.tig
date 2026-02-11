@@ -125,7 +125,9 @@ let
      var H7 := coordinate{file=7, rank=6}
      var H8 := coordinate{file=7, rank=7}
 
-     /* Abs val function */
+     /*****************************************/
+     
+     /* Absolute value function */
      function abs(x : int) : int =
          if x < 0 then x * -1 else x
 	 
@@ -183,28 +185,47 @@ let
              b 	/* Returns the updated board */ 
 	 end
 
-       /* Emulators for MIPS R2000 don't seem to support unicode sadly */ 
-       function printPiece (p : piece) =
-           if      p = WHITE_PAWN   then print("WP")
-	   else if p = WHITE_ROOK   then print("WR")
-	   else if p = WHITE_KNIGHT then print("WN")
-	   else if p = WHITE_BISHOP then print("WB")
-	   else if p = WHITE_QUEEN  then print("WQ")
-	   else if p = WHITE_KING   then print("WK")
-	   else if p = BLACK_PAWN   then print("BP")
-	   else if p = BLACK_ROOK   then print("BR")
-	   else if p = BLACK_KNIGHT then print("BN")
-	   else if p = BLACK_BISHOP then print("BB")
-	   else if p = BLACK_QUEEN  then print("BQ")
-	   else if p = BLACK_KING   then print("BK")
-	   else print ("  ")
-    
+
+       function printMove(fromC : coordinate, toC : coordinate) =
+           let function printCoordinate(c : coordinate) =
+               let function fileToStr(f : int) : string = chr(f + 97)
+	           function rankToStr(r : int) : string = chr(r + 49)
+	           var str := concat(fileToStr(c.file), rankToStr(c.rank))
+	       in
+	           print(str)
+               end
+	   in
+	       print("Moved ");
+	       printCoordinate(fromC);
+	       print(" to ");
+	       printCoordinate(toC);
+	       print("\n")
+	   end
+	       
+	
        function printBoard (b : board) =
            let var rank := 7
+	   
+	       /* Emulators for MIPS R2000 don't seem to support unicode sadly */ 
+               function printPiece (p : piece) =
+                   if      p = WHITE_PAWN   then print("WP")
+	           else if p = WHITE_ROOK   then print("WR")
+	           else if p = WHITE_KNIGHT then print("WN")
+	           else if p = WHITE_BISHOP then print("WB")
+	           else if p = WHITE_QUEEN  then print("WQ")
+	           else if p = WHITE_KING   then print("WK")
+	           else if p = BLACK_PAWN   then print("BP")
+	           else if p = BLACK_ROOK   then print("BR")
+	           else if p = BLACK_KNIGHT then print("BN")
+	           else if p = BLACK_BISHOP then print("BB")
+	           else if p = BLACK_QUEEN  then print("BQ")
+	           else if p = BLACK_KING   then print("BK")
+	           else print ("  ")
+
 	   in 
              while rank >= 0 do	     
-	       (print("------------------------------------------\n");
-	        print("| ");
+	       (print("     -----------------------------------------\n");
+	        print("   "); print(chr(rank + 49)); print(" | ");
 	        for file := 0 to 7 do
 	           let var p := b[rank][file]
 		   in
@@ -213,7 +234,8 @@ let
 		   end;	
 	       print("\n");
 	       rank := rank - 1);
-	     print("------------------------------------------\n\n")
+	     print("     -----------------------------------------\n");
+	     print("       a    b    c    d    e    f    g    h\n\n")
 	   end
 
 
@@ -244,66 +266,68 @@ let
 	
        /* Check if two coordinates are on the same diagonal. */
        function isDiagonal(fromC : coordinate, toC : coordinate) : bool =
-           let var dx := abs(fromC.file - toC.file)
+           let var dx := abs(fromC.file - toC.file) 
 	       var dy := abs(fromC.rank - toC.rank)
 	   in
 	       (dx = dy) & (dx <> 0)
-	   end
-	   
-       function noPiecesBetweenHorizontally (b : board, fromC : coordinate, toC : coordinate) : bool =
-           let var low := if fromC.file <= toC.file then fromC.file else toC.file
-	       var high := if fromC.file <= toC.file then toC.file else fromC.file	       
-	       var rank := fromC.rank /* Invariant: fromC.rank = toC.rank */ 
-	       var res := 1
-	   in
-               for file := (low + 1) to (high - 1) do
-	           if getPiece(b, coordinate{file=file, rank=rank}) <> EMPTY
-		       then (res := 0; break);
-	       res
-	   end
-
-       function noPiecesBetweenVertically (b : board, fromC : coordinate, toC : coordinate) : bool =
-           let var low := if fromC.rank <= toC.rank then fromC.rank else toC.rank
-	       var high := if fromC.rank <= toC.rank then toC.rank else fromC.rank	       
-	       var file := fromC.file /* Invariant: fromC.file = toC.file */ 
-	       var res := 1
-	   in
-               for rank := (low + 1) to (high - 1) do
-	           if getPiece(b, coordinate{file=file, rank=rank}) <> EMPTY
-		       then (res := 0; break);
-	       res
-	   end
-
-       function noPiecesBetweenDiagonally (b : board, fromC : coordinate, toC : coordinate) : bool =
-           let var lowRank := (if fromC.rank <= toC.rank then fromC.rank else toC.rank) + 1
-	       var highRank := (if fromC.rank <= toC.rank then toC.rank else fromC.rank) - 1
-	       var lowFile := (if fromC.file <= toC.file then fromC.file else toC.file) + 1
-	       var highFile := (if fromC.file <= toC.file then toC.file else fromC.file) - 1
-
-	       var res := 1
-	   in
-               while lowRank <> highRank do
-	           (if getPiece(b, coordinate{file=lowFile, rank=lowRank}) <> EMPTY
-		       then (res :=0; break);
-		    lowRank := lowRank + 1;
-		    lowFile := lowFile + 1);
-		    
-	       res 
-	   end
+	   end	   
 	   
 
        function canSeeSquare(b : board, fromC : coordinate, toC : coordinate) : bool =
-           if fromC = toC then 0   /* Pieces can't move to themselves */
-	   else
-	       let var horizontal := fromC.rank = toC.rank
-	           var vertical   := fromC.file = toC.file
-		   var diagonal   := isDiagonal(fromC, toC)
-	       in
-	           if       horizontal then noPiecesBetweenHorizontally(b, fromC, toC)
-		   else if  vertical   then noPiecesBetweenVertically(b, fromC, toC)
-		   else if  diagonal   then noPiecesBetweenDiagonally(b, fromC, toC)
-		   else 0
-	       end
+           let function noPiecesBetweenHorizontally (b : board, fromC : coordinate, toC : coordinate) : bool =
+               	    let var low := if fromC.file <= toC.file then fromC.file else toC.file
+	       		var high := if fromC.file <= toC.file then toC.file else fromC.file	       
+	       		var rank := fromC.rank /* Invariant: fromC.rank = toC.rank */ 
+	       		var res := 1
+	    	     in
+               	        for file := (low + 1) to (high - 1) do
+	           	    if getPiece(b, coordinate{file=file, rank=rank}) <> EMPTY
+		       	       then (res := 0; break);
+	       		res			
+               	     end
+		     
+	       function noPiecesBetweenVertically (b : board, fromC : coordinate, toC : coordinate) : bool =
+                     let var low := if fromC.rank <= toC.rank then fromC.rank else toC.rank
+	                 var high := if fromC.rank <= toC.rank then toC.rank else fromC.rank	       
+	                 var file := fromC.file /* Invariant: fromC.file = toC.file */ 
+	                 var res := 1
+	             in
+                         for rank := (low + 1) to (high - 1) do
+	                     if getPiece(b, coordinate{file=file, rank=rank}) <> EMPTY
+		                 then (res := 0; break);
+	                 res
+	             end
+
+       
+               function noPiecesBetweenDiagonally (b : board, fromC : coordinate, toC : coordinate) : bool =
+               	     let var lowRank := (if fromC.rank <= toC.rank then fromC.rank else toC.rank) + 1
+	                 var highRank := (if fromC.rank <= toC.rank then toC.rank else fromC.rank)
+	                 var lowFile := (if fromC.file <= toC.file then fromC.file else toC.file) + 1
+	                 var highFile := (if fromC.file <= toC.file then toC.file else fromC.file)
+
+	                 var res := 1
+	             in
+                         while lowRank <> highRank do
+	                     (if getPiece(b, coordinate{file=lowFile, rank=lowRank}) <> EMPTY
+		                 then (res :=0; break);
+		              lowRank := lowRank + 1;
+		              lowFile := lowFile + 1);
+		    
+	                 res 
+	             end
+	   in 
+               if fromC = toC then 0   /* Pieces can't move to themselves */
+	       else
+	           let var horizontal := fromC.rank = toC.rank
+	               var vertical   := fromC.file = toC.file
+		       var diagonal   := isDiagonal(fromC, toC)
+	           in
+	               if       horizontal then noPiecesBetweenHorizontally(b, fromC, toC)
+		       else if  vertical   then noPiecesBetweenVertically(b, fromC, toC)
+		       else if  diagonal   then noPiecesBetweenDiagonally(b, fromC, toC)
+		       else 0
+	           end
+           end 
 
 
        /****************************************
@@ -413,8 +437,11 @@ let
 	            in
                         setPiece(b, toC, p);
 		        setPiece(b, fromC, EMPTY);
+			printMove(fromC, toC);
+			printBoard(b)			
 		    end
-           else print("\nInvalid move\n")	      
+           else (print("\nInvalid Move: You ");
+	         printMove(fromC, toC))
 		        
 		   
 in
@@ -422,11 +449,15 @@ in
      in     
          printBoard(b);
 	 move(b, E2, E4);
-	 printBoard(b);
 	 move(b, E7, E5);
-	 printBoard(b);
 	 move(b, B1, C3);
-	 printBoard(b)
+	 
+	 /* Illegal moves */
+	 move(b, F1, H3);
+	 move(b, E4, E5);
+	 move(b, D1, D3);
+	 move(b, D1, B1)
+	 /****************/
      end 
 end
   	
