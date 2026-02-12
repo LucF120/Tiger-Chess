@@ -502,25 +502,56 @@ let
            
 
        function attackingWhiteKing(g : game, c : coordinate) : bool =
-           let var p := getPiece(g.board, c)
+           let var b := g.board
+	       var p := getPiece(b, c)
+	       var kingLoc := g.whiteKingLoc
+	       var canSee := canSeeSquare(b, c, kingLoc) | isKnight(p)
 	   in
 	       /* This will return false for empty squares and squares with
 	          white pieces */ 
-	       if p.color = BLACK 
-	           then legalMove(g, c, g.whiteKingLoc) 
+	       if p.color = BLACK & canSee then 
+	           if isRook(p) then
+		      (c.file = kingLoc.file | c.rank = kingLoc.rank)
+		   else if isBishop(p) then
+		      isDiagonal(c, kingLoc)
+		   else if isQueen(p) then
+		      (c.file = kingLoc.file | c.rank = kingLoc.rank) | isDiagonal(c, kingLoc)
+		   else if isKnight(p) then
+		      legalKnightMove(c, kingLoc)
+		   else if isPawn(p) then
+		      legalPawnMove(g, p, c, kingLoc)
+		   else
+		      (abs(c.file - kingLoc.file) <= 1 & 
+                       abs(c.rank - kingLoc.rank) <= 1)
 	       else 0
 	   end 
 
-       
+ 
        function attackingBlackKing(g : game, c : coordinate) : bool =
-           let var p := getPiece(g.board, c)
+           let var b := g.board
+	       var p := getPiece(b, c)
+	       var kingLoc := g.blackKingLoc
+	       var canSee := canSeeSquare(b, c, kingLoc) | isKnight(p)
 	   in
 	       /* This will return false for empty squares and squares with
 	          black pieces */ 
-	       if p.color = WHITE
-	           then legalMove(g, c, g.blackKingLoc)
+	       if p.color = WHITE & canSee then
+	           if isRook(p) then
+		      (c.file = kingLoc.file | c.rank = kingLoc.rank)
+		   else if isBishop(p) then
+		      isDiagonal(c, kingLoc)
+		   else if isQueen(p) then
+		      (c.file = kingLoc.file | c.rank = kingLoc.rank) | isDiagonal(c, kingLoc)
+		   else if isKnight(p) then
+		      legalKnightMove(c, kingLoc)
+		   else if isPawn(p) then
+		      legalPawnMove(g, p, c, kingLoc)
+		   else
+		      (abs(c.file - kingLoc.file) <= 1 & 
+                       abs(c.rank - kingLoc.rank) <= 1)
 	       else 0
 	   end
+	   
        	   
         /* This is pretty inefficent, but gets the job done */ 
        function hasAMove(g : game) : bool =
@@ -821,10 +852,15 @@ let
 			 else
 			    (setPiece(b, toC, p);
 		             setPiece(b, fromC, EMPTY));
+
+                         if g.turn = WHITE
+			     then if blackInCheck(g) then print("Black is now in check\n");
+			 if g.turn = BLACK
+			     then if whiteInCheck(g) then print("White is now in check\n");
 		         
 			 updateEnPassantable();
 			 updateCanCastle();
-			 updateKingLoc();
+			 updateKingLoc();			
 			 updateTurn(); 
 			 printMove(p, fromC, toC);
 			 printBoard(g);
