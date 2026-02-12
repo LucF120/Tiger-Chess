@@ -31,7 +31,7 @@ let
                  turn: int,
 		 whiteKingLoc: coordinate,
                  blackKingLoc: coordinate,
-		 enPassantable: piece,
+		 enPassantable: coordinate,
 		 fiftyMoveCounter: int}
 
     /****************************
@@ -58,6 +58,7 @@ let
     /****************************
            Coordinate Constants
      ***************************/
+     var NO_COORD := coordinate{file=-1, rank=-1}
      var A1 := coordinate{file=0, rank=0}
      var A2 := coordinate{file=0, rank=1}
      var A3 := coordinate{file=0, rank=2}
@@ -203,7 +204,7 @@ let
 	            turn=WHITE,
 		    whiteKingLoc=E1,
 		    blackKingLoc=E8,
-		    enPassantable=EMPTY,
+		    enPassantable=NO_COORD,
 		    fiftyMoveCounter=0}
 	   end 
 
@@ -356,13 +357,46 @@ let
        /****************************************
                    Legal Move Checks
 	****************************************/
-       function legalPawnMove(b : board, p : piece, fromC : coordinate, toC : coordinate) : bool =
-           let var vertical := toC.rank - fromC.rank
+       function legalPawnMove(g : game, p : piece, fromC : coordinate, toC : coordinate) : bool =
+           let var b := g.board 
+	       var vertical := toC.rank - fromC.rank
 	       var horizontal := toC.file - fromC.file
 
 	       var goingUp := vertical > 0
 	       var goingDown := vertical < 0	       
 	       var wrongDirection := (goingDown & isWhite(p)) | (goingUp & isBlack(p))
+	       var capturing := abs(vertical) = 1 & abs(horizontal) = 1	       
+	       
+	       function nextToEnPassantable () : bool =
+	           let var leftLegal := 0
+		       var rightLegal := 0
+		       var leftFile := fromC.file - 1
+		       var rightFile := fromC.file + 1
+		       var currPiece := getPiece(b, fromC)
+		       var currColor := currPiece.color
+		       var leftPiece := getPiece(b, coordinate{file=leftFile,
+							       rank=fromC.rank})
+                       var rightPiece := getPiece(b, coordinate{file=rightFile,
+							        rank=fromC.rank})
+							       
+		   in 
+	               if leftPiece <> EMPTY & leftFile >= 0
+		           then leftLegal :=
+			       (g.enPassantable.file = leftFile 
+			        & leftPiece.color <> currColor);
+				
+		       if rightPiece <> EMPTY & rightFile <= 7
+		           then rightLegal :=
+			       (g.enPassantable.file = rightFile 
+			        & rightPiece.color <> currColor);
+
+                       /* True if an en passantable pawn is on the left or right */ 
+                       leftLegal | rightLegal
+		   end
+		   
+	       var canEnPassant := nextToEnPassantable()
+		
+		       
 
 	   in
 	       /* FAIL: White pawn going down or black pawn going up */ 
@@ -374,10 +408,14 @@ let
 	           then (isWhite(p) & fromC.rank = 1) | (isBlack(p) & fromC.rank = 6)
 
                /* Capture case. Only legal if there is a piece to capture
-	          TODO: IMPLEMENT EN-PASSANT
 	        */
-	       else if (abs(vertical) = 1 & abs(horizontal) = 1)
+	       else if capturing & canEnPassant = 0
 	           then (getPiece(b, toC) <> EMPTY)
+
+               /* En passant case. Only legal if the square adjacent has an
+	          en passantable pawn */ 
+               else if (capturing & canEnPassant)
+	           then 1 
 
                /* One move forward case. Only legal if there is not a piece
 	          on that square
@@ -435,7 +473,7 @@ let
 	       else if isKnight(pFrom)  then legalKnightMove(fromC, toC)
 	       else if isBishop(pFrom)  then legalBishopMove(fromC, toC)
 	       else if isQueen(pFrom)   then legalQueenMove(fromC, toC)
-	       else if isPawn(pFrom)    then legalPawnMove(b, pFrom, fromC, toC)
+	       else if isPawn(pFrom)    then legalPawnMove(g, pFrom, fromC, toC)
 	       /* TODO: IMPLEMENT THIS 
 	       else if isKing(pFrom)    then legalKingMove(b, pFrom, fromC, toC)
 	       */
@@ -457,17 +495,66 @@ let
 	   
        function move(g : game, fromC : coordinate, toC : coordinate) =
            let var b := g.board
+               var p := getPiece(b, fromC)
+	       /* If a pawn moved 2 squares, set that coordinate to be
+	          en passantable for next turn */ 
+	       function updateEnPassantable() =
+		   let function pawnDoubleJump() : bool =
+			   let var vertical := abs(fromC.rank - toC.rank)
+			   in
+			       if isPawn(p) & vertical = 2
+				   then 1
+				   else 0
+			   end
+	           in
+		       if pawnDoubleJump()
+		           then g.enPassantable := toC
+		           else g.enPassantable := NO_COORD 
+		   end
+
+               /* Return true if a move is an en passant */ 
+               function isEnPassant() : bool =
+	           let var vertical := abs(fromC.rank - toC.rank)
+		       var horizontal := abs(fromC.file - toC.file)
+		   in
+		       /* It's an en passant if it's a pawn capture where
+		          the destination square is empty */ 
+		       if (isPawn(p) & vertical = 1 & horizontal = 1 &
+		          getPiece(b, toC) = EMPTY)
+			  then 1
+			  else 0
+	           end
+			  
+	       /* Special handling for the en passant move, since
+	          it's the only move where a piece gets captured on a square
+		  different than the destination square */ 
+	       function moveEnPassant() =
+	           let var captureC := if p.color = WHITE
+		                         then coordinate{file=toC.file,
+          				                 rank=toC.rank - 1}
+					 else coordinate{file=toC.file,
+					                 rank=toC.rank + 1}
+                   in
+		       setPiece(b, fromC, EMPTY);
+		       setPiece(b, toC, p);
+		       setPiece(b, captureC, EMPTY)
+                   end 
+					 
+		                                         
 	   in 
                if legalMove(g, fromC, toC)
-	           then let var p := getPiece(b, fromC)
-	              in
-                         setPiece(b, toC, p);
-		         setPiece(b, fromC, EMPTY);
+	           then (if isEnPassant()
+			    then moveEnPassant()
+			    else 
+                            	 (setPiece(b, toC, p);
+		         	  setPiece(b, fromC, EMPTY));
+		         
+			 updateEnPassantable();
 			 printMove(fromC, toC);
-			 printBoard(g)			
-		      end
-               else (print("\nInvalid Move: You ");
-             	     printMove(fromC, toC))
+			 printBoard(g))			
+
+                   else (print("\nInvalid Move: You ");
+             	         printMove(fromC, toC))
             end 
 		        
 		   
@@ -484,8 +571,15 @@ in
 	 move(g, F1, H3);
 	 move(g, E4, E5);
 	 move(g, D1, D3);
-	 move(g, D1, G1)
+	 move(g, D1, G1);
 	 /****************/
+
+         /* Trying en passant
+	 ********************/
+	 move(g, H2, H4);
+	 move(g, H4, H5);
+	 move(g, G7, G5);
+	 move(g, H5, G6)
      end 
 end
   	
