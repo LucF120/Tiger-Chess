@@ -218,7 +218,7 @@ let
 	   end 
 
 
-       function printMove(fromC : coordinate, toC : coordinate) =
+       function printMove(p : piece, fromC : coordinate, toC : coordinate) =
            let function printCoordinate(c : coordinate) =
                let function fileToStr(f : int) : string = chr(f + 97)
 	           function rankToStr(r : int) : string = chr(r + 49)
@@ -226,12 +226,20 @@ let
 	       in
 	           print(str)
                end
+
+               var horizontal := abs(fromC.file - toC.file)
+	       var castledLong := p.piece = KING & horizontal = 2 &  toC.file = 2
+	       var castledShort := p.piece = KING & horizontal = 2 & toC.file = 6
+	     
 	   in
-	       print("Moved ");
-	       printCoordinate(fromC);
-	       print(" to ");
-	       printCoordinate(toC);
-	       print("\n")
+	       if      castledShort then print("O-O\n")
+	       else if castledLong  then print("O-O-O\n")
+	       else 
+ 	           (print("Moved ");
+		    printCoordinate(fromC);
+		    print(" to ");
+		    printCoordinate(toC);
+		    print("\n"))
 	   end
 	       
 	
@@ -418,7 +426,7 @@ let
 
                /* Capture case. Only legal if there is a piece to capture
 	        */
-	       else if capturing & canEnPassant = 0
+	       else if capturing & not(canEnPassant)
 	           then (getPiece(b, toC) <> EMPTY)
 
                /* En passant case. Only legal if the square adjacent has an
@@ -452,9 +460,33 @@ let
        function legalQueenMove (fromC : coordinate, toC : coordinate) : bool =
            legalRookMove(fromC, toC) | legalBishopMove(fromC, toC)
 
-       /* TODO: IMPLEMENT THIS */ 
-       function legalKingMove (b : board, p : piece, fromC : coordinate, toC : coordinate) : bool =
-           0
+       function legalKingMove (g : game, p : piece, fromC : coordinate, toC : coordinate) : bool =
+           let
+	       /* Check that the king isn't passing through danger on the E, F or G files. */
+	       function legalShortCastle(color : int) : bool =
+	          (movingExposesMyKing(g, fromC, coordinate{file=5, rank=toC.rank}, color);
+		   movingExposesMyKing(g, fromC, coordinate{file=6, rank=toC.rank}, color))
+
+               /* Check that the king isn't passing through danger on the E, D, or C files. */
+               function legalLongCastle(color : int) : bool =
+	          (movingExposesMyKing(g, fromC, coordinate{file=3, rank=toC.rank}, color);
+		   movingExposesMyKing(g, fromC, coordinate{file=2, rank=toC.rank}, color))
+
+               var color := p.color	       
+	       var vertical := fromC.rank - toC.rank
+	       var horizontal := fromC.file - toC.file
+	       var castledShort := abs(horizontal) = 2 & vertical = 0 & toC.file = 6
+	       var castledLong := abs(horizontal) = 2 & vertical = 0 & toC.file = 2
+	       var regularMove := abs(vertical) = 1 & abs(horizontal) = 1
+	       var inCheck := if color = WHITE then whiteInCheck(g)
+	                                       else blackInCheck(g)
+           in
+	       if      castledShort & not(inCheck)  then legalShortCastle(color)
+	       else if castledLong & not(inCheck)   then legalLongCastle(color)
+	       else if regularMove
+	           then not(movingExposesMyKing(g, fromC, toC, color))
+	       else 0
+           end
        
 
        function attackingWhiteKing(g : game, c : coordinate) : bool =
@@ -507,22 +539,43 @@ let
            end 	       
 			   
 	           
-       function movingExposesMyKing(g : game, c : coordinate, color : int) : bool =
+       function movingExposesMyKing(g : game, fromC : coordinate, toC : coordinate, color : int) : bool =
            let var canSeeMyKing := if color = WHITE
-	                              then canSeeSquare(g.board, c, g.whiteKingLoc)
-	                              else canSeeSquare(g.board, c, g.blackKingLoc)
+	                              then canSeeSquare(g.board, fromC, g.whiteKingLoc)
+	                              else canSeeSquare(g.board, fromC, g.blackKingLoc)
                var exposes := 0
-	       var p := getPiece(g.board, c)
+	       var p := getPiece(g.board, fromC)
+	       var destP := getPiece(g.board, toC)
            in
+	       /* The below logic tries moving the piece at fromC to toC, and then
+	          checks if the king is in check as a result */
+
+               /* The only "weird" moves to account for here are castling and en
+	          passant. Castling logic is handled specially in the
+		  legalKingMove function.
+
+                  It is NEVER possible for an en passant to expose a line to
+		  the king where the captured pawn was, since this would mean
+		  the king could have been captured on the previous term. So,
+		  we don't need to do the special en passant move logic here
+		  when trying the move!
+
+                  In other words, it's okay to not temporarily delete the captured
+		  pawn in an en passant. 
+	       */
 	       if canSeeMyKing & color = WHITE
-	          then (setPiece(g.board, c, EMPTY); /* Temp remove the piece */
+	          then (setPiece(g.board, fromC, EMPTY); /* Temp remove the piece */
+		        setPiece(g.board, toC, p);
 		        exposes := whiteInCheck(g);
-			setPiece(g.board, c, p) /* Insert the piece back */)
+			setPiece(g.board, fromC, p); /* Insert the moved piece back */
+			setPiece(g.board, toC, destP)) /* Insert the captured piece back */ 
 			
 	       else if canSeeMyKing & color = BLACK
-	                then (setPiece(g.board, c, EMPTY);
+	                then (setPiece(g.board, fromC, EMPTY);
+			      setPiece(g.board, toC, p);
 		              exposes := blackInCheck(g);
-			      setPiece(g.board, c, p));
+			      setPiece(g.board, fromC, p);
+                              setPiece(g.board, toC, destP));
 
                exposes
            end 			      
@@ -541,20 +594,18 @@ let
                else if (pFrom.color = pTo.color) then 0
 
                /* FAIL: From piece is not a knight, and can't see dest. square */
-	       else if (isKnight(pFrom) = 0 &
-	                canSeeSquare(b, fromC, toC) = 0)  then 0
+	       else if (not(isKnight(pFrom)) & canSeeSquare(b, fromC, toC) = 0)
+	             then 0
  
                /* FAIL: Moving gets YOUR king killed */
-               else if movingExposesMyKing(g, fromC, pFrom.color) then 0
+               else if movingExposesMyKing(g, fromC, toC, pFrom.color) then 0
 
 	       else if isRook(pFrom)    then legalRookMove(fromC, toC)
 	       else if isKnight(pFrom)  then legalKnightMove(fromC, toC)
 	       else if isBishop(pFrom)  then legalBishopMove(fromC, toC)
 	       else if isQueen(pFrom)   then legalQueenMove(fromC, toC)
 	       else if isPawn(pFrom)    then legalPawnMove(g, pFrom, fromC, toC)
-	       /* TODO: IMPLEMENT THIS 
-	       else if isKing(pFrom)    then legalKingMove(b, pFrom, fromC, toC)
-	       */
+	       else if isKing(pFrom)    then legalKingMove(g, pFrom, fromC, toC)
 
 	       else 0
 	   end
@@ -574,6 +625,8 @@ let
        function move(g : game, fromC : coordinate, toC : coordinate) =
            let var b := g.board
                var p := getPiece(b, fromC)
+	       var captureP := getPiece(b, toC)
+	       
 	       /* If a pawn moved 2 squares, set that coordinate to be
 	          en passantable for next turn */ 
 	       function updateEnPassantable() =
@@ -690,9 +743,20 @@ let
 					 then g.blackCanShortCastle := 0))
                      end
                  
-                 function updateKingLoc() = 
+               function updateKingLoc() = 
 		     if      p = WHITE_KING then g.whiteKingLoc := toC
-		     else if p = BLACK_KING then g.blackKingLoc := toC 
+		     else if p = BLACK_KING then g.blackKingLoc := toC
+               
+	       
+               function updateFiftyMoves() =
+	             let var capturedOrPawnPush :=
+		                           p.piece = PAWN | captureP <> EMPTY
+                     in
+		         if capturedOrPawnPush
+			     then g.fiftyMoveCounter := 1
+			     else g.fiftyMoveCounter := g.fiftyMoveCounter + 1
+                     end 			     
+		 
 	   in 
                if legalMove(g, fromC, toC)
 	           then (if isEnPassant()
@@ -705,12 +769,18 @@ let
 		         
 			 updateEnPassantable();
 			 updateCanCastle();
-			 updateKingLoc(); 
-			 printMove(fromC, toC);
-			 printBoard(g))			
+			 updateKingLoc();			 
+			 printMove(p, fromC, toC);
+			 printBoard(g);
+			 updateFiftyMoves();
+
+                         /* We check at 100 since the 50 move rule happens when
+			    both players moved 50 times without a pawn move or
+			    a capture */ 
+			 if g.fiftyMoveCounter = 100 then print("Draw by 50 move rule\n"))
 
                    else (print("\nInvalid Move: You ");
-             	         printMove(fromC, toC))
+             	         printMove(p, fromC, toC))
             end 
 		        
 		   
@@ -751,7 +821,18 @@ in
 
          /* Legal en passant */
 	 move(g, G2, G4);
-	 move(g, F4, G3)
+	 move(g, F4, G3);
+
+         /* Reset and try to get 50 move draw. 
+	 ***********************************/
+	 /*
+	 g := initGame();
+	 for i:= 0 to 24 do 
+	     (move(g, B1, C3);
+	      move(g, B8, C6);
+	      move(g, C3, B1);
+	      move(g, C6, B8))
+	 */
      end 
 end
   	
