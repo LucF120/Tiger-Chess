@@ -497,8 +497,8 @@ let
 	       else if regularMove
 	           then not(movingExposesMyKing(g, fromC, toC, color))
 	       else 0
-           end
-       
+           end       
+           
 
        function attackingWhiteKing(g : game, c : coordinate) : bool =
            let var p := getPiece(g.board, c)
@@ -506,7 +506,7 @@ let
 	       /* This will return false for empty squares and squares with
 	          white pieces */ 
 	       if p.color = BLACK 
-	           then canSeeSquare(g.board, c, g.whiteKingLoc)
+	           then legalMove(g, c, g.whiteKingLoc) 
 	       else 0
 	   end 
 
@@ -517,7 +517,7 @@ let
 	       /* This will return false for empty squares and squares with
 	          black pieces */ 
 	       if p.color = WHITE
-	           then canSeeSquare(g.board, c, g.blackKingLoc)
+	           then legalMove(g, c, g.blackKingLoc)
 	       else 0
 	   end
 
@@ -601,6 +601,9 @@ let
 	       /* FAIL: From square is empty */ 
 	       if      (pFrom = EMPTY) then 0
 
+               /* FAIL: Trying to move the opponent's piece */
+	       else if (pFrom.color <> g.turn) then 0
+	       
                /* FAIL: Trying to capture your own piece */ 
                else if (pFrom.color = pTo.color) then 0
 
@@ -766,7 +769,10 @@ let
 		         if capturedOrPawnPush
 			     then g.fiftyMoveCounter := 1
 			     else g.fiftyMoveCounter := g.fiftyMoveCounter + 1
-                     end 			     
+                     end
+	       function updateTurn() =
+	             if g.turn = WHITE then g.turn := BLACK
+		                       else g.turn := WHITE 
 		 
 	   in 
                if legalMove(g, fromC, toC)
@@ -780,7 +786,8 @@ let
 		         
 			 updateEnPassantable();
 			 updateCanCastle();
-			 updateKingLoc();			 
+			 updateKingLoc();
+			 updateTurn(); 
 			 printMove(p, fromC, toC);
 			 printBoard(g);
 			 updateFiftyMoves();
@@ -864,103 +871,14 @@ let
 		    
 		 end
 
-             /* Useful test function */ 
-             function testChess () =
-	     let var g := initGame()
-		 in     
-		    printBoard(g);
-		    move(g, E2, E4);
-		    move(g, E7, E5);
-		    move(g, B1, C3);
-
-		    /* Illegal moves
-		    ******************/
-		    move(g, F1, H3);
-		    move(g, E4, E5);
-		    move(g, D1, D3);
-		    move(g, D1, G1);
-		    /****************/
-
-		    /* Trying en passant
-		    ********************/
-		    move(g, H2, H4);
-		    move(g, H4, H5);
-		    move(g, G7, G5);
-		    move(g, H5, G6);
-
-		    /* Reset
-		    ***************/
-		    g := initGame();
-
-		    /*  Try illegal en passants 
-		    **************************/
-		    move(g, E2, E4);
-		    move(g, E4, F5);
-		    move(g, F7, F5);
-		    move(g, F5, F4);
-		    move(g, E4, F5);
-
-		    /* Legal en passant */
-		    move(g, G2, G4);
-		    move(g, F4, G3);
-
-		    /* Reset and try to get 50 move draw. 
-		    ***********************************/
-		    /*
-		    g := initGame();
-		    for i:= 0 to 24 do 
-			(move(g, B1, C3);
-			 move(g, B8, C6);
-			 move(g, C3, B1);
-			 move(g, C6, B8))
-		    */
-
-		    /* Entire opera game */
-		    g := initGame();
-		    (move(g, E2, E4);
-		     move(g, E7, E5);
-		     move(g, G1, F3);
-		     move(g, D7, D6);
-		     move(g, D2, D4);
-		     move(g, C8, G4);
-		     move(g, D4, E5);
-		     move(g, G4, F3);
-		     move(g, D1, F3);
-		     move(g, D6, E5);
-		     move(g, F1, C4);
-		     move(g, G8, F6);
-		     move(g, F3, B3);
-		     move(g, D8, E7);
-		     move(g, B1, C3);
-		     move(g, C7, C6);
-		     move(g, C1, G5);
-		     move(g, B7, B5);
-		     move(g, C3, B5);
-		     move(g, C6, B5);
-		     move(g, C4, B5);
-		     move(g, B8, D7);
-		     move(g, E1, C1);
-		     move(g, A8, D8);
-		     move(g, D1, D7);
-		     move(g, D8, D7);
-		     move(g, H1, D1);
-		     move(g, E7, E6);
-		     move(g, B5, D7);
-		     move(g, F6, D7);
-		     move(g, B3, B8);
-		     move(g, D7, B8);
-		     move(g, D1, D8))
-		end 
-
-
 
             /*********************************************************
 	              Time to play Chess! 
 	    *********************************************************/
 	    function playGame () =
 	        let var g := initGame()
-		    var turn := WHITE
 		in
+		    printBoard(g);
 		    print("Welcome! To make a move, type two space-separated coordinates.\nFor example: e2 e4\n");
 		    
 		    while 1 do
@@ -969,11 +887,10 @@ let
 			    var fromC := moveCoordinates.fromC
 			    var toC := moveCoordinates.toC  
 			in
-			    print("GOT TO HERE\n")
+			    move(g, fromC, toC)
 			end 
 	        end
 		   
 in
-    /* testChess() */
     playGame()
 end
