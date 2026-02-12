@@ -341,18 +341,26 @@ let
 
        
                function noPiecesBetweenDiagonally (b : board, fromC : coordinate, toC : coordinate) : bool =
-               	     let var lowRank := (if fromC.rank <= toC.rank then fromC.rank else toC.rank) + 1
-	                 var highRank := (if fromC.rank <= toC.rank then toC.rank else fromC.rank)
-	                 var lowFile := (if fromC.file <= toC.file then fromC.file else toC.file) + 1
-	                 var highFile := (if fromC.file <= toC.file then toC.file else fromC.file)
+               	     let var toRank := toC.rank
+			 var toFile := toC.file
+
+                         var vertStep := if fromC.rank < toRank 
+			                 then 1
+					 else -1
+			 var horizStep := if fromC.file < toFile 
+			                  then 1
+					  else -1
+
+                         var fromRank := fromC.rank + vertStep
+			 var fromFile := fromC.file + horizStep
 
 	                 var res := 1
 	             in
-                         while lowRank <> highRank do
-	                     (if getPiece(b, coordinate{file=lowFile, rank=lowRank}) <> EMPTY
+                         while fromRank <> toRank do
+	                     (if getPiece(b, coordinate{file=fromFile, rank=fromRank}) <> EMPTY
 		                 then (res :=0; break);
-		              lowRank := lowRank + 1;
-		              lowFile := lowFile + 1);
+		              fromRank := fromRank + vertStep;
+		              fromFile := fromFile + horizStep);
 		    
 	                 res 
 	             end
@@ -464,13 +472,15 @@ let
            let
 	       /* Check that the king isn't passing through danger on the E, F or G files. */
 	       function legalShortCastle(color : int) : bool =
-	          (movingExposesMyKing(g, fromC, coordinate{file=5, rank=toC.rank}, color);
-		   movingExposesMyKing(g, fromC, coordinate{file=6, rank=toC.rank}, color))
+	          not(movingExposesMyKing(g, fromC, coordinate{file=5, rank=toC.rank}, color))
+		  & 
+		  not(movingExposesMyKing(g, fromC, coordinate{file=6, rank=toC.rank}, color))
 
                /* Check that the king isn't passing through danger on the E, D, or C files. */
                function legalLongCastle(color : int) : bool =
-	          (movingExposesMyKing(g, fromC, coordinate{file=3, rank=toC.rank}, color);
-		   movingExposesMyKing(g, fromC, coordinate{file=2, rank=toC.rank}, color))
+	          not(movingExposesMyKing(g, fromC, coordinate{file=3, rank=toC.rank}, color))
+		  &
+		  not(movingExposesMyKing(g, fromC, coordinate{file=2, rank=toC.rank}, color))
 
                var color := p.color	       
 	       var vertical := fromC.rank - toC.rank
@@ -679,7 +689,7 @@ let
 		    end 			
 			
                 function moveCastling() =
-		    let var horizontal := fromC.file - toC.file 
+		    let var horizontal := toC.file - fromC.file
 		    in
 		        /* White king long castling case */ 
 			if p = WHITE_KING & horizontal = -2
@@ -779,7 +789,7 @@ let
 			    a capture */ 
 			 if g.fiftyMoveCounter = 100 then print("Draw by 50 move rule\n"))
 
-                   else (print("\nInvalid Move: You ");
+                   else (print("\nInvalid Move: ");
              	         printMove(p, fromC, toC))
             end 
 		        
@@ -833,6 +843,41 @@ in
 	      move(g, C3, B1);
 	      move(g, C6, B8))
 	 */
+
+         /* Entire opera game */
+	 g := initGame();
+	 (move(g, E2, E4);
+	  move(g, E7, E5);
+	  move(g, G1, F3);
+	  move(g, D7, D6);
+	  move(g, D2, D4);
+	  move(g, C8, G4);
+	  move(g, D4, E5);
+	  move(g, G4, F3);
+	  move(g, D1, F3);
+	  move(g, D6, E5);
+	  move(g, F1, C4);
+	  move(g, G8, F6);
+	  move(g, F3, B3);
+	  move(g, D8, E7);
+	  move(g, B1, C3);
+	  move(g, C7, C6);
+	  move(g, C1, G5);
+	  move(g, B7, B5);
+	  move(g, C3, B5);
+	  move(g, C6, B5);
+	  move(g, C4, B5);
+	  move(g, B8, D7);
+	  move(g, E1, C1);
+	  move(g, A8, D8);
+	  move(g, D1, D7);
+	  move(g, D8, D7);
+	  move(g, H1, D1);
+	  move(g, E7, E6);
+	  move(g, B5, D7);
+	  move(g, F6, D7);
+	  move(g, B3, B8);
+	  move(g, D7, B8);
+	  move(g, D1, D8))
      end 
 end
-  	
