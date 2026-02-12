@@ -1,137 +1,141 @@
 	.data
-L940:
+L1003:
 	.word 19
 	.ascii "Draw by stalemate!
 "
-L939:
+L1002:
 	.word 32
 	.ascii "Checkmate! White is the winner!
 "
-L930:
+L993:
 	.word 32
 	.ascii "Checkmate! Black is the winner!
 "
-L920:
+L984:
+	.word 30
+	.ascii "Draw by insufficient material
+"
+L982:
 	.word 82
 	.ascii "Welcome! To make a move, type two space-separated coordinates.
 For example: e2 e4
 "
-L916:
+L978:
 	.word 26
 	.ascii "Invalid input. Try again:
 "
-L907:
+L969:
 	.word 1
 	.ascii "
 "
-L906:
+L968:
 	.word 1
 	.ascii " "
-L904:
+L966:
 	.word 0
 	.ascii ""
-L853:
+L915:
 	.word 15
 	.ascii "Black to move: "
-L852:
+L914:
 	.word 15
 	.ascii "White to move: "
-L848:
+L910:
 	.word 15
 	.ascii "
 Invalid Move: "
-L845:
+L907:
 	.word 21
 	.ascii "Draw by 50 move rule
 "
-L840:
+L902:
 	.word 22
 	.ascii "White is now in check
 "
-L835:
+L897:
 	.word 22
 	.ascii "Black is now in check
 "
-L225:
+L226:
 	.word 45
 	.ascii "       a    b    c    d    e    f    g    h
 
 "
-L224:
+L225:
 	.word 47
 	.ascii "     -----------------------------------------
 "
-L221:
+L222:
 	.word 1
 	.ascii "
 "
-L218:
+L219:
+	.word 3
+	.ascii " | "
+L217:
 	.word 3
 	.ascii " | "
 L216:
 	.word 3
-	.ascii " | "
-L215:
-	.word 3
 	.ascii "   "
-L214:
+L215:
 	.word 47
 	.ascii "     -----------------------------------------
 "
-L176:
+L177:
 	.word 2
 	.ascii "  "
-L175:
+L176:
 	.word 2
 	.ascii "BK"
-L174:
+L175:
 	.word 2
 	.ascii "BQ"
-L173:
+L174:
 	.word 2
 	.ascii "BB"
-L172:
+L173:
 	.word 2
 	.ascii "BN"
-L171:
+L172:
 	.word 2
 	.ascii "BR"
-L170:
+L171:
 	.word 2
 	.ascii "BP"
-L169:
+L170:
 	.word 2
 	.ascii "WK"
-L168:
+L169:
 	.word 2
 	.ascii "WQ"
-L167:
+L168:
 	.word 2
 	.ascii "WB"
-L166:
+L167:
 	.word 2
 	.ascii "WN"
-L165:
+L166:
 	.word 2
 	.ascii "WR"
-L164:
+L165:
 	.word 2
 	.ascii "WP"
-L156:
+L157:
 	.word 1
 	.ascii "
 "
-L155:
+L156:
 	.word 4
 	.ascii " to "
-L154:
+L155:
 	.word 6
 	.ascii "Moved "
-L153:
+L154:
 	.word 6
 	.ascii "O-O-O
 "
-L152:
+L153:
 	.word 4
 	.ascii "O-O
 "
@@ -144,7 +148,7 @@ tig_main:
 	addi $sp, $sp, -152
 	sw $a0, 4($fp)
 	sw $ra, -148($fp)
-L953:
+L1019:
 	li $t0, 0
 	sw $t0, -4($fp)
 	li $t0, 1
@@ -666,9 +670,9 @@ L953:
 	sw $t0, 4($v0)
 	sw $v0, -144($fp)
 	move $a0, $fp
-	jal L35
-	j L952
-L952:
+	jal L36
+	j L1018
+L1018:
 	lw $ra, -148($fp)
 	
 	addi $sp, $sp, 152
@@ -680,23 +684,32 @@ L952:
 
 
 
-L35:
+L36:
 	addi $sp, $sp, -8
 	sw $fp, 0($sp)
 	move $fp, $sp
 	addi $sp, $sp, -28
 	sw $a0, 4($fp)
 	sw $ra, -12($fp)
-L955:
+L1021:
 	lw $a0, 4($fp)
 	jal L2
 	sw $v0, -4($fp)
 	lw $a0, 4($fp)
 	lw $a1, -4($fp)
 	jal L4
-	la $a0, L920
+	la $a0, L982
 	jal tig_print
-L951:
+L1017:
+	lw $a0, 4($fp)
+	lw $a1, -4($fp)
+	jal L24
+	move $a0, $v0
+	jal tig_not
+	li $t0, 0
+	bne $t0, $v0, L1013
+	j L1014
+L1014:
 	lw $a0, 4($fp)
 	lw $a1, -4($fp)
 	jal L23
@@ -705,115 +718,123 @@ L951:
 	sw $v0, -8($fp)
 	li $t1, 0
 	lw $t0, -8($fp)
-	bne $t1, $t0, L924
-	j L925
-L925:
+	bne $t1, $t0, L987
+	j L988
+L988:
 	li $t0, 0
-L926:
+L989:
 	li $t1, 0
-	bne $t1, $t0, L927
-	j L928
-L928:
+	bne $t1, $t0, L990
+	j L991
+L991:
 	li $v0, 0
-L929:
+L992:
 	li $t0, 0
-	bne $t0, $v0, L947
-	j L948
-L948:
+	bne $t0, $v0, L1010
+	j L1011
+L1011:
 	li $t1, 0
 	lw $t0, -8($fp)
-	bne $t1, $t0, L933
-	j L934
-L934:
+	bne $t1, $t0, L996
+	j L997
+L997:
 	li $t0, 0
-L935:
+L998:
 	li $t1, 0
-	bne $t1, $t0, L936
-	j L937
-L937:
+	bne $t1, $t0, L999
+	j L1000
+L1000:
 	li $v0, 0
-L938:
+L1001:
 	li $t0, 0
-	bne $t0, $v0, L944
-	j L945
-L945:
+	bne $t0, $v0, L1007
+	j L1008
+L1008:
 	li $t1, 0
 	lw $t0, -8($fp)
-	bne $t1, $t0, L941
-	j L942
-L942:
+	bne $t1, $t0, L1004
+	j L1005
+L1005:
 	lw $a0, 4($fp)
 	lw $a1, -4($fp)
-	jal L31
+	jal L32
 	lw $a0, 4($fp)
-	jal L34
+	jal L35
 	lw $a2, 0($v0)
 	lw $a3, 4($v0)
 	lw $a0, 4($fp)
 	lw $a1, -4($fp)
-	jal L30
-L943:
-L946:
-L949:
-	j L951
-L924:
+	jal L31
+L1006:
+L1009:
+L1012:
+L1015:
+	j L1017
+L1013:
+	la $a0, L984
+	jal tig_print
+L983:
+	li $v0, 0
+	j L1020
+L1022:
+	li $v0, 0
+	j L1015
+L987:
 	li $t0, 1
 	lw $t1, -4($fp)
 	lw $t2, 4($t1)
 	lw $t1, 4($fp)
 	lw $t1, -4($t1)
-	beq $t2, $t1, L922
-	j L923
-L923:
+	beq $t2, $t1, L985
+	j L986
+L986:
 	li $t0, 0
-L922:
-	j L926
-L927:
+L985:
+	j L989
+L990:
 	lw $a0, 4($fp)
 	lw $a1, -4($fp)
-	jal L24
-	j L929
-L947:
-	la $a0, L930
+	jal L25
+	j L992
+L1010:
+	la $a0, L993
 	jal tig_print
-L921:
+	j L983
+L1023:
 	li $v0, 0
-	j L954
-L956:
-	li $v0, 0
-	j L949
-L933:
+	j L1012
+L996:
 	li $t0, 1
 	lw $t1, -4($fp)
 	lw $t2, 4($t1)
 	lw $t1, 4($fp)
 	lw $t1, -8($t1)
-	beq $t2, $t1, L931
-	j L932
-L932:
+	beq $t2, $t1, L994
+	j L995
+L995:
 	li $t0, 0
-L931:
-	j L935
-L936:
+L994:
+	j L998
+L999:
 	lw $a0, 4($fp)
 	lw $a1, -4($fp)
-	jal L25
-	j L938
-L944:
-	la $a0, L939
+	jal L26
+	j L1001
+L1007:
+	la $a0, L1002
 	jal tig_print
-	j L921
-L957:
+	j L983
+L1024:
 	li $v0, 0
-	j L946
-L941:
-	la $a0, L940
+	j L1009
+L1004:
+	la $a0, L1003
 	jal tig_print
-	j L921
-L958:
+	j L983
+L1025:
 	li $v0, 0
-	j L943
-L954:
+	j L1006
+L1020:
 	lw $ra, -12($fp)
 	
 	addi $sp, $sp, 28
@@ -824,30 +845,30 @@ L954:
 
 
 
-L34:
+L35:
 	addi $sp, $sp, -8
 	sw $fp, 0($sp)
 	move $fp, $sp
 	addi $sp, $sp, -48
 	sw $a0, 4($fp)
 	sw $ra, -28($fp)
-L960:
-	la $t0, L904
+L1027:
+	la $t0, L966
 	sw $t0, -4($fp)
 	move $a0, $fp
-	jal L905
+	jal L967
 	lw $t0, -4($fp)
 	sw $t0, -8($fp)
 	move $a0, $fp
-	jal L905
+	jal L967
 	lw $t0, -4($fp)
 	sw $t0, -12($fp)
 	move $a0, $fp
-	jal L905
+	jal L967
 	lw $t0, -4($fp)
 	sw $t0, -16($fp)
 	move $a0, $fp
-	jal L905
+	jal L967
 	lw $t0, -4($fp)
 	sw $t0, -20($fp)
 	lw $a0, 4($fp)
@@ -856,36 +877,36 @@ L960:
 	lw $a3, -16($fp)
 	lw $t0, -20($fp)
 	sw $t0, 20($a0)
-	jal L32
+	jal L33
 	li $t0, 0
-	bne $t0, $v0, L917
-	j L918
-L918:
-	la $a0, L916
+	bne $t0, $v0, L979
+	j L980
+L980:
+	la $a0, L978
 	jal tig_print
 	lw $a0, 4($fp)
-	jal L34
-L919:
-	j L959
-L917:
+	jal L35
+L981:
+	j L1026
+L979:
 	li $a0, 8
 	jal tig_allocRecord
 	sw $v0, -24($fp)
 	lw $a0, 4($fp)
 	lw $a1, -8($fp)
 	lw $a2, -12($fp)
-	jal L33
+	jal L34
 	lw $t0, -24($fp)
 	sw $v0, 0($t0)
 	lw $a0, 4($fp)
 	lw $a1, -16($fp)
 	lw $a2, -20($fp)
-	jal L33
+	jal L34
 	lw $t0, -24($fp)
 	sw $v0, 4($t0)
 	lw $v0, -24($fp)
-	j L919
-L959:
+	j L981
+L1026:
 	lw $ra, -28($fp)
 	
 	addi $sp, $sp, 48
@@ -896,63 +917,63 @@ L959:
 
 
 
-L905:
+L967:
 	addi $sp, $sp, -8
 	sw $fp, 0($sp)
 	move $fp, $sp
 	addi $sp, $sp, -16
 	sw $a0, 4($fp)
 	sw $ra, -8($fp)
-L962:
+L1029:
 	jal tig_getchar
 	lw $t0, 4($fp)
 	sw $v0, -4($t0)
 	lw $t0, 4($fp)
 	lw $a0, -4($t0)
-	la $a1, L906
+	la $a1, L968
 	jal tig_stringEqual
 	li $t0, 1
-	beq $v0, $t0, L910
-	j L911
-L911:
+	beq $v0, $t0, L972
+	j L973
+L973:
 	li $t0, 1
 	sw $t0, -4($fp)
 	lw $t0, 4($fp)
 	lw $a0, -4($t0)
-	la $a1, L907
+	la $a1, L969
 	jal tig_stringEqual
 	li $t0, 1
-	beq $v0, $t0, L908
-	j L909
-L909:
+	beq $v0, $t0, L970
+	j L971
+L971:
 	li $t0, 0
 	sw $t0, -4($fp)
-L908:
+L970:
 	lw $t0, -4($fp)
-L912:
+L974:
 	li $t1, 0
-	bne $t1, $t0, L915
-	j L913
-L913:
+	bne $t1, $t0, L977
+	j L975
+L975:
 	li $v0, 0
-	j L961
-L910:
+	j L1028
+L972:
 	li $t0, 1
-	j L912
-L915:
+	j L974
+L977:
 	jal tig_getchar
 	lw $t0, 4($fp)
 	sw $v0, -4($t0)
 	lw $t0, 4($fp)
 	lw $a0, -4($t0)
-	la $a1, L906
+	la $a1, L968
 	jal tig_stringEqual
 	li $t0, 1
-	beq $v0, $t0, L910
-	j L963
-L963:
-	j L911
-L961:
+	beq $v0, $t0, L972
+	j L1030
+L1030:
+	j L973
+L1028:
 	lw $ra, -8($fp)
 	
 	addi $sp, $sp, 16
@@ -963,7 +984,7 @@ L961:
 
 
 
-L33:
+L34:
 	addi $sp, $sp, -16
 	sw $fp, 0($sp)
 	move $fp, $sp
@@ -971,13 +992,13 @@ L33:
 	sw $a0, 4($fp)
 	sw $a2, -4($fp)
 	sw $ra, -16($fp)
-L965:
+L1032:
 	move $a0, $fp
-	jal L892
+	jal L954
 	sw $v0, -8($fp)
 	move $a0, $fp
 	lw $a1, -4($fp)
-	jal L893
+	jal L955
 	sw $v0, -12($fp)
 	li $a0, 8
 	jal tig_allocRecord
@@ -985,8 +1006,8 @@ L965:
 	sw $t0, 0($v0)
 	lw $t0, -12($fp)
 	sw $t0, 4($v0)
-	j L964
-L964:
+	j L1031
+L1031:
 	lw $ra, -16($fp)
 	
 	addi $sp, $sp, 24
@@ -997,7 +1018,7 @@ L964:
 
 
 
-L893:
+L955:
 	addi $sp, $sp, -12
 	sw $fp, 0($sp)
 	move $fp, $sp
@@ -1005,12 +1026,12 @@ L893:
 	sw $a0, 4($fp)
 	move $a0, $a1
 	sw $ra, -4($fp)
-L967:
+L1034:
 	jal tig_ord
 	li $t0, 49
 	sub $v0, $v0, $t0
-	j L966
-L966:
+	j L1033
+L1033:
 	lw $ra, -4($fp)
 	
 	addi $sp, $sp, 8
@@ -1021,7 +1042,7 @@ L966:
 
 
 
-L892:
+L954:
 	addi $sp, $sp, -12
 	sw $fp, 0($sp)
 	move $fp, $sp
@@ -1029,43 +1050,222 @@ L892:
 	sw $a0, 4($fp)
 	move $a0, $a1
 	sw $ra, -4($fp)
-L969:
+L1036:
 	jal tig_ord
 	li $t0, 1
 	li $t1, 65
-	bge $v0, $t1, L894
-	j L895
-L895:
+	bge $v0, $t1, L956
+	j L957
+L957:
 	li $t0, 0
-L894:
+L956:
 	li $t1, 0
-	bne $t1, $t0, L898
-	j L899
-L899:
+	bne $t1, $t0, L960
+	j L961
+L961:
 	li $t0, 0
-L900:
+L962:
 	li $t1, 0
-	bne $t1, $t0, L901
-	j L902
-L902:
+	bne $t1, $t0, L963
+	j L964
+L964:
 	li $t0, 97
 	sub $v0, $v0, $t0
-L903:
-	j L968
-L898:
+L965:
+	j L1035
+L960:
 	li $t0, 1
 	li $t1, 72
-	ble $v0, $t1, L896
-	j L897
-L897:
+	ble $v0, $t1, L958
+	j L959
+L959:
 	li $t0, 0
-L896:
-	j L900
-L901:
+L958:
+	j L962
+L963:
 	li $t0, 65
 	sub $v0, $v0, $t0
-	j L903
-L968:
+	j L965
+L1035:
+	lw $ra, -4($fp)
+	
+	addi $sp, $sp, 8
+	lw $fp, 0($sp)
+	addi $sp, $sp, 12
+	jr $ra
+
+
+
+
+L33:
+	addi $sp, $sp, -24
+	sw $fp, 0($sp)
+	move $fp, $sp
+	addi $sp, $sp, -20
+	sw $a0, 4($fp)
+	sw $a2, -4($fp)
+	sw $a3, -8($fp)
+	lw $t0, 20($a0)
+	sw $t0, 20($fp)
+	sw $ra, -12($fp)
+L1038:
+	move $a0, $fp
+	jal L919
+	li $t0, 0
+	bne $t0, $v0, L945
+	j L946
+L946:
+	li $v0, 0
+L947:
+	li $t0, 0
+	bne $t0, $v0, L948
+	j L949
+L949:
+	li $v0, 0
+L950:
+	li $t0, 0
+	bne $t0, $v0, L951
+	j L952
+L952:
+	li $v0, 0
+L953:
+	j L1037
+L945:
+	move $a0, $fp
+	lw $a1, -4($fp)
+	jal L920
+	j L947
+L948:
+	move $a0, $fp
+	lw $a1, -8($fp)
+	jal L919
+	j L950
+L951:
+	lw $a1, 20($fp)
+	move $a0, $fp
+	jal L920
+	j L953
+L1037:
+	lw $ra, -12($fp)
+	
+	addi $sp, $sp, 20
+	lw $fp, 0($sp)
+	addi $sp, $sp, 24
+	jr $ra
+
+
+
+
+L920:
+	addi $sp, $sp, -12
+	sw $fp, 0($sp)
+	move $fp, $sp
+	addi $sp, $sp, -8
+	sw $a0, 4($fp)
+	move $a0, $a1
+	sw $ra, -4($fp)
+L1040:
+	jal tig_ord
+	move $t0, $v0
+	li $t1, 1
+	li $t2, 49
+	bge $t0, $t2, L938
+	j L939
+L939:
+	li $t1, 0
+L938:
+	li $t2, 0
+	bne $t2, $t1, L942
+	j L943
+L943:
+	li $v0, 0
+L944:
+	j L1039
+L942:
+	li $v0, 1
+	li $t1, 56
+	ble $t0, $t1, L940
+	j L941
+L941:
+	li $v0, 0
+L940:
+	j L944
+L1039:
+	lw $ra, -4($fp)
+	
+	addi $sp, $sp, 8
+	lw $fp, 0($sp)
+	addi $sp, $sp, 12
+	jr $ra
+
+
+
+
+L919:
+	addi $sp, $sp, -12
+	sw $fp, 0($sp)
+	move $fp, $sp
+	addi $sp, $sp, -8
+	sw $a0, 4($fp)
+	move $a0, $a1
+	sw $ra, -4($fp)
+L1042:
+	jal tig_ord
+	move $t0, $v0
+	li $t1, 1
+	li $t2, 65
+	bge $t0, $t2, L921
+	j L922
+L922:
+	li $t1, 0
+L921:
+	li $t2, 0
+	bne $t2, $t1, L925
+	j L926
+L926:
+	li $t1, 0
+L927:
+	li $t2, 1
+	li $t3, 97
+	bge $t0, $t3, L928
+	j L929
+L929:
+	li $t2, 0
+L928:
+	li $t3, 0
+	bne $t3, $t2, L932
+	j L933
+L933:
+	li $v0, 0
+L934:
+	li $t0, 0
+	bne $t0, $t1, L935
+	j L936
+L936:
+L937:
+	j L1041
+L925:
+	li $t1, 1
+	li $t2, 72
+	ble $t0, $t2, L923
+	j L924
+L924:
+	li $t1, 0
+L923:
+	j L927
+L932:
+	li $v0, 1
+	li $t2, 104
+	ble $t0, $t2, L930
+	j L931
+L931:
+	li $v0, 0
+L930:
+	j L934
+L935:
+	li $v0, 1
+	j L937
+L1041:
 	lw $ra, -4($fp)
 	
 	addi $sp, $sp, 8
@@ -1077,174 +1277,28 @@ L968:
 
 
 L32:
-	addi $sp, $sp, -24
-	sw $fp, 0($sp)
-	move $fp, $sp
-	addi $sp, $sp, -20
-	sw $a0, 4($fp)
-	sw $a2, -4($fp)
-	sw $a3, -8($fp)
-	lw $t0, 20($a0)
-	sw $t0, 20($fp)
-	sw $ra, -12($fp)
-L971:
-	move $a0, $fp
-	jal L857
-	li $t0, 0
-	bne $t0, $v0, L883
-	j L884
-L884:
-	li $v0, 0
-L885:
-	li $t0, 0
-	bne $t0, $v0, L886
-	j L887
-L887:
-	li $v0, 0
-L888:
-	li $t0, 0
-	bne $t0, $v0, L889
-	j L890
-L890:
-	li $v0, 0
-L891:
-	j L970
-L883:
-	move $a0, $fp
-	lw $a1, -4($fp)
-	jal L858
-	j L885
-L886:
-	move $a0, $fp
-	lw $a1, -8($fp)
-	jal L857
-	j L888
-L889:
-	lw $a1, 20($fp)
-	move $a0, $fp
-	jal L858
-	j L891
-L970:
-	lw $ra, -12($fp)
-	
-	addi $sp, $sp, 20
-	lw $fp, 0($sp)
-	addi $sp, $sp, 24
-	jr $ra
-
-
-
-
-L858:
 	addi $sp, $sp, -12
 	sw $fp, 0($sp)
 	move $fp, $sp
 	addi $sp, $sp, -8
 	sw $a0, 4($fp)
-	move $a0, $a1
 	sw $ra, -4($fp)
-L973:
-	jal tig_ord
-	move $t0, $v0
-	li $t1, 1
-	li $t2, 49
-	bge $t0, $t2, L876
-	j L877
-L877:
-	li $t1, 0
-L876:
-	li $t2, 0
-	bne $t2, $t1, L880
-	j L881
-L881:
-	li $v0, 0
-L882:
-	j L972
-L880:
-	li $v0, 1
-	li $t1, 56
-	ble $t0, $t1, L878
-	j L879
-L879:
-	li $v0, 0
-L878:
-	j L882
-L972:
-	lw $ra, -4($fp)
-	
-	addi $sp, $sp, 8
-	lw $fp, 0($sp)
-	addi $sp, $sp, 12
-	jr $ra
-
-
-
-
-L857:
-	addi $sp, $sp, -12
-	sw $fp, 0($sp)
-	move $fp, $sp
-	addi $sp, $sp, -8
-	sw $a0, 4($fp)
-	move $a0, $a1
-	sw $ra, -4($fp)
-L975:
-	jal tig_ord
-	move $t0, $v0
-	li $t1, 1
-	li $t2, 65
-	bge $t0, $t2, L859
-	j L860
-L860:
-	li $t1, 0
-L859:
-	li $t2, 0
-	bne $t2, $t1, L863
-	j L864
-L864:
-	li $t1, 0
-L865:
-	li $t2, 1
-	li $t3, 97
-	bge $t0, $t3, L866
-	j L867
-L867:
-	li $t2, 0
-L866:
-	li $t3, 0
-	bne $t3, $t2, L870
-	j L871
-L871:
-	li $v0, 0
-L872:
-	li $t0, 0
-	bne $t0, $t1, L873
-	j L874
-L874:
-L875:
-	j L974
-L863:
-	li $t1, 1
-	li $t2, 72
-	ble $t0, $t2, L861
-	j L862
-L862:
-	li $t1, 0
-L861:
-	j L865
-L870:
-	li $v0, 1
-	li $t2, 104
-	ble $t0, $t2, L868
-	j L869
-L869:
-	li $v0, 0
-L868:
-	j L872
-L873:
-	li $v0, 1
-	j L875
-L974:
+L1044:
+	lw $t1, 4($a1)
+	lw $t0, 4($fp)
+	lw $t0, -4($t0)
+	beq $t1, $t0, L916
+	j L917
+L917:
+	la $a0, L915
+	jal tig_print
+L918:
+	j L1043
+L916:
+	la $a0, L914
+	jal tig_print
+	j L918
+L1043:
 	lw $ra, -4($fp)
 	
 	addi $sp, $sp, 8
@@ -1256,39 +1310,6 @@ L974:
 
 
 L31:
-	addi $sp, $sp, -12
-	sw $fp, 0($sp)
-	move $fp, $sp
-	addi $sp, $sp, -8
-	sw $a0, 4($fp)
-	sw $ra, -4($fp)
-L977:
-	lw $t1, 4($a1)
-	lw $t0, 4($fp)
-	lw $t0, -4($t0)
-	beq $t1, $t0, L854
-	j L855
-L855:
-	la $a0, L853
-	jal tig_print
-L856:
-	j L976
-L854:
-	la $a0, L852
-	jal tig_print
-	j L856
-L976:
-	lw $ra, -4($fp)
-	
-	addi $sp, $sp, 8
-	lw $fp, 0($sp)
-	addi $sp, $sp, 12
-	jr $ra
-
-
-
-
-L30:
 	addi $sp, $sp, -20
 	sw $fp, 0($sp)
 	move $fp, $sp
@@ -1298,86 +1319,86 @@ L30:
 	sw $a2, 12($fp)
 	sw $a3, 16($fp)
 	sw $ra, -16($fp)
-L979:
+L1046:
 	lw $t0, 8($fp)
 	lw $t0, 0($t0)
 	sw $t0, -4($fp)
 	lw $a0, 4($fp)
 	lw $a1, -4($fp)
 	lw $a2, 12($fp)
-	jal L28
+	jal L29
 	sw $v0, -8($fp)
 	lw $a0, 4($fp)
 	lw $a1, -4($fp)
 	lw $a2, 16($fp)
-	jal L28
+	jal L29
 	sw $v0, -12($fp)
 	lw $a0, 4($fp)
 	lw $a1, 8($fp)
 	lw $a2, 12($fp)
 	lw $a3, 16($fp)
-	jal L27
+	jal L28
 	li $t0, 0
-	bne $t0, $v0, L849
-	j L850
-L850:
-	la $a0, L848
+	bne $t0, $v0, L911
+	j L912
+L912:
+	la $a0, L910
 	jal tig_print
 	lw $a0, 4($fp)
 	lw $a1, -8($fp)
 	lw $a2, 12($fp)
 	lw $a3, 16($fp)
 	jal L3
-L851:
-	j L978
-L849:
+L913:
+	j L1045
+L911:
 	move $a0, $fp
-	jal L679
+	jal L741
 	li $t0, 0
-	bne $t0, $v0, L832
-	j L833
-L833:
+	bne $t0, $v0, L894
+	j L895
+L895:
 	move $a0, $fp
-	jal L681
+	jal L743
 	li $t0, 0
-	bne $t0, $v0, L829
-	j L830
-L830:
+	bne $t0, $v0, L891
+	j L892
+L892:
 	lw $a0, 4($fp)
 	lw $a1, -4($fp)
 	lw $a2, 16($fp)
 	lw $a3, -8($fp)
-	jal L29
+	jal L30
 	lw $a0, 4($fp)
 	lw $a1, -4($fp)
 	lw $a2, 12($fp)
 	lw $t0, 4($fp)
 	lw $a3, -36($t0)
-	jal L29
-L831:
-L834:
+	jal L30
+L893:
+L896:
 	lw $t0, 8($fp)
 	lw $t1, 4($t0)
 	lw $t0, 4($fp)
 	lw $t0, -4($t0)
-	beq $t1, $t0, L838
-	j L839
-L839:
+	beq $t1, $t0, L900
+	j L901
+L901:
 	lw $t0, 8($fp)
 	lw $t1, 4($t0)
 	lw $t0, 4($fp)
 	lw $t0, -8($t0)
-	beq $t1, $t0, L843
-	j L844
-L844:
+	beq $t1, $t0, L905
+	j L906
+L906:
 	move $a0, $fp
-	jal L678
+	jal L740
 	move $a0, $fp
-	jal L683
+	jal L745
 	move $a0, $fp
-	jal L684
+	jal L746
 	move $a0, $fp
-	jal L686
+	jal L748
 	lw $a0, 4($fp)
 	lw $a1, -8($fp)
 	lw $a2, 12($fp)
@@ -1387,54 +1408,54 @@ L844:
 	lw $a1, 8($fp)
 	jal L4
 	move $a0, $fp
-	jal L685
+	jal L747
 	lw $t0, 8($fp)
 	lw $t1, 36($t0)
 	li $t0, 100
-	beq $t1, $t0, L846
-	j L847
-L847:
+	beq $t1, $t0, L908
+	j L909
+L909:
 	li $v0, 0
-	j L851
-L832:
+	j L913
+L894:
 	move $a0, $fp
-	jal L680
-	j L834
-L829:
+	jal L742
+	j L896
+L891:
 	move $a0, $fp
-	jal L682
-	j L831
-L838:
+	jal L744
+	j L893
+L900:
+	lw $a0, 4($fp)
+	lw $a1, 8($fp)
+	jal L26
+	li $t0, 0
+	bne $t0, $v0, L898
+	j L899
+L899:
+	j L901
+L898:
+	la $a0, L897
+	jal tig_print
+	j L899
+L905:
 	lw $a0, 4($fp)
 	lw $a1, 8($fp)
 	jal L25
 	li $t0, 0
-	bne $t0, $v0, L836
-	j L837
-L837:
-	j L839
-L836:
-	la $a0, L835
+	bne $t0, $v0, L903
+	j L904
+L904:
+	j L906
+L903:
+	la $a0, L902
 	jal tig_print
-	j L837
-L843:
-	lw $a0, 4($fp)
-	lw $a1, 8($fp)
-	jal L24
-	li $t0, 0
-	bne $t0, $v0, L841
-	j L842
-L842:
-	j L844
-L841:
-	la $a0, L840
+	j L904
+L908:
+	la $a0, L907
 	jal tig_print
-	j L842
-L846:
-	la $a0, L845
-	jal tig_print
-	j L847
-L978:
+	j L909
+L1045:
 	lw $ra, -16($fp)
 	
 	addi $sp, $sp, 32
@@ -1445,21 +1466,21 @@ L978:
 
 
 
-L686:
+L748:
 	addi $sp, $sp, -8
 	sw $fp, 0($sp)
 	move $fp, $sp
 	sw $a0, 4($fp)
-L981:
+L1048:
 	lw $t0, 4($fp)
 	lw $t0, 8($t0)
 	lw $t1, 4($t0)
 	lw $t0, 4($fp)
 	lw $t0, 4($t0)
 	lw $t0, -4($t0)
-	beq $t1, $t0, L826
-	j L827
-L827:
+	beq $t1, $t0, L888
+	j L889
+L889:
 	lw $t0, 4($fp)
 	lw $t0, 4($t0)
 	lw $t1, -4($t0)
@@ -1467,9 +1488,9 @@ L827:
 	lw $t0, 8($t0)
 	sw $t1, 4($t0)
 	li $v0, 0
-L828:
-	j L980
-L826:
+L890:
+	j L1047
+L888:
 	lw $t0, 4($fp)
 	lw $t0, 4($t0)
 	lw $t1, -8($t0)
@@ -1477,8 +1498,8 @@ L826:
 	lw $t0, 8($t0)
 	sw $t1, 4($t0)
 	li $v0, 0
-	j L828
-L980:
+	j L890
+L1047:
 	
 	lw $fp, 0($sp)
 	addi $sp, $sp, 8
@@ -1487,37 +1508,37 @@ L980:
 
 
 
-L685:
+L747:
 	addi $sp, $sp, -8
 	sw $fp, 0($sp)
 	move $fp, $sp
 	sw $a0, 4($fp)
-L983:
+L1050:
 	lw $t0, 4($fp)
 	lw $t0, -8($t0)
 	lw $t1, 4($t0)
 	lw $t0, 4($fp)
 	lw $t0, 4($t0)
 	lw $t0, -12($t0)
-	beq $t1, $t0, L820
-	j L821
-L821:
+	beq $t1, $t0, L882
+	j L883
+L883:
 	li $t0, 1
 	lw $t1, 4($fp)
 	lw $t2, -12($t1)
 	lw $t1, 4($fp)
 	lw $t1, 4($t1)
 	lw $t1, -36($t1)
-	bne $t2, $t1, L818
-	j L819
-L819:
+	bne $t2, $t1, L880
+	j L881
+L881:
 	li $t0, 0
-L818:
-L822:
+L880:
+L884:
 	li $t1, 0
-	bne $t1, $t0, L823
-	j L824
-L824:
+	bne $t1, $t0, L885
+	j L886
+L886:
 	lw $t0, 4($fp)
 	lw $t0, 8($t0)
 	lw $t0, 36($t0)
@@ -1526,19 +1547,19 @@ L824:
 	lw $t0, 8($t0)
 	sw $t1, 36($t0)
 	li $v0, 0
-L825:
-	j L982
-L820:
+L887:
+	j L1049
+L882:
 	li $t0, 1
-	j L822
-L823:
+	j L884
+L885:
 	li $t1, 1
 	lw $t0, 4($fp)
 	lw $t0, 8($t0)
 	sw $t1, 36($t0)
 	li $v0, 0
-	j L825
-L982:
+	j L887
+L1049:
 	
 	lw $fp, 0($sp)
 	addi $sp, $sp, 8
@@ -1547,47 +1568,47 @@ L982:
 
 
 
-L684:
+L746:
 	addi $sp, $sp, -8
 	sw $fp, 0($sp)
 	move $fp, $sp
 	sw $a0, 4($fp)
-L985:
+L1052:
 	lw $t0, 4($fp)
 	lw $t1, -8($t0)
 	lw $t0, 4($fp)
 	lw $t0, 4($t0)
 	lw $t0, -60($t0)
-	beq $t1, $t0, L815
-	j L816
-L816:
+	beq $t1, $t0, L877
+	j L878
+L878:
 	lw $t0, 4($fp)
 	lw $t1, -8($t0)
 	lw $t0, 4($fp)
 	lw $t0, 4($t0)
 	lw $t0, -84($t0)
-	beq $t1, $t0, L813
-	j L814
-L814:
+	beq $t1, $t0, L875
+	j L876
+L876:
 	li $v0, 0
-L817:
-	j L984
-L815:
+L879:
+	j L1051
+L877:
 	lw $t0, 4($fp)
 	lw $t1, 16($t0)
 	lw $t0, 4($fp)
 	lw $t0, 8($t0)
 	sw $t1, 8($t0)
 	li $v0, 0
-	j L817
-L813:
+	j L879
+L875:
 	lw $t0, 4($fp)
 	lw $t1, 16($t0)
 	lw $t0, 4($fp)
 	lw $t0, 8($t0)
 	sw $t1, 12($t0)
-	j L814
-L984:
+	j L876
+L1051:
 	
 	lw $fp, 0($sp)
 	addi $sp, $sp, 8
@@ -1596,12 +1617,12 @@ L984:
 
 
 
-L683:
+L745:
 	addi $sp, $sp, -8
 	sw $fp, 0($sp)
 	move $fp, $sp
 	sw $a0, 4($fp)
-L987:
+L1054:
 	lw $t0, 4($fp)
 	lw $t0, -8($t0)
 	lw $t0, 0($t0)
@@ -1612,11 +1633,11 @@ L987:
 	lw $t2, 4($fp)
 	lw $t2, 4($t2)
 	lw $t2, -32($t2)
-	beq $t3, $t2, L758
-	j L759
-L759:
+	beq $t3, $t2, L820
+	j L821
+L821:
 	li $t1, 0
-L758:
+L820:
 	li $t2, 1
 	lw $t3, 4($fp)
 	lw $t3, -8($t3)
@@ -1624,97 +1645,97 @@ L758:
 	lw $t3, 4($fp)
 	lw $t3, 4($t3)
 	lw $t3, -16($t3)
-	beq $t4, $t3, L760
-	j L761
-L761:
+	beq $t4, $t3, L822
+	j L823
+L823:
 	li $t2, 0
-L760:
+L822:
 	li $t4, 0
 	lw $t3, 4($fp)
 	lw $t3, 8($t3)
 	lw $t3, 16($t3)
-	bne $t4, $t3, L762
-	j L763
-L763:
+	bne $t4, $t3, L824
+	j L825
+L825:
 	lw $t3, 4($fp)
 	lw $t3, 8($t3)
 	lw $t3, 24($t3)
-L764:
+L826:
 	li $t4, 0
-	bne $t4, $t3, L765
-	j L766
-L766:
+	bne $t4, $t3, L827
+	j L828
+L828:
 	lw $t3, 4($fp)
 	lw $t3, 8($t3)
 	lw $t3, 20($t3)
-L767:
+L829:
 	li $t4, 0
-	bne $t4, $t3, L768
-	j L769
-L769:
+	bne $t4, $t3, L830
+	j L831
+L831:
 	lw $t3, 4($fp)
 	lw $t3, 8($t3)
 	lw $t3, 28($t3)
-L770:
+L832:
 	li $t4, 0
-	bne $t4, $t3, L811
-	j L812
-L812:
+	bne $t4, $t3, L873
+	j L874
+L874:
 	li $v0, 0
-	j L986
-L762:
+	j L1053
+L824:
 	li $t3, 1
-	j L764
-L765:
+	j L826
+L827:
 	li $t3, 1
-	j L767
-L768:
+	j L829
+L830:
 	li $t3, 1
-	j L770
-L811:
+	j L832
+L873:
 	lw $t3, 4($fp)
 	lw $t3, 4($t3)
 	lw $t3, -4($t3)
-	beq $t0, $t3, L789
-	j L790
-L790:
+	beq $t0, $t3, L851
+	j L852
+L852:
 	lw $t3, 4($fp)
 	lw $t3, 4($t3)
 	lw $t3, -8($t3)
-	beq $t0, $t3, L809
-	j L810
-L810:
-	j L812
-L789:
+	beq $t0, $t3, L871
+	j L872
+L872:
+	j L874
+L851:
 	li $t3, 0
-	bne $t3, $t1, L786
-	j L787
-L787:
+	bne $t3, $t1, L848
+	j L849
+L849:
 	li $t3, 0
-	bne $t3, $t2, L773
-	j L774
-L774:
+	bne $t3, $t2, L835
+	j L836
+L836:
 	li $t3, 0
-L775:
+L837:
 	li $t4, 0
-	bne $t4, $t3, L783
-	j L784
-L784:
+	bne $t4, $t3, L845
+	j L846
+L846:
 	li $t3, 0
-	bne $t3, $t2, L778
-	j L779
-L779:
+	bne $t3, $t2, L840
+	j L841
+L841:
 	li $t3, 0
-L780:
+L842:
 	li $t4, 0
-	bne $t4, $t3, L781
-	j L782
-L782:
+	bne $t4, $t3, L843
+	j L844
+L844:
 	li $t3, 0
-L785:
-L788:
-	j L790
-L786:
+L847:
+L850:
+	j L852
+L848:
 	li $t4, 0
 	lw $t3, 4($fp)
 	lw $t3, 8($t3)
@@ -1724,76 +1745,76 @@ L786:
 	lw $t3, 8($t3)
 	sw $t4, 24($t3)
 	li $t3, 0
-	j L788
-L773:
+	j L850
+L835:
 	li $t3, 1
 	lw $t4, 4($fp)
 	lw $t5, 12($t4)
 	lw $t4, 4($fp)
 	lw $t4, 4($t4)
 	lw $t4, -92($t4)
-	beq $t5, $t4, L771
-	j L772
-L772:
+	beq $t5, $t4, L833
+	j L834
+L834:
 	li $t3, 0
-L771:
-	j L775
-L783:
+L833:
+	j L837
+L845:
 	li $t4, 0
 	lw $t3, 4($fp)
 	lw $t3, 8($t3)
 	sw $t4, 24($t3)
 	li $t3, 0
-	j L785
-L778:
+	j L847
+L840:
 	li $t3, 1
 	lw $t4, 4($fp)
 	lw $t5, 12($t4)
 	lw $t4, 4($fp)
 	lw $t4, 4($t4)
 	lw $t4, -140($t4)
-	beq $t5, $t4, L776
-	j L777
-L777:
+	beq $t5, $t4, L838
+	j L839
+L839:
 	li $t3, 0
-L776:
-	j L780
-L781:
+L838:
+	j L842
+L843:
 	li $t4, 0
 	lw $t3, 4($fp)
 	lw $t3, 8($t3)
 	sw $t4, 16($t3)
-	j L782
-L809:
+	j L844
+L871:
 	li $t0, 0
-	bne $t0, $t1, L806
-	j L807
-L807:
+	bne $t0, $t1, L868
+	j L869
+L869:
 	li $t0, 0
-	bne $t0, $t2, L793
-	j L794
-L794:
+	bne $t0, $t2, L855
+	j L856
+L856:
 	li $t0, 0
-L795:
+L857:
 	li $t1, 0
-	bne $t1, $t0, L803
-	j L804
-L804:
+	bne $t1, $t0, L865
+	j L866
+L866:
 	li $t0, 0
-	bne $t0, $t2, L798
-	j L799
-L799:
+	bne $t0, $t2, L860
+	j L861
+L861:
 	li $t0, 0
-L800:
+L862:
 	li $t1, 0
-	bne $t1, $t0, L801
-	j L802
-L802:
+	bne $t1, $t0, L863
+	j L864
+L864:
 	li $t0, 0
-L805:
-L808:
-	j L810
-L806:
+L867:
+L870:
+	j L872
+L868:
 	li $t1, 0
 	lw $t0, 4($fp)
 	lw $t0, 8($t0)
@@ -1803,47 +1824,47 @@ L806:
 	lw $t0, 8($t0)
 	sw $t1, 28($t0)
 	li $t0, 0
-	j L808
-L793:
+	j L870
+L855:
 	li $t0, 1
 	lw $t1, 4($fp)
 	lw $t3, 12($t1)
 	lw $t1, 4($fp)
 	lw $t1, 4($t1)
 	lw $t1, -96($t1)
-	beq $t3, $t1, L791
-	j L792
-L792:
+	beq $t3, $t1, L853
+	j L854
+L854:
 	li $t0, 0
-L791:
-	j L795
-L803:
+L853:
+	j L857
+L865:
 	li $t1, 0
 	lw $t0, 4($fp)
 	lw $t0, 8($t0)
 	sw $t1, 28($t0)
 	li $t0, 0
-	j L805
-L798:
+	j L867
+L860:
 	li $t0, 1
 	lw $t1, 4($fp)
 	lw $t2, 12($t1)
 	lw $t1, 4($fp)
 	lw $t1, 4($t1)
 	lw $t1, -144($t1)
-	beq $t2, $t1, L796
-	j L797
-L797:
+	beq $t2, $t1, L858
+	j L859
+L859:
 	li $t0, 0
-L796:
-	j L800
-L801:
+L858:
+	j L862
+L863:
 	li $t1, 0
 	lw $t0, 4($fp)
 	lw $t0, 8($t0)
 	sw $t1, 20($t0)
-	j L802
-L986:
+	j L864
+L1053:
 	
 	lw $fp, 0($sp)
 	addi $sp, $sp, 8
@@ -1852,14 +1873,14 @@ L986:
 
 
 
-L682:
+L744:
 	addi $sp, $sp, -8
 	sw $fp, 0($sp)
 	move $fp, $sp
 	addi $sp, $sp, -20
 	sw $a0, 4($fp)
 	sw $ra, -4($fp)
-L989:
+L1056:
 	lw $t0, 4($fp)
 	lw $t0, 16($t0)
 	lw $t1, 0($t0)
@@ -1872,74 +1893,74 @@ L989:
 	lw $t1, 4($fp)
 	lw $t1, 4($t1)
 	lw $t1, -60($t1)
-	beq $t2, $t1, L729
-	j L730
-L730:
+	beq $t2, $t1, L791
+	j L792
+L792:
 	li $t1, 0
-L731:
+L793:
 	li $t2, 0
-	bne $t2, $t1, L755
-	j L756
-L756:
+	bne $t2, $t1, L817
+	j L818
+L818:
 	lw $t1, 4($fp)
 	lw $t2, -8($t1)
 	lw $t1, 4($fp)
 	lw $t1, 4($t1)
 	lw $t1, -60($t1)
-	beq $t2, $t1, L734
-	j L735
-L735:
+	beq $t2, $t1, L796
+	j L797
+L797:
 	li $t1, 0
-L736:
+L798:
 	li $t2, 0
-	bne $t2, $t1, L752
-	j L753
-L753:
+	bne $t2, $t1, L814
+	j L815
+L815:
 	lw $t1, 4($fp)
 	lw $t2, -8($t1)
 	lw $t1, 4($fp)
 	lw $t1, 4($t1)
 	lw $t1, -84($t1)
-	beq $t2, $t1, L739
-	j L740
-L740:
+	beq $t2, $t1, L801
+	j L802
+L802:
 	li $t1, 0
-L741:
+L803:
 	li $t2, 0
-	bne $t2, $t1, L749
-	j L750
-L750:
+	bne $t2, $t1, L811
+	j L812
+L812:
 	lw $t1, 4($fp)
 	lw $t2, -8($t1)
 	lw $t1, 4($fp)
 	lw $t1, 4($t1)
 	lw $t1, -84($t1)
-	beq $t2, $t1, L744
-	j L745
-L745:
+	beq $t2, $t1, L806
+	j L807
+L807:
 	li $t1, 0
-L746:
+L808:
 	li $t0, 0
-	bne $t0, $t1, L747
-	j L748
-L748:
+	bne $t0, $t1, L809
+	j L810
+L810:
 	li $v0, 0
-L751:
-L754:
-L757:
-	j L988
-L729:
+L813:
+L816:
+L819:
+	j L1055
+L791:
 	li $t1, 1
 	li $t3, 0
 	li $t2, 2
 	sub $t2, $t3, $t2
-	beq $t0, $t2, L727
-	j L728
-L728:
+	beq $t0, $t2, L789
+	j L790
+L790:
 	li $t1, 0
-L727:
-	j L731
-L755:
+L789:
+	j L793
+L817:
 	lw $t0, 4($fp)
 	lw $a0, 4($t0)
 	lw $t0, 4($fp)
@@ -1950,7 +1971,7 @@ L755:
 	lw $t0, 4($fp)
 	lw $t0, 4($t0)
 	lw $a3, -60($t0)
-	jal L29
+	jal L30
 	lw $t0, 4($fp)
 	lw $a0, 4($t0)
 	lw $t0, 4($fp)
@@ -1961,7 +1982,7 @@ L755:
 	lw $t0, 4($fp)
 	lw $t0, 4($t0)
 	lw $a3, -44($t0)
-	jal L29
+	jal L30
 	lw $t0, 4($fp)
 	lw $a0, 4($t0)
 	lw $t0, 4($fp)
@@ -1972,7 +1993,7 @@ L755:
 	lw $t0, 4($fp)
 	lw $t0, 4($t0)
 	lw $a3, -36($t0)
-	jal L29
+	jal L30
 	lw $t0, 4($fp)
 	lw $a0, 4($t0)
 	lw $t0, 4($fp)
@@ -1983,18 +2004,18 @@ L755:
 	lw $t0, 4($fp)
 	lw $t0, 4($t0)
 	lw $a3, -36($t0)
-	jal L29
-	j L757
-L734:
+	jal L30
+	j L819
+L796:
 	li $t1, 1
 	li $t2, 2
-	beq $t0, $t2, L732
-	j L733
-L733:
+	beq $t0, $t2, L794
+	j L795
+L795:
 	li $t1, 0
-L732:
-	j L736
-L752:
+L794:
+	j L798
+L814:
 	lw $t0, 4($fp)
 	lw $a0, 4($t0)
 	lw $t0, 4($fp)
@@ -2005,7 +2026,7 @@ L752:
 	lw $t0, 4($fp)
 	lw $t0, 4($t0)
 	lw $a3, -60($t0)
-	jal L29
+	jal L30
 	lw $t0, 4($fp)
 	lw $a0, 4($t0)
 	lw $t0, 4($fp)
@@ -2016,7 +2037,7 @@ L752:
 	lw $t0, 4($fp)
 	lw $t0, 4($t0)
 	lw $a3, -44($t0)
-	jal L29
+	jal L30
 	lw $t0, 4($fp)
 	lw $a0, 4($t0)
 	lw $t0, 4($fp)
@@ -2027,7 +2048,7 @@ L752:
 	lw $t0, 4($fp)
 	lw $t0, 4($t0)
 	lw $a3, -36($t0)
-	jal L29
+	jal L30
 	lw $t0, 4($fp)
 	lw $a0, 4($t0)
 	lw $t0, 4($fp)
@@ -2038,20 +2059,20 @@ L752:
 	lw $t0, 4($fp)
 	lw $t0, 4($t0)
 	lw $a3, -36($t0)
-	jal L29
-	j L754
-L739:
+	jal L30
+	j L816
+L801:
 	li $t1, 1
 	li $t3, 0
 	li $t2, 2
 	sub $t2, $t3, $t2
-	beq $t0, $t2, L737
-	j L738
-L738:
+	beq $t0, $t2, L799
+	j L800
+L800:
 	li $t1, 0
-L737:
-	j L741
-L749:
+L799:
+	j L803
+L811:
 	lw $t0, 4($fp)
 	lw $a0, 4($t0)
 	lw $t0, 4($fp)
@@ -2062,7 +2083,7 @@ L749:
 	lw $t0, 4($fp)
 	lw $t0, 4($t0)
 	lw $a3, -84($t0)
-	jal L29
+	jal L30
 	lw $t0, 4($fp)
 	lw $a0, 4($t0)
 	lw $t0, 4($fp)
@@ -2073,7 +2094,7 @@ L749:
 	lw $t0, 4($fp)
 	lw $t0, 4($t0)
 	lw $a3, -68($t0)
-	jal L29
+	jal L30
 	lw $t0, 4($fp)
 	lw $a0, 4($t0)
 	lw $t0, 4($fp)
@@ -2084,7 +2105,7 @@ L749:
 	lw $t0, 4($fp)
 	lw $t0, 4($t0)
 	lw $a3, -36($t0)
-	jal L29
+	jal L30
 	lw $t0, 4($fp)
 	lw $a0, 4($t0)
 	lw $t0, 4($fp)
@@ -2095,18 +2116,18 @@ L749:
 	lw $t0, 4($fp)
 	lw $t0, 4($t0)
 	lw $a3, -36($t0)
-	jal L29
-	j L751
-L744:
+	jal L30
+	j L813
+L806:
 	li $t1, 1
 	li $t2, 2
-	beq $t0, $t2, L742
-	j L743
-L743:
+	beq $t0, $t2, L804
+	j L805
+L805:
 	li $t1, 0
-L742:
-	j L746
-L747:
+L804:
+	j L808
+L809:
 	lw $t0, 4($fp)
 	lw $a0, 4($t0)
 	lw $t0, 4($fp)
@@ -2117,7 +2138,7 @@ L747:
 	lw $t0, 4($fp)
 	lw $t0, 4($t0)
 	lw $a3, -84($t0)
-	jal L29
+	jal L30
 	lw $t0, 4($fp)
 	lw $a0, 4($t0)
 	lw $t0, 4($fp)
@@ -2128,7 +2149,7 @@ L747:
 	lw $t0, 4($fp)
 	lw $t0, 4($t0)
 	lw $a3, -68($t0)
-	jal L29
+	jal L30
 	lw $t0, 4($fp)
 	lw $a0, 4($t0)
 	lw $t0, 4($fp)
@@ -2139,7 +2160,7 @@ L747:
 	lw $t0, 4($fp)
 	lw $t0, 4($t0)
 	lw $a3, -36($t0)
-	jal L29
+	jal L30
 	lw $t0, 4($fp)
 	lw $a0, 4($t0)
 	lw $t0, 4($fp)
@@ -2150,9 +2171,9 @@ L747:
 	lw $t0, 4($fp)
 	lw $t0, 4($t0)
 	lw $a3, -36($t0)
-	jal L29
-	j L748
-L988:
+	jal L30
+	j L810
+L1055:
 	lw $ra, -4($fp)
 	
 	addi $sp, $sp, 20
@@ -2163,14 +2184,14 @@ L988:
 
 
 
-L681:
+L743:
 	addi $sp, $sp, -8
 	sw $fp, 0($sp)
 	move $fp, $sp
 	addi $sp, $sp, -16
 	sw $a0, 4($fp)
 	sw $ra, -8($fp)
-L991:
+L1058:
 	lw $t0, 4($fp)
 	lw $t0, 12($t0)
 	lw $t1, 0($t0)
@@ -2185,34 +2206,34 @@ L991:
 	lw $t1, 4($fp)
 	lw $t1, 4($t1)
 	lw $t1, -32($t1)
-	beq $t2, $t1, L720
-	j L721
-L721:
+	beq $t2, $t1, L782
+	j L783
+L783:
 	li $t0, 0
-L720:
+L782:
 	li $t1, 0
-	bne $t1, $t0, L724
-	j L725
-L725:
+	bne $t1, $t0, L786
+	j L787
+L787:
 	li $v0, 0
-L726:
-	j L990
-L724:
+L788:
+	j L1057
+L786:
 	li $t0, 1
 	sw $t0, -4($fp)
 	lw $t0, 4($fp)
 	lw $a0, 4($t0)
 	jal L0
 	li $t0, 2
-	beq $v0, $t0, L722
-	j L723
-L723:
+	beq $v0, $t0, L784
+	j L785
+L785:
 	li $t0, 0
 	sw $t0, -4($fp)
-L722:
+L784:
 	lw $v0, -4($fp)
-	j L726
-L990:
+	j L788
+L1057:
 	lw $ra, -8($fp)
 	
 	addi $sp, $sp, 16
@@ -2223,23 +2244,23 @@ L990:
 
 
 
-L680:
+L742:
 	addi $sp, $sp, -8
 	sw $fp, 0($sp)
 	move $fp, $sp
 	addi $sp, $sp, -24
 	sw $a0, 4($fp)
 	sw $ra, -8($fp)
-L993:
+L1060:
 	lw $t0, 4($fp)
 	lw $t0, -8($t0)
 	lw $t1, 0($t0)
 	lw $t0, 4($fp)
 	lw $t0, 4($t0)
 	lw $t0, -4($t0)
-	beq $t1, $t0, L717
-	j L718
-L718:
+	beq $t1, $t0, L779
+	j L780
+L780:
 	li $a0, 8
 	jal tig_allocRecord
 	lw $t0, 4($fp)
@@ -2251,7 +2272,7 @@ L718:
 	lw $t0, 4($t0)
 	addi $t0, $t0, 1
 	sw $t0, 4($v0)
-L719:
+L781:
 	sw $v0, -4($fp)
 	lw $t0, 4($fp)
 	lw $a0, 4($t0)
@@ -2262,7 +2283,7 @@ L719:
 	lw $t0, 4($fp)
 	lw $t0, 4($t0)
 	lw $a3, -36($t0)
-	jal L29
+	jal L30
 	lw $t0, 4($fp)
 	lw $a0, 4($t0)
 	lw $t0, 4($fp)
@@ -2271,7 +2292,7 @@ L719:
 	lw $a2, 16($t0)
 	lw $t0, 4($fp)
 	lw $a3, -8($t0)
-	jal L29
+	jal L30
 	lw $t0, 4($fp)
 	lw $a0, 4($t0)
 	lw $t0, 4($fp)
@@ -2280,9 +2301,9 @@ L719:
 	lw $t0, 4($t0)
 	lw $a3, -36($t0)
 	lw $a2, -4($fp)
-	jal L29
-	j L992
-L717:
+	jal L30
+	j L1059
+L779:
 	li $a0, 8
 	jal tig_allocRecord
 	lw $t0, 4($fp)
@@ -2295,8 +2316,8 @@ L717:
 	li $t0, 1
 	sub $t0, $t1, $t0
 	sw $t0, 4($v0)
-	j L719
-L992:
+	j L781
+L1059:
 	lw $ra, -8($fp)
 	
 	addi $sp, $sp, 24
@@ -2307,14 +2328,14 @@ L992:
 
 
 
-L679:
+L741:
 	addi $sp, $sp, -8
 	sw $fp, 0($sp)
 	move $fp, $sp
 	addi $sp, $sp, -28
 	sw $a0, 4($fp)
 	sw $ra, -16($fp)
-L995:
+L1062:
 	lw $t0, 4($fp)
 	lw $a0, 4($t0)
 	lw $t0, 4($fp)
@@ -2343,51 +2364,51 @@ L995:
 	lw $a1, -8($t0)
 	jal L8
 	li $t0, 0
-	bne $t0, $v0, L701
-	j L702
-L702:
+	bne $t0, $v0, L763
+	j L764
+L764:
 	li $t0, 0
-L703:
+L765:
 	li $t1, 0
-	bne $t1, $t0, L706
-	j L707
-L707:
+	bne $t1, $t0, L768
+	j L769
+L769:
 	li $t0, 0
-L708:
+L770:
 	li $t1, 0
-	bne $t1, $t0, L711
-	j L712
-L712:
+	bne $t1, $t0, L773
+	j L774
+L774:
 	li $t0, 0
-L713:
+L775:
 	li $t1, 0
-	bne $t1, $t0, L714
-	j L715
-L715:
+	bne $t1, $t0, L776
+	j L777
+L777:
 	li $v0, 0
-L716:
-	j L994
-L701:
+L778:
+	j L1061
+L763:
 	li $t0, 1
 	li $t2, 1
 	lw $t1, -4($fp)
-	beq $t1, $t2, L699
-	j L700
-L700:
+	beq $t1, $t2, L761
+	j L762
+L762:
 	li $t0, 0
-L699:
-	j L703
-L706:
+L761:
+	j L765
+L768:
 	li $t0, 1
 	li $t2, 1
 	lw $t1, -8($fp)
-	beq $t1, $t2, L704
-	j L705
-L705:
+	beq $t1, $t2, L766
+	j L767
+L767:
 	li $t0, 0
-L704:
-	j L708
-L711:
+L766:
+	j L770
+L773:
 	li $t0, 1
 	sw $t0, -12($fp)
 	lw $t0, 4($fp)
@@ -2396,22 +2417,22 @@ L711:
 	lw $a1, -4($t0)
 	lw $t0, 4($fp)
 	lw $a2, 16($t0)
-	jal L28
+	jal L29
 	lw $t0, 4($fp)
 	lw $t0, 4($t0)
 	lw $t0, -36($t0)
-	beq $v0, $t0, L709
-	j L710
-L710:
+	beq $v0, $t0, L771
+	j L772
+L772:
 	li $t0, 0
 	sw $t0, -12($fp)
-L709:
+L771:
 	lw $t0, -12($fp)
-	j L713
-L714:
+	j L775
+L776:
 	li $v0, 1
-	j L716
-L994:
+	j L778
+L1061:
 	lw $ra, -16($fp)
 	
 	addi $sp, $sp, 28
@@ -2422,20 +2443,20 @@ L994:
 
 
 
-L678:
+L740:
 	addi $sp, $sp, -8
 	sw $fp, 0($sp)
 	move $fp, $sp
 	addi $sp, $sp, -8
 	sw $a0, 4($fp)
 	sw $ra, -4($fp)
-L997:
+L1064:
 	move $a0, $fp
-	jal L687
+	jal L749
 	li $t0, 0
-	bne $t0, $v0, L696
-	j L697
-L697:
+	bne $t0, $v0, L758
+	j L759
+L759:
 	lw $t0, 4($fp)
 	lw $t0, 4($t0)
 	lw $t1, -88($t0)
@@ -2443,17 +2464,17 @@ L697:
 	lw $t0, 8($t0)
 	sw $t1, 32($t0)
 	li $v0, 0
-L698:
-	j L996
-L696:
+L760:
+	j L1063
+L758:
 	lw $t0, 4($fp)
 	lw $t1, 16($t0)
 	lw $t0, 4($fp)
 	lw $t0, 8($t0)
 	sw $t1, 32($t0)
 	li $v0, 0
-	j L698
-L996:
+	j L760
+L1063:
 	lw $ra, -4($fp)
 	
 	addi $sp, $sp, 8
@@ -2464,14 +2485,14 @@ L996:
 
 
 
-L687:
+L749:
 	addi $sp, $sp, -8
 	sw $fp, 0($sp)
 	move $fp, $sp
 	addi $sp, $sp, -16
 	sw $a0, 4($fp)
 	sw $ra, -8($fp)
-L999:
+L1066:
 	lw $t0, 4($fp)
 	lw $t0, 4($t0)
 	lw $a0, 4($t0)
@@ -2494,32 +2515,32 @@ L999:
 	lw $a1, -8($t0)
 	jal L8
 	li $t0, 0
-	bne $t0, $v0, L690
-	j L691
-L691:
+	bne $t0, $v0, L752
+	j L753
+L753:
 	li $t0, 0
-L692:
+L754:
 	li $t1, 0
-	bne $t1, $t0, L693
-	j L694
-L694:
+	bne $t1, $t0, L755
+	j L756
+L756:
 	li $v0, 0
-L695:
-	j L998
-L690:
+L757:
+	j L1065
+L752:
 	li $t0, 1
 	li $t2, 2
 	lw $t1, -4($fp)
-	beq $t1, $t2, L688
-	j L689
-L689:
+	beq $t1, $t2, L750
+	j L751
+L751:
 	li $t0, 0
-L688:
-	j L692
-L693:
+L750:
+	j L754
+L755:
 	li $v0, 1
-	j L695
-L998:
+	j L757
+L1065:
 	lw $ra, -8($fp)
 	
 	addi $sp, $sp, 16
@@ -2530,12 +2551,12 @@ L998:
 
 
 
-L29:
+L30:
 	addi $sp, $sp, -20
 	sw $fp, 0($sp)
 	move $fp, $sp
 	sw $a0, 4($fp)
-L1001:
+L1068:
 	lw $t1, 4($a2)
 	li $t0, 4
 	mul $t0, $t1, $t0
@@ -2549,8 +2570,8 @@ L1001:
 	add $t0, $t2, $t0
 	sw $a3, 0($t0)
 	li $v0, 0
-	j L1000
-L1000:
+	j L1067
+L1067:
 	
 	lw $fp, 0($sp)
 	addi $sp, $sp, 20
@@ -2559,12 +2580,12 @@ L1000:
 
 
 
-L28:
+L29:
 	addi $sp, $sp, -16
 	sw $fp, 0($sp)
 	move $fp, $sp
 	sw $a0, 4($fp)
-L1003:
+L1070:
 	lw $t1, 4($a2)
 	li $t0, 4
 	mul $t0, $t1, $t0
@@ -2577,8 +2598,8 @@ L1003:
 	addi $t0, $t0, 4
 	add $t0, $t2, $t0
 	lw $v0, 0($t0)
-	j L1002
-L1002:
+	j L1069
+L1069:
 	
 	lw $fp, 0($sp)
 	addi $sp, $sp, 16
@@ -2587,7 +2608,7 @@ L1002:
 
 
 
-L27:
+L28:
 	addi $sp, $sp, -20
 	sw $fp, 0($sp)
 	move $fp, $sp
@@ -2597,178 +2618,178 @@ L27:
 	sw $a2, -8($fp)
 	sw $a3, -12($fp)
 	sw $ra, -28($fp)
-L1005:
+L1072:
 	lw $t0, -4($fp)
 	lw $t0, 0($t0)
 	sw $t0, -16($fp)
 	lw $t0, -8($fp)
 	lw $t1, 0($t0)
 	li $t0, 0
-	blt $t1, $t0, L598
-	j L599
-L599:
+	blt $t1, $t0, L660
+	j L661
+L661:
 	li $t0, 1
 	lw $t1, -12($fp)
 	lw $t2, 0($t1)
 	li $t1, 0
-	blt $t2, $t1, L596
-	j L597
-L597:
+	blt $t2, $t1, L658
+	j L659
+L659:
 	li $t0, 0
-L596:
-L600:
+L658:
+L662:
 	li $t1, 0
-	bne $t1, $t0, L603
-	j L604
-L604:
+	bne $t1, $t0, L665
+	j L666
+L666:
 	li $t0, 1
 	lw $t1, -8($fp)
 	lw $t2, 4($t1)
 	li $t1, 0
-	blt $t2, $t1, L601
-	j L602
-L602:
+	blt $t2, $t1, L663
+	j L664
+L664:
 	li $t0, 0
-L601:
-L605:
+L663:
+L667:
 	li $t1, 0
-	bne $t1, $t0, L608
-	j L609
-L609:
+	bne $t1, $t0, L670
+	j L671
+L671:
 	li $t0, 1
 	lw $t1, -12($fp)
 	lw $t2, 4($t1)
 	li $t1, 0
-	blt $t2, $t1, L606
-	j L607
-L607:
+	blt $t2, $t1, L668
+	j L669
+L669:
 	li $t0, 0
-L606:
-L610:
-	li $t1, 0
-	bne $t1, $t0, L613
-	j L614
-L614:
-	li $t0, 1
-	lw $t1, -8($fp)
-	lw $t2, 0($t1)
-	li $t1, 7
-	bgt $t2, $t1, L611
-	j L612
-L612:
-	li $t0, 0
-L611:
-L615:
-	li $t1, 0
-	bne $t1, $t0, L618
-	j L619
-L619:
-	li $t0, 1
-	lw $t1, -12($fp)
-	lw $t2, 0($t1)
-	li $t1, 7
-	bgt $t2, $t1, L616
-	j L617
-L617:
-	li $t0, 0
-L616:
-L620:
-	li $t1, 0
-	bne $t1, $t0, L623
-	j L624
-L624:
-	li $t0, 1
-	lw $t1, -8($fp)
-	lw $t2, 0($t1)
-	li $t1, 7
-	bgt $t2, $t1, L621
-	j L622
-L622:
-	li $t0, 0
-L621:
-L625:
-	li $t1, 0
-	bne $t1, $t0, L628
-	j L629
-L629:
-	li $t0, 1
-	lw $t1, -12($fp)
-	lw $t2, 4($t1)
-	li $t1, 7
-	bgt $t2, $t1, L626
-	j L627
-L627:
-	li $t0, 0
-L626:
-L630:
+L668:
+L672:
 	li $t1, 0
 	bne $t1, $t0, L675
 	j L676
 L676:
+	li $t0, 1
+	lw $t1, -8($fp)
+	lw $t2, 0($t1)
+	li $t1, 7
+	bgt $t2, $t1, L673
+	j L674
+L674:
+	li $t0, 0
+L673:
+L677:
+	li $t1, 0
+	bne $t1, $t0, L680
+	j L681
+L681:
+	li $t0, 1
+	lw $t1, -12($fp)
+	lw $t2, 0($t1)
+	li $t1, 7
+	bgt $t2, $t1, L678
+	j L679
+L679:
+	li $t0, 0
+L678:
+L682:
+	li $t1, 0
+	bne $t1, $t0, L685
+	j L686
+L686:
+	li $t0, 1
+	lw $t1, -8($fp)
+	lw $t2, 0($t1)
+	li $t1, 7
+	bgt $t2, $t1, L683
+	j L684
+L684:
+	li $t0, 0
+L683:
+L687:
+	li $t1, 0
+	bne $t1, $t0, L690
+	j L691
+L691:
+	li $t0, 1
+	lw $t1, -12($fp)
+	lw $t2, 4($t1)
+	li $t1, 7
+	bgt $t2, $t1, L688
+	j L689
+L689:
+	li $t0, 0
+L688:
+L692:
+	li $t1, 0
+	bne $t1, $t0, L737
+	j L738
+L738:
 	lw $a0, 4($fp)
 	lw $a1, -16($fp)
 	lw $a2, -8($fp)
-	jal L28
+	jal L29
 	sw $v0, -20($fp)
 	lw $a0, 4($fp)
 	lw $a1, -16($fp)
 	lw $a2, -12($fp)
-	jal L28
+	jal L29
 	li $t0, 1
 	lw $t1, 4($fp)
 	lw $t2, -36($t1)
 	lw $t1, -20($fp)
-	beq $t1, $t2, L631
-	j L632
-L632:
+	beq $t1, $t2, L693
+	j L694
+L694:
 	li $t0, 0
-L631:
+L693:
 	li $t1, 0
-	bne $t1, $t0, L672
-	j L673
-L673:
+	bne $t1, $t0, L734
+	j L735
+L735:
 	li $t0, 1
 	lw $t1, -20($fp)
 	lw $t2, 0($t1)
 	lw $t1, -4($fp)
 	lw $t1, 4($t1)
-	bne $t2, $t1, L633
-	j L634
-L634:
+	bne $t2, $t1, L695
+	j L696
+L696:
 	li $t0, 0
-L633:
+L695:
 	li $t1, 0
-	bne $t1, $t0, L669
-	j L670
-L670:
+	bne $t1, $t0, L731
+	j L732
+L732:
 	li $t0, 1
 	lw $t1, -20($fp)
 	lw $t2, 0($t1)
 	lw $t1, 0($v0)
-	beq $t2, $t1, L635
-	j L636
-L636:
+	beq $t2, $t1, L697
+	j L698
+L698:
 	li $t0, 0
-L635:
+L697:
 	li $t1, 0
-	bne $t1, $t0, L666
-	j L667
-L667:
+	bne $t1, $t0, L728
+	j L729
+L729:
 	lw $a0, 4($fp)
 	lw $a1, -20($fp)
 	jal L5
 	move $a0, $v0
 	jal tig_not
 	li $t0, 0
-	bne $t0, $v0, L639
-	j L640
-L640:
+	bne $t0, $v0, L701
+	j L702
+L702:
 	li $t0, 0
-L641:
+L703:
 	li $t1, 0
-	bne $t1, $t0, L663
-	j L664
-L664:
+	bne $t1, $t0, L725
+	j L726
+L726:
 	lw $a0, 4($fp)
 	lw $t0, -20($fp)
 	lw $t0, 0($t0)
@@ -2776,101 +2797,101 @@ L664:
 	lw $a2, -8($fp)
 	lw $a3, -12($fp)
 	sw $t0, 20($a0)
-	jal L26
+	jal L27
 	li $t0, 0
-	bne $t0, $v0, L660
-	j L661
-L661:
+	bne $t0, $v0, L722
+	j L723
+L723:
 	lw $a0, 4($fp)
 	lw $a1, -20($fp)
 	jal L6
 	li $t0, 0
-	bne $t0, $v0, L657
-	j L658
-L658:
+	bne $t0, $v0, L719
+	j L720
+L720:
 	lw $a0, 4($fp)
 	lw $a1, -20($fp)
 	jal L5
 	li $t0, 0
-	bne $t0, $v0, L654
-	j L655
-L655:
+	bne $t0, $v0, L716
+	j L717
+L717:
 	lw $a0, 4($fp)
 	lw $a1, -20($fp)
 	jal L7
 	li $t0, 0
-	bne $t0, $v0, L651
-	j L652
-L652:
+	bne $t0, $v0, L713
+	j L714
+L714:
 	lw $a0, 4($fp)
 	lw $a1, -20($fp)
 	jal L9
 	li $t0, 0
-	bne $t0, $v0, L648
-	j L649
-L649:
+	bne $t0, $v0, L710
+	j L711
+L711:
 	lw $a0, 4($fp)
 	lw $a1, -20($fp)
 	jal L8
 	li $t0, 0
-	bne $t0, $v0, L645
-	j L646
-L646:
+	bne $t0, $v0, L707
+	j L708
+L708:
 	lw $a0, 4($fp)
 	lw $a1, -20($fp)
 	jal L10
 	li $t0, 0
-	bne $t0, $v0, L642
-	j L643
-L643:
+	bne $t0, $v0, L704
+	j L705
+L705:
 	li $v0, 0
-L644:
-L647:
-L650:
-L653:
-L656:
-L659:
-L662:
+L706:
+L709:
+L712:
+L715:
+L718:
+L721:
+L724:
+L727:
+L730:
+L733:
+L736:
+L739:
+	j L1071
+L660:
+	li $t0, 1
+	j L662
 L665:
-L668:
-L671:
-L674:
-L677:
-	j L1004
-L598:
 	li $t0, 1
-	j L600
-L603:
+	j L667
+L670:
 	li $t0, 1
-	j L605
-L608:
-	li $t0, 1
-	j L610
-L613:
-	li $t0, 1
-	j L615
-L618:
-	li $t0, 1
-	j L620
-L623:
-	li $t0, 1
-	j L625
-L628:
-	li $t0, 1
-	j L630
+	j L672
 L675:
-	li $v0, 0
+	li $t0, 1
 	j L677
-L672:
+L680:
+	li $t0, 1
+	j L682
+L685:
+	li $t0, 1
+	j L687
+L690:
+	li $t0, 1
+	j L692
+L737:
 	li $v0, 0
-	j L674
-L669:
+	j L739
+L734:
 	li $v0, 0
-	j L671
-L666:
+	j L736
+L731:
 	li $v0, 0
-	j L668
-L639:
+	j L733
+L728:
+	li $v0, 0
+	j L730
+L701:
 	li $t0, 1
 	sw $t0, -24($fp)
 	lw $a0, 4($fp)
@@ -2879,45 +2900,45 @@ L639:
 	lw $a3, -12($fp)
 	jal L14
 	li $t0, 0
-	beq $v0, $t0, L637
-	j L638
-L638:
+	beq $v0, $t0, L699
+	j L700
+L700:
 	li $t0, 0
 	sw $t0, -24($fp)
-L637:
+L699:
 	lw $t0, -24($fp)
-	j L641
-L663:
+	j L703
+L725:
 	li $v0, 0
-	j L665
-L660:
+	j L727
+L722:
 	li $v0, 0
-	j L662
-L657:
+	j L724
+L719:
 	lw $a0, 4($fp)
 	lw $a1, -8($fp)
 	lw $a2, -12($fp)
 	jal L17
-	j L659
-L654:
+	j L721
+L716:
 	lw $a0, 4($fp)
 	lw $a1, -8($fp)
 	lw $a2, -12($fp)
 	jal L16
-	j L656
-L651:
+	j L718
+L713:
 	lw $a0, 4($fp)
 	lw $a1, -8($fp)
 	lw $a2, -12($fp)
 	jal L18
-	j L653
-L648:
+	j L715
+L710:
 	lw $a0, 4($fp)
 	lw $a1, -8($fp)
 	lw $a2, -12($fp)
 	jal L19
-	j L650
-L645:
+	j L712
+L707:
 	lw $a0, 4($fp)
 	lw $a1, -4($fp)
 	lw $a2, -20($fp)
@@ -2925,8 +2946,8 @@ L645:
 	lw $t0, -12($fp)
 	sw $t0, 20($a0)
 	jal L15
-	j L647
-L642:
+	j L709
+L704:
 	lw $a0, 4($fp)
 	lw $a1, -4($fp)
 	lw $a2, -20($fp)
@@ -2934,8 +2955,8 @@ L642:
 	lw $t0, -12($fp)
 	sw $t0, 20($a0)
 	jal L20
-	j L644
-L1004:
+	j L706
+L1071:
 	lw $ra, -28($fp)
 	
 	addi $sp, $sp, 48
@@ -2946,7 +2967,7 @@ L1004:
 
 
 
-L26:
+L27:
 	addi $sp, $sp, -24
 	sw $fp, 0($sp)
 	move $fp, $sp
@@ -2958,20 +2979,20 @@ L26:
 	lw $t0, 20($a0)
 	sw $t0, 20($fp)
 	sw $ra, -36($fp)
-L1007:
+L1074:
 	li $t0, 0
 	sw $t0, -16($fp)
 	lw $a0, 4($fp)
 	lw $t0, -4($fp)
 	lw $a1, 0($t0)
 	lw $a2, -8($fp)
-	jal L28
+	jal L29
 	sw $v0, -20($fp)
 	lw $a0, 4($fp)
 	lw $t0, -4($fp)
 	lw $a1, 0($t0)
 	lw $a2, -12($fp)
-	jal L28
+	jal L29
 	sw $v0, -24($fp)
 	lw $t0, -4($fp)
 	lw $t0, 8($t0)
@@ -2982,29 +3003,29 @@ L1007:
 	lw $t0, 4($fp)
 	lw $t1, -60($t0)
 	lw $t0, -20($fp)
-	beq $t0, $t1, L587
-	j L588
-L588:
+	beq $t0, $t1, L649
+	j L650
+L650:
 	lw $t0, 4($fp)
 	lw $t1, -84($t0)
 	lw $t0, -20($fp)
-	beq $t0, $t1, L589
-	j L590
-L590:
+	beq $t0, $t1, L651
+	j L652
+L652:
 	lw $t1, 20($fp)
 	lw $t0, 4($fp)
 	lw $t0, -4($t0)
-	beq $t1, $t0, L593
-	j L594
-L594:
+	beq $t1, $t0, L655
+	j L656
+L656:
 	lw $t1, 20($fp)
 	lw $t0, 4($fp)
 	lw $t0, -8($t0)
-	beq $t1, $t0, L591
-	j L592
-L592:
+	beq $t1, $t0, L653
+	j L654
+L654:
 	li $v0, 0
-L595:
+L657:
 	lw $t1, -28($fp)
 	lw $t0, -4($fp)
 	sw $t1, 8($t0)
@@ -3012,62 +3033,31 @@ L595:
 	lw $t0, -4($fp)
 	sw $t1, 12($t0)
 	lw $v0, -16($fp)
-	j L1006
-L587:
+	j L1073
+L649:
 	lw $t1, -12($fp)
 	lw $t0, -4($fp)
 	sw $t1, 8($t0)
-	j L588
-L589:
+	j L650
+L651:
 	lw $t1, -12($fp)
 	lw $t0, -4($fp)
 	sw $t1, 12($t0)
-	j L590
-L593:
+	j L652
+L655:
 	lw $a0, 4($fp)
 	lw $t0, -4($fp)
 	lw $a1, 0($t0)
 	lw $t0, 4($fp)
 	lw $a3, -36($t0)
 	lw $a2, -8($fp)
-	jal L29
+	jal L30
 	lw $a0, 4($fp)
 	lw $t0, -4($fp)
 	lw $a1, 0($t0)
 	lw $a2, -12($fp)
 	lw $a3, -20($fp)
-	jal L29
-	lw $a0, 4($fp)
-	lw $a1, -4($fp)
-	jal L24
-	sw $v0, -16($fp)
-	lw $a0, 4($fp)
-	lw $t0, -4($fp)
-	lw $a1, 0($t0)
-	lw $a2, -8($fp)
-	lw $a3, -20($fp)
-	jal L29
-	lw $a0, 4($fp)
-	lw $t0, -4($fp)
-	lw $a1, 0($t0)
-	lw $a2, -12($fp)
-	lw $a3, -24($fp)
-	jal L29
-	j L595
-L591:
-	lw $a0, 4($fp)
-	lw $t0, -4($fp)
-	lw $a1, 0($t0)
-	lw $t0, 4($fp)
-	lw $a3, -36($t0)
-	lw $a2, -8($fp)
-	jal L29
-	lw $a0, 4($fp)
-	lw $t0, -4($fp)
-	lw $a1, 0($t0)
-	lw $a2, -12($fp)
-	lw $a3, -20($fp)
-	jal L29
+	jal L30
 	lw $a0, 4($fp)
 	lw $a1, -4($fp)
 	jal L25
@@ -3077,15 +3067,46 @@ L591:
 	lw $a1, 0($t0)
 	lw $a2, -8($fp)
 	lw $a3, -20($fp)
-	jal L29
+	jal L30
 	lw $a0, 4($fp)
 	lw $t0, -4($fp)
 	lw $a1, 0($t0)
 	lw $a2, -12($fp)
 	lw $a3, -24($fp)
-	jal L29
-	j L592
-L1006:
+	jal L30
+	j L657
+L653:
+	lw $a0, 4($fp)
+	lw $t0, -4($fp)
+	lw $a1, 0($t0)
+	lw $t0, 4($fp)
+	lw $a3, -36($t0)
+	lw $a2, -8($fp)
+	jal L30
+	lw $a0, 4($fp)
+	lw $t0, -4($fp)
+	lw $a1, 0($t0)
+	lw $a2, -12($fp)
+	lw $a3, -20($fp)
+	jal L30
+	lw $a0, 4($fp)
+	lw $a1, -4($fp)
+	jal L26
+	sw $v0, -16($fp)
+	lw $a0, 4($fp)
+	lw $t0, -4($fp)
+	lw $a1, 0($t0)
+	lw $a2, -8($fp)
+	lw $a3, -20($fp)
+	jal L30
+	lw $a0, 4($fp)
+	lw $t0, -4($fp)
+	lw $a1, 0($t0)
+	lw $a2, -12($fp)
+	lw $a3, -24($fp)
+	jal L30
+	j L654
+L1073:
 	lw $ra, -36($fp)
 	
 	addi $sp, $sp, 52
@@ -3096,7 +3117,7 @@ L1006:
 
 
 
-L25:
+L26:
 	addi $sp, $sp, -12
 	sw $fp, 0($sp)
 	move $fp, $sp
@@ -3104,36 +3125,36 @@ L25:
 	sw $a0, 4($fp)
 	sw $a1, -4($fp)
 	sw $ra, -24($fp)
-L1009:
+L1076:
 	li $t0, 0
 	sw $t0, -8($fp)
 	li $t0, 0
 	sw $t0, -12($fp)
 	li $t1, 7
 	lw $t0, -12($fp)
-	ble $t0, $t1, L586
-	j L579
-L579:
+	ble $t0, $t1, L648
+	j L641
+L641:
 	lw $v0, -8($fp)
-	j L1008
-L586:
+	j L1075
+L648:
 	li $t0, 0
 	sw $t0, -16($fp)
 	li $t1, 7
 	lw $t0, -16($fp)
-	ble $t0, $t1, L584
-	j L580
-L580:
+	ble $t0, $t1, L646
+	j L642
+L642:
 	lw $t0, -12($fp)
 	addi $t0, $t0, 1
 	sw $t0, -12($fp)
 	li $t1, 7
 	lw $t0, -12($fp)
-	ble $t0, $t1, L586
-	j L1010
-L1010:
-	j L579
-L584:
+	ble $t0, $t1, L648
+	j L1077
+L1077:
+	j L641
+L646:
 	lw $t0, 4($fp)
 	sw $t0, -20($fp)
 	li $a0, 8
@@ -3147,23 +3168,101 @@ L584:
 	lw $a1, -4($fp)
 	jal L22
 	li $t0, 0
-	bne $t0, $v0, L581
-	j L582
-L582:
+	bne $t0, $v0, L643
+	j L644
+L644:
 	lw $t0, -16($fp)
 	addi $t0, $t0, 1
 	sw $t0, -16($fp)
 	li $t1, 7
 	lw $t0, -16($fp)
-	ble $t0, $t1, L584
-	j L1011
-L1011:
-	j L580
-L581:
+	ble $t0, $t1, L646
+	j L1078
+L1078:
+	j L642
+L643:
 	li $t0, 1
 	sw $t0, -8($fp)
-	j L582
-L1008:
+	j L644
+L1075:
+	lw $ra, -24($fp)
+	
+	addi $sp, $sp, 36
+	lw $fp, 0($sp)
+	addi $sp, $sp, 12
+	jr $ra
+
+
+
+
+L25:
+	addi $sp, $sp, -12
+	sw $fp, 0($sp)
+	move $fp, $sp
+	addi $sp, $sp, -36
+	sw $a0, 4($fp)
+	sw $a1, -4($fp)
+	sw $ra, -24($fp)
+L1080:
+	li $t0, 0
+	sw $t0, -8($fp)
+	li $t0, 0
+	sw $t0, -12($fp)
+	li $t1, 7
+	lw $t0, -12($fp)
+	ble $t0, $t1, L640
+	j L633
+L633:
+	lw $v0, -8($fp)
+	j L1079
+L640:
+	li $t0, 0
+	sw $t0, -16($fp)
+	li $t1, 7
+	lw $t0, -16($fp)
+	ble $t0, $t1, L638
+	j L634
+L634:
+	lw $t0, -12($fp)
+	addi $t0, $t0, 1
+	sw $t0, -12($fp)
+	li $t1, 7
+	lw $t0, -12($fp)
+	ble $t0, $t1, L640
+	j L1081
+L1081:
+	j L633
+L638:
+	lw $t0, 4($fp)
+	sw $t0, -20($fp)
+	li $a0, 8
+	jal tig_allocRecord
+	move $a2, $v0
+	lw $t0, -16($fp)
+	sw $t0, 0($a2)
+	lw $t0, -12($fp)
+	sw $t0, 4($a2)
+	lw $a0, -20($fp)
+	lw $a1, -4($fp)
+	jal L21
+	li $t0, 0
+	bne $t0, $v0, L635
+	j L636
+L636:
+	lw $t0, -16($fp)
+	addi $t0, $t0, 1
+	sw $t0, -16($fp)
+	li $t1, 7
+	lw $t0, -16($fp)
+	ble $t0, $t1, L638
+	j L1082
+L1082:
+	j L634
+L635:
+	li $t0, 1
+	sw $t0, -8($fp)
+	j L636
+L1079:
 	lw $ra, -24($fp)
 	
 	addi $sp, $sp, 36
@@ -3178,73 +3277,229 @@ L24:
 	addi $sp, $sp, -12
 	sw $fp, 0($sp)
 	move $fp, $sp
-	addi $sp, $sp, -36
 	sw $a0, 4($fp)
-	sw $a1, -4($fp)
-	sw $ra, -24($fp)
-L1013:
+L1084:
 	li $t0, 0
-	sw $t0, -8($fp)
-	li $t0, 0
-	sw $t0, -12($fp)
-	li $t1, 7
-	lw $t0, -12($fp)
-	ble $t0, $t1, L578
-	j L571
-L571:
-	lw $v0, -8($fp)
-	j L1012
-L578:
-	li $t0, 0
-	sw $t0, -16($fp)
-	li $t1, 7
-	lw $t0, -16($fp)
-	ble $t0, $t1, L576
+	li $t1, 0
+	li $t2, 0
+	li $t3, 0
+	li $v0, 0
+	li $t4, 0
+	li $t5, 7
+	ble $t4, $t5, L605
 	j L572
 L572:
-	lw $t0, -12($fp)
-	addi $t0, $t0, 1
-	sw $t0, -12($fp)
-	li $t1, 7
-	lw $t0, -12($fp)
-	ble $t0, $t1, L578
-	j L1014
-L1014:
-	j L571
-L576:
-	lw $t0, 4($fp)
-	sw $t0, -20($fp)
-	li $a0, 8
-	jal tig_allocRecord
-	move $a2, $v0
-	lw $t0, -16($fp)
-	sw $t0, 0($a2)
-	lw $t0, -12($fp)
-	sw $t0, 4($a2)
-	lw $a0, -20($fp)
-	lw $a1, -4($fp)
-	jal L21
+	li $t4, 0
+	bne $t4, $v0, L630
+	j L631
+L631:
+	li $t4, 2
+	bge $t0, $t4, L608
+	j L609
+L609:
+	li $t4, 1
+	li $t5, 2
+	bge $t2, $t5, L606
+	j L607
+L607:
+	li $t4, 0
+L606:
+L610:
+	li $t5, 0
+	bne $t5, $t4, L627
+	j L628
+L628:
+	li $t4, 1
+	bge $t0, $t4, L613
+	j L614
+L614:
 	li $t0, 0
-	bne $t0, $v0, L573
-	j L574
-L574:
-	lw $t0, -16($fp)
-	addi $t0, $t0, 1
-	sw $t0, -16($fp)
-	li $t1, 7
-	lw $t0, -16($fp)
-	ble $t0, $t1, L576
-	j L1015
-L1015:
-	j L572
-L573:
+L615:
+	li $t1, 0
+	bne $t1, $t0, L621
+	j L622
+L622:
 	li $t0, 1
-	sw $t0, -8($fp)
-	j L574
-L1012:
-	lw $ra, -24($fp)
+	bge $t2, $t0, L618
+	j L619
+L619:
+	li $t0, 0
+L620:
+L623:
+	li $t1, 0
+	bne $t1, $t0, L624
+	j L625
+L625:
+	li $v0, 0
+L626:
+L629:
+L632:
+	j L1083
+L605:
+	li $t5, 0
+	li $t6, 7
+	ble $t5, $t6, L601
+	j L573
+L573:
+	li $t5, 1
+	beq $v0, $t5, L602
+	j L603
+L603:
+	addi $t4, $t4, 1
+	li $t5, 7
+	ble $t4, $t5, L605
+	j L1087
+L1087:
+	j L572
+L601:
+	lw $t7, 0($a1)
+	li $t6, 4
+	mul $t6, $t4, $t6
+	addi $t6, $t6, 4
+	add $t6, $t7, $t6
+	lw $t7, 0($t6)
+	li $t6, 4
+	mul $t6, $t5, $t6
+	addi $t6, $t6, 4
+	add $t6, $t7, $t6
+	lw $t6, 0($t6)
+	lw $t7, 4($fp)
+	lw $t7, -36($t7)
+	bne $t6, $t7, L598
+	j L599
+L599:
+	addi $t5, $t5, 1
+	li $t6, 7
+	ble $t5, $t6, L601
+	j L1088
+L1088:
+	j L573
+L598:
+	lw $t8, 4($t6)
+	lw $t7, 4($fp)
+	lw $t7, -16($t7)
+	beq $t8, $t7, L576
+	j L577
+L577:
+	li $t7, 1
+	lw $t8, 4($t6)
+	lw $t9, 4($fp)
+	lw $t9, -28($t9)
+	beq $t8, $t9, L574
+	j L575
+L575:
+	li $t7, 0
+L574:
+L578:
+	li $t8, 0
+	bne $t8, $t7, L581
+	j L582
+L582:
+	li $t7, 1
+	lw $t8, 4($t6)
+	lw $t9, 4($fp)
+	lw $t9, -12($t9)
+	beq $t8, $t9, L579
+	j L580
+L580:
+	li $t7, 0
+L579:
+L583:
+	li $t8, 0
+	bne $t8, $t7, L595
+	j L596
+L596:
+	lw $t7, 4($fp)
+	lw $t7, -52($t7)
+	beq $t6, $t7, L592
+	j L593
+L593:
+	lw $t7, 4($fp)
+	lw $t7, -48($t7)
+	beq $t6, $t7, L589
+	j L590
+L590:
+	lw $t7, 4($fp)
+	lw $t7, -76($t7)
+	beq $t6, $t7, L586
+	j L587
+L587:
+	lw $t7, 4($fp)
+	lw $t7, -72($t7)
+	beq $t6, $t7, L584
+	j L585
+L585:
+	li $t6, 0
+L588:
+L591:
+L594:
+L597:
+	j L599
+L576:
+	li $t7, 1
+	j L578
+L581:
+	li $t7, 1
+	j L583
+L595:
+	li $v0, 1
+	j L573
+L1085:
+	li $t6, 0
+	j L597
+L592:
+	addi $t0, $t0, 1
+	li $t6, 0
+	j L594
+L589:
+	addi $t1, $t1, 1
+	li $t6, 0
+	j L591
+L586:
+	addi $t2, $t2, 1
+	li $t6, 0
+	j L588
+L584:
+	addi $t3, $t3, 1
+	j L585
+L602:
+	j L572
+L1086:
+	j L603
+L630:
+	j L632
+L608:
+	li $t4, 1
+	j L610
+L627:
+	li $v0, 1
+	j L629
+L613:
+	li $t0, 1
+	li $t4, 1
+	bge $t1, $t4, L611
+	j L612
+L612:
+	li $t0, 0
+L611:
+	j L615
+L621:
+	li $t0, 1
+	j L623
+L618:
+	li $t0, 1
+	li $t1, 1
+	bge $t3, $t1, L616
+	j L617
+L617:
+	li $t0, 0
+L616:
+	j L620
+L624:
+	li $v0, 1
+	j L626
+L1083:
 	
-	addi $sp, $sp, 36
 	lw $fp, 0($sp)
 	addi $sp, $sp, 12
 	jr $ra
@@ -3260,85 +3515,85 @@ L23:
 	sw $a0, 4($fp)
 	sw $a1, -4($fp)
 	sw $ra, -32($fp)
-L1017:
+L1090:
 	li $t0, 0
 	sw $t0, -8($fp)
 	li $t0, 0
 	sw $t0, -12($fp)
 	li $t1, 7
 	lw $t0, -12($fp)
-	ble $t0, $t1, L570
-	j L551
-L551:
+	ble $t0, $t1, L571
+	j L552
+L552:
 	lw $v0, -8($fp)
-	j L1016
-L570:
+	j L1089
+L571:
 	li $t0, 0
 	sw $t0, -16($fp)
 	li $t1, 7
 	lw $t0, -16($fp)
-	ble $t0, $t1, L566
-	j L552
-L552:
+	ble $t0, $t1, L567
+	j L553
+L553:
 	li $t1, 1
 	lw $t0, -8($fp)
-	beq $t0, $t1, L567
-	j L568
-L568:
+	beq $t0, $t1, L568
+	j L569
+L569:
 	lw $t0, -12($fp)
 	addi $t0, $t0, 1
 	sw $t0, -12($fp)
 	li $t1, 7
 	lw $t0, -12($fp)
-	ble $t0, $t1, L570
-	j L1022
-L1022:
-	j L551
-L566:
+	ble $t0, $t1, L571
+	j L1095
+L1095:
+	j L552
+L567:
 	li $t0, 0
 	sw $t0, -20($fp)
 	li $t1, 7
 	lw $t0, -20($fp)
-	ble $t0, $t1, L562
-	j L553
-L553:
+	ble $t0, $t1, L563
+	j L554
+L554:
 	li $t1, 1
 	lw $t0, -8($fp)
-	beq $t0, $t1, L563
-	j L564
-L564:
+	beq $t0, $t1, L564
+	j L565
+L565:
 	lw $t0, -16($fp)
 	addi $t0, $t0, 1
 	sw $t0, -16($fp)
 	li $t1, 7
 	lw $t0, -16($fp)
-	ble $t0, $t1, L566
-	j L1023
-L1023:
-	j L552
-L562:
+	ble $t0, $t1, L567
+	j L1096
+L1096:
+	j L553
+L563:
 	li $t0, 0
 	sw $t0, -24($fp)
 	li $t1, 7
 	lw $t0, -24($fp)
-	ble $t0, $t1, L558
-	j L554
-L554:
+	ble $t0, $t1, L559
+	j L555
+L555:
 	li $t1, 1
 	lw $t0, -8($fp)
-	beq $t0, $t1, L559
-	j L560
-L560:
+	beq $t0, $t1, L560
+	j L561
+L561:
 	lw $t0, -20($fp)
 	addi $t0, $t0, 1
 	sw $t0, -20($fp)
 	li $t1, 7
 	lw $t0, -20($fp)
-	ble $t0, $t1, L562
-	j L1024
-L1024:
-	j L553
-L558:
+	ble $t0, $t1, L563
+	j L1097
+L1097:
+	j L554
+L559:
 	li $a0, 8
 	jal tig_allocRecord
 	lw $t0, -16($fp)
@@ -3356,39 +3611,39 @@ L558:
 	lw $a0, 4($fp)
 	lw $a1, -4($fp)
 	lw $a2, -28($fp)
-	jal L27
+	jal L28
 	li $t0, 0
-	bne $t0, $v0, L555
-	j L556
-L556:
+	bne $t0, $v0, L556
+	j L557
+L557:
 	lw $t0, -24($fp)
 	addi $t0, $t0, 1
 	sw $t0, -24($fp)
 	li $t1, 7
 	lw $t0, -24($fp)
-	ble $t0, $t1, L558
-	j L1025
-L1025:
-	j L554
-L555:
+	ble $t0, $t1, L559
+	j L1098
+L1098:
+	j L555
+L556:
 	li $t0, 1
 	sw $t0, -8($fp)
+	j L555
+L1091:
+	j L557
+L560:
 	j L554
-L1018:
-	j L556
-L559:
+L1092:
+	j L561
+L564:
 	j L553
-L1019:
-	j L560
-L563:
+L1093:
+	j L565
+L568:
 	j L552
-L1020:
-	j L564
-L567:
-	j L551
-L1021:
-	j L568
-L1016:
+L1094:
+	j L569
+L1089:
 	lw $ra, -32($fp)
 	
 	addi $sp, $sp, 48
@@ -3408,14 +3663,14 @@ L22:
 	sw $a1, -4($fp)
 	sw $a2, -8($fp)
 	sw $ra, -28($fp)
-L1027:
+L1100:
 	lw $t0, -4($fp)
 	lw $t0, 0($t0)
 	sw $t0, -12($fp)
 	lw $a0, 4($fp)
 	lw $a1, -12($fp)
 	lw $a2, -8($fp)
-	jal L28
+	jal L29
 	sw $v0, -16($fp)
 	lw $t0, -4($fp)
 	lw $t0, 12($t0)
@@ -3426,70 +3681,70 @@ L1027:
 	lw $a3, -20($fp)
 	jal L14
 	li $t0, 0
-	bne $t0, $v0, L509
-	j L510
-L510:
+	bne $t0, $v0, L510
+	j L511
+L511:
 	lw $a0, 4($fp)
 	lw $a1, -16($fp)
 	jal L5
-L511:
+L512:
 	lw $t0, -16($fp)
 	lw $t1, 0($t0)
 	lw $t0, 4($fp)
 	lw $t0, -4($t0)
-	beq $t1, $t0, L512
-	j L513
-L513:
-	li $v0, 0
-L514:
-	li $t0, 0
-	bne $t0, $v0, L548
-	j L549
-L549:
-	li $v0, 0
-L550:
-	j L1026
-L509:
-	li $v0, 1
-	j L511
-L512:
+	beq $t1, $t0, L513
 	j L514
-L548:
+L514:
+	li $v0, 0
+L515:
+	li $t0, 0
+	bne $t0, $v0, L549
+	j L550
+L550:
+	li $v0, 0
+L551:
+	j L1099
+L510:
+	li $v0, 1
+	j L512
+L513:
+	j L515
+L549:
 	lw $a0, 4($fp)
 	lw $a1, -16($fp)
 	jal L6
 	li $t0, 0
-	bne $t0, $v0, L545
-	j L546
-L546:
+	bne $t0, $v0, L546
+	j L547
+L547:
 	lw $a0, 4($fp)
 	lw $a1, -16($fp)
 	jal L7
 	li $t0, 0
-	bne $t0, $v0, L542
-	j L543
-L543:
+	bne $t0, $v0, L543
+	j L544
+L544:
 	lw $a0, 4($fp)
 	lw $a1, -16($fp)
 	jal L9
 	li $t0, 0
-	bne $t0, $v0, L539
-	j L540
-L540:
+	bne $t0, $v0, L540
+	j L541
+L541:
 	lw $a0, 4($fp)
 	lw $a1, -16($fp)
 	jal L5
 	li $t0, 0
-	bne $t0, $v0, L536
-	j L537
-L537:
+	bne $t0, $v0, L537
+	j L538
+L538:
 	lw $a0, 4($fp)
 	lw $a1, -16($fp)
 	jal L8
 	li $t0, 0
-	bne $t0, $v0, L533
-	j L534
-L534:
+	bne $t0, $v0, L534
+	j L535
+L535:
 	lw $a0, 4($fp)
 	lw $t0, -8($fp)
 	lw $t1, 0($t0)
@@ -3498,88 +3753,88 @@ L534:
 	sub $a1, $t1, $t0
 	jal L0
 	li $t0, 1
-	ble $v0, $t0, L530
-	j L531
-L531:
-	li $v0, 0
+	ble $v0, $t0, L531
+	j L532
 L532:
-L535:
-L538:
-L541:
-L544:
-L547:
-	j L550
+	li $v0, 0
+L533:
+L536:
+L539:
+L542:
 L545:
+L548:
+	j L551
+L546:
 	lw $t0, -8($fp)
 	lw $t1, 0($t0)
 	lw $t0, -20($fp)
 	lw $t0, 0($t0)
-	beq $t1, $t0, L517
-	j L518
-L518:
+	beq $t1, $t0, L518
+	j L519
+L519:
 	li $v0, 1
 	lw $t0, -8($fp)
 	lw $t1, 4($t0)
 	lw $t0, -20($fp)
 	lw $t0, 4($t0)
-	beq $t1, $t0, L515
-	j L516
-L516:
-	li $v0, 0
-L515:
-L519:
-	j L547
+	beq $t1, $t0, L516
+	j L517
 L517:
+	li $v0, 0
+L516:
+L520:
+	j L548
+L518:
 	li $v0, 1
-	j L519
-L542:
+	j L520
+L543:
 	lw $a0, 4($fp)
 	lw $a1, -8($fp)
 	lw $a2, -20($fp)
 	jal L13
-	j L544
-L539:
+	j L545
+L540:
 	lw $t0, -8($fp)
 	lw $t1, 0($t0)
 	lw $t0, -20($fp)
 	lw $t0, 0($t0)
-	beq $t1, $t0, L522
-	j L523
-L523:
+	beq $t1, $t0, L523
+	j L524
+L524:
 	li $t0, 1
 	lw $t1, -8($fp)
 	lw $t2, 4($t1)
 	lw $t1, -20($fp)
 	lw $t1, 4($t1)
-	beq $t2, $t1, L520
-	j L521
-L521:
+	beq $t2, $t1, L521
+	j L522
+L522:
 	li $t0, 0
-L520:
-L524:
+L521:
+L525:
 	li $t1, 0
-	bne $t1, $t0, L525
-	j L526
-L526:
+	bne $t1, $t0, L526
+	j L527
+L527:
 	lw $a0, 4($fp)
 	lw $a1, -8($fp)
 	lw $a2, -20($fp)
 	jal L13
-L527:
-	j L541
-L522:
+L528:
+	j L542
+L523:
 	li $t0, 1
-	j L524
-L525:
+	j L525
+L526:
 	li $v0, 1
-	j L527
-L536:
+	j L528
+L537:
 	lw $a0, 4($fp)
 	lw $a1, -8($fp)
 	lw $a2, -20($fp)
 	jal L16
-	j L538
-L533:
+	j L539
+L534:
 	lw $a0, 4($fp)
 	lw $a1, -4($fp)
 	lw $a2, -16($fp)
@@ -3587,8 +3842,8 @@ L533:
 	lw $t0, -20($fp)
 	sw $t0, 20($a0)
 	jal L15
-	j L535
-L530:
+	j L536
+L531:
 	li $t0, 1
 	sw $t0, -24($fp)
 	lw $a0, 4($fp)
@@ -3599,15 +3854,15 @@ L530:
 	sub $a1, $t1, $t0
 	jal L0
 	li $t0, 1
-	ble $v0, $t0, L528
-	j L529
-L529:
+	ble $v0, $t0, L529
+	j L530
+L530:
 	li $t0, 0
 	sw $t0, -24($fp)
-L528:
+L529:
 	lw $v0, -24($fp)
-	j L532
-L1026:
+	j L533
+L1099:
 	lw $ra, -28($fp)
 	
 	addi $sp, $sp, 48
@@ -3627,14 +3882,14 @@ L21:
 	sw $a1, -4($fp)
 	sw $a2, -8($fp)
 	sw $ra, -28($fp)
-L1029:
+L1102:
 	lw $t0, -4($fp)
 	lw $t0, 0($t0)
 	sw $t0, -12($fp)
 	lw $a0, 4($fp)
 	lw $a1, -12($fp)
 	lw $a2, -8($fp)
-	jal L28
+	jal L29
 	sw $v0, -16($fp)
 	lw $t0, -4($fp)
 	lw $t0, 8($t0)
@@ -3645,70 +3900,70 @@ L1029:
 	lw $a3, -20($fp)
 	jal L14
 	li $t0, 0
-	bne $t0, $v0, L467
-	j L468
-L468:
+	bne $t0, $v0, L468
+	j L469
+L469:
 	lw $a0, 4($fp)
 	lw $a1, -16($fp)
 	jal L5
-L469:
+L470:
 	lw $t0, -16($fp)
 	lw $t1, 0($t0)
 	lw $t0, 4($fp)
 	lw $t0, -8($t0)
-	beq $t1, $t0, L470
-	j L471
-L471:
-	li $v0, 0
-L472:
-	li $t0, 0
-	bne $t0, $v0, L506
-	j L507
-L507:
-	li $v0, 0
-L508:
-	j L1028
-L467:
-	li $v0, 1
-	j L469
-L470:
+	beq $t1, $t0, L471
 	j L472
-L506:
+L472:
+	li $v0, 0
+L473:
+	li $t0, 0
+	bne $t0, $v0, L507
+	j L508
+L508:
+	li $v0, 0
+L509:
+	j L1101
+L468:
+	li $v0, 1
+	j L470
+L471:
+	j L473
+L507:
 	lw $a0, 4($fp)
 	lw $a1, -16($fp)
 	jal L6
 	li $t0, 0
-	bne $t0, $v0, L503
-	j L504
-L504:
+	bne $t0, $v0, L504
+	j L505
+L505:
 	lw $a0, 4($fp)
 	lw $a1, -16($fp)
 	jal L7
 	li $t0, 0
-	bne $t0, $v0, L500
-	j L501
-L501:
+	bne $t0, $v0, L501
+	j L502
+L502:
 	lw $a0, 4($fp)
 	lw $a1, -16($fp)
 	jal L9
 	li $t0, 0
-	bne $t0, $v0, L497
-	j L498
-L498:
+	bne $t0, $v0, L498
+	j L499
+L499:
 	lw $a0, 4($fp)
 	lw $a1, -16($fp)
 	jal L5
 	li $t0, 0
-	bne $t0, $v0, L494
-	j L495
-L495:
+	bne $t0, $v0, L495
+	j L496
+L496:
 	lw $a0, 4($fp)
 	lw $a1, -16($fp)
 	jal L8
 	li $t0, 0
-	bne $t0, $v0, L491
-	j L492
-L492:
+	bne $t0, $v0, L492
+	j L493
+L493:
 	lw $a0, 4($fp)
 	lw $t0, -8($fp)
 	lw $t1, 0($t0)
@@ -3717,88 +3972,88 @@ L492:
 	sub $a1, $t1, $t0
 	jal L0
 	li $t0, 1
-	ble $v0, $t0, L488
-	j L489
-L489:
-	li $v0, 0
+	ble $v0, $t0, L489
+	j L490
 L490:
-L493:
-L496:
-L499:
-L502:
-L505:
-	j L508
+	li $v0, 0
+L491:
+L494:
+L497:
+L500:
 L503:
+L506:
+	j L509
+L504:
 	lw $t0, -8($fp)
 	lw $t1, 0($t0)
 	lw $t0, -20($fp)
 	lw $t0, 0($t0)
-	beq $t1, $t0, L475
-	j L476
-L476:
+	beq $t1, $t0, L476
+	j L477
+L477:
 	li $v0, 1
 	lw $t0, -8($fp)
 	lw $t1, 4($t0)
 	lw $t0, -20($fp)
 	lw $t0, 4($t0)
-	beq $t1, $t0, L473
-	j L474
-L474:
-	li $v0, 0
-L473:
-L477:
-	j L505
+	beq $t1, $t0, L474
+	j L475
 L475:
+	li $v0, 0
+L474:
+L478:
+	j L506
+L476:
 	li $v0, 1
-	j L477
-L500:
+	j L478
+L501:
 	lw $a0, 4($fp)
 	lw $a1, -8($fp)
 	lw $a2, -20($fp)
 	jal L13
-	j L502
-L497:
+	j L503
+L498:
 	lw $t0, -8($fp)
 	lw $t1, 0($t0)
 	lw $t0, -20($fp)
 	lw $t0, 0($t0)
-	beq $t1, $t0, L480
-	j L481
-L481:
+	beq $t1, $t0, L481
+	j L482
+L482:
 	li $t0, 1
 	lw $t1, -8($fp)
 	lw $t2, 4($t1)
 	lw $t1, -20($fp)
 	lw $t1, 4($t1)
-	beq $t2, $t1, L478
-	j L479
-L479:
+	beq $t2, $t1, L479
+	j L480
+L480:
 	li $t0, 0
-L478:
-L482:
+L479:
+L483:
 	li $t1, 0
-	bne $t1, $t0, L483
-	j L484
-L484:
+	bne $t1, $t0, L484
+	j L485
+L485:
 	lw $a0, 4($fp)
 	lw $a1, -8($fp)
 	lw $a2, -20($fp)
 	jal L13
-L485:
-	j L499
-L480:
+L486:
+	j L500
+L481:
 	li $t0, 1
-	j L482
-L483:
+	j L483
+L484:
 	li $v0, 1
-	j L485
-L494:
+	j L486
+L495:
 	lw $a0, 4($fp)
 	lw $a1, -8($fp)
 	lw $a2, -20($fp)
 	jal L16
-	j L496
-L491:
+	j L497
+L492:
 	lw $a0, 4($fp)
 	lw $a1, -4($fp)
 	lw $a2, -16($fp)
@@ -3806,8 +4061,8 @@ L491:
 	lw $t0, -20($fp)
 	sw $t0, 20($a0)
 	jal L15
-	j L493
-L488:
+	j L494
+L489:
 	li $t0, 1
 	sw $t0, -24($fp)
 	lw $a0, 4($fp)
@@ -3818,15 +4073,15 @@ L488:
 	sub $a1, $t1, $t0
 	jal L0
 	li $t0, 1
-	ble $v0, $t0, L486
-	j L487
-L487:
+	ble $v0, $t0, L487
+	j L488
+L488:
 	li $t0, 0
 	sw $t0, -24($fp)
-L486:
+L487:
 	lw $v0, -24($fp)
-	j L490
-L1028:
+	j L491
+L1101:
 	lw $ra, -28($fp)
 	
 	addi $sp, $sp, 48
@@ -3848,7 +4103,7 @@ L20:
 	lw $t0, 20($a0)
 	sw $t0, 20($fp)
 	sw $ra, -36($fp)
-L1031:
+L1104:
 	lw $t0, 0($a2)
 	sw $t0, -4($fp)
 	lw $t0, 16($fp)
@@ -3867,179 +4122,179 @@ L1031:
 	lw $a1, -12($fp)
 	jal L0
 	li $t0, 2
-	beq $v0, $t0, L426
-	j L427
-L427:
-	li $t0, 0
+	beq $v0, $t0, L427
+	j L428
 L428:
-	li $t1, 0
-	bne $t1, $t0, L431
-	j L432
-L432:
 	li $t0, 0
+L429:
+	li $t1, 0
+	bne $t1, $t0, L432
+	j L433
 L433:
+	li $t0, 0
+L434:
 	sw $t0, -16($fp)
 	lw $a0, 4($fp)
 	lw $a1, -12($fp)
 	jal L0
 	li $t0, 2
-	beq $v0, $t0, L436
-	j L437
-L437:
-	li $t0, 0
+	beq $v0, $t0, L437
+	j L438
 L438:
-	li $t1, 0
-	bne $t1, $t0, L441
-	j L442
-L442:
 	li $t0, 0
+L439:
+	li $t1, 0
+	bne $t1, $t0, L442
+	j L443
 L443:
+	li $t0, 0
+L444:
 	sw $t0, -20($fp)
 	lw $a0, 4($fp)
 	lw $a1, -8($fp)
 	jal L0
 	li $t0, 1
-	beq $v0, $t0, L446
-	j L447
-L447:
-	li $t0, 0
+	beq $v0, $t0, L447
+	j L448
 L448:
+	li $t0, 0
+L449:
 	sw $t0, -28($fp)
 	lw $t0, 4($fp)
 	lw $t1, -4($t0)
 	lw $t0, -4($fp)
-	beq $t0, $t1, L449
-	j L450
-L450:
+	beq $t0, $t1, L450
+	j L451
+L451:
 	lw $a0, 4($fp)
 	lw $a1, 8($fp)
-	jal L25
-L451:
+	jal L26
+L452:
 	sw $v0, -32($fp)
 	li $t1, 0
 	lw $t0, -16($fp)
-	bne $t1, $t0, L452
-	j L453
-L453:
-	li $v0, 0
+	bne $t1, $t0, L453
+	j L454
 L454:
+	li $v0, 0
+L455:
 	li $t0, 0
-	bne $t0, $v0, L464
-	j L465
-L465:
+	bne $t0, $v0, L465
+	j L466
+L466:
 	li $t1, 0
 	lw $t0, -20($fp)
-	bne $t1, $t0, L455
-	j L456
-L456:
-	li $v0, 0
+	bne $t1, $t0, L456
+	j L457
 L457:
+	li $v0, 0
+L458:
 	li $t0, 0
-	bne $t0, $v0, L461
-	j L462
-L462:
+	bne $t0, $v0, L462
+	j L463
+L463:
 	li $t1, 0
 	lw $t0, -28($fp)
-	bne $t1, $t0, L458
-	j L459
-L459:
-	li $v0, 0
+	bne $t1, $t0, L459
+	j L460
 L460:
-L463:
-L466:
-	j L1030
-L426:
+	li $v0, 0
+L461:
+L464:
+L467:
+	j L1103
+L427:
 	li $t0, 1
 	li $t2, 0
 	lw $t1, -8($fp)
-	beq $t1, $t2, L424
-	j L425
-L425:
+	beq $t1, $t2, L425
+	j L426
+L426:
 	li $t0, 0
-L424:
-	j L428
-L431:
+L425:
+	j L429
+L432:
 	li $t0, 1
 	lw $t1, 20($fp)
 	lw $t2, 0($t1)
 	li $t1, 6
-	beq $t2, $t1, L429
-	j L430
-L430:
+	beq $t2, $t1, L430
+	j L431
+L431:
 	li $t0, 0
-L429:
-	j L433
-L436:
+L430:
+	j L434
+L437:
 	li $t0, 1
 	li $t2, 0
 	lw $t1, -8($fp)
-	beq $t1, $t2, L434
-	j L435
-L435:
+	beq $t1, $t2, L435
+	j L436
+L436:
 	li $t0, 0
-L434:
-	j L438
-L441:
+L435:
+	j L439
+L442:
 	li $t0, 1
 	lw $t1, 20($fp)
 	lw $t2, 0($t1)
 	li $t1, 2
-	beq $t2, $t1, L439
-	j L440
-L440:
+	beq $t2, $t1, L440
+	j L441
+L441:
 	li $t0, 0
-L439:
-	j L443
-L446:
+L440:
+	j L444
+L447:
 	li $t0, 1
 	sw $t0, -24($fp)
 	lw $a0, 4($fp)
 	lw $a1, -12($fp)
 	jal L0
 	li $t0, 1
-	beq $v0, $t0, L444
-	j L445
-L445:
+	beq $v0, $t0, L445
+	j L446
+L446:
 	li $t0, 0
 	sw $t0, -24($fp)
-L444:
+L445:
 	lw $t0, -24($fp)
-	j L448
-L449:
+	j L449
+L450:
 	lw $a0, 4($fp)
 	lw $a1, 8($fp)
-	jal L24
-	j L451
-L452:
+	jal L25
+	j L452
+L453:
 	lw $a0, -32($fp)
 	jal tig_not
-	j L454
-L464:
-	move $a0, $fp
-	lw $a1, -4($fp)
-	jal L416
-	j L466
-L455:
-	lw $a0, -32($fp)
-	jal tig_not
-	j L457
-L461:
+	j L455
+L465:
 	move $a0, $fp
 	lw $a1, -4($fp)
 	jal L417
-	j L463
-L458:
+	j L467
+L456:
+	lw $a0, -32($fp)
+	jal tig_not
+	j L458
+L462:
+	move $a0, $fp
+	lw $a1, -4($fp)
+	jal L418
+	j L464
+L459:
 	lw $a0, 4($fp)
 	lw $a1, 8($fp)
 	lw $a2, 16($fp)
 	lw $a3, 20($fp)
 	lw $t0, -4($fp)
 	sw $t0, 20($a0)
-	jal L26
+	jal L27
 	move $a0, $v0
 	jal tig_not
-	j L460
-L1030:
+	j L461
+L1103:
 	lw $ra, -36($fp)
 	
 	addi $sp, $sp, 56
@@ -4050,7 +4305,7 @@ L1030:
 
 
 
-L417:
+L418:
 	addi $sp, $sp, -12
 	sw $fp, 0($sp)
 	move $fp, $sp
@@ -4058,7 +4313,7 @@ L417:
 	sw $a0, 4($fp)
 	sw $a1, -4($fp)
 	sw $ra, -32($fp)
-L1033:
+L1106:
 	lw $t0, 4($fp)
 	lw $t0, 4($t0)
 	sw $t0, -16($fp)
@@ -4082,17 +4337,17 @@ L1033:
 	lw $a2, -8($fp)
 	lw $t0, -4($fp)
 	sw $t0, 20($a0)
-	jal L26
+	jal L27
 	move $a0, $v0
 	jal tig_not
 	li $t0, 0
-	bne $t0, $v0, L421
-	j L422
-L422:
-	li $v0, 0
+	bne $t0, $v0, L422
+	j L423
 L423:
-	j L1032
-L421:
+	li $v0, 0
+L424:
+	j L1105
+L422:
 	lw $t0, 4($fp)
 	lw $t0, 4($t0)
 	sw $t0, -28($fp)
@@ -4116,11 +4371,11 @@ L421:
 	lw $a2, -20($fp)
 	lw $t0, -4($fp)
 	sw $t0, 20($a0)
-	jal L26
+	jal L27
 	move $a0, $v0
 	jal tig_not
-	j L423
-L1032:
+	j L424
+L1105:
 	lw $ra, -32($fp)
 	
 	addi $sp, $sp, 52
@@ -4131,7 +4386,7 @@ L1032:
 
 
 
-L416:
+L417:
 	addi $sp, $sp, -12
 	sw $fp, 0($sp)
 	move $fp, $sp
@@ -4139,7 +4394,7 @@ L416:
 	sw $a0, 4($fp)
 	sw $a1, -4($fp)
 	sw $ra, -32($fp)
-L1035:
+L1108:
 	lw $t0, 4($fp)
 	lw $t0, 4($t0)
 	sw $t0, -16($fp)
@@ -4163,17 +4418,17 @@ L1035:
 	lw $a2, -8($fp)
 	lw $t0, -4($fp)
 	sw $t0, 20($a0)
-	jal L26
+	jal L27
 	move $a0, $v0
 	jal tig_not
 	li $t0, 0
-	bne $t0, $v0, L418
-	j L419
-L419:
-	li $v0, 0
+	bne $t0, $v0, L419
+	j L420
 L420:
-	j L1034
-L418:
+	li $v0, 0
+L421:
+	j L1107
+L419:
 	lw $t0, 4($fp)
 	lw $t0, 4($t0)
 	sw $t0, -28($fp)
@@ -4197,11 +4452,11 @@ L418:
 	lw $a2, -20($fp)
 	lw $t0, -4($fp)
 	sw $t0, 20($a0)
-	jal L26
+	jal L27
 	move $a0, $v0
 	jal tig_not
-	j L420
-L1034:
+	j L421
+L1107:
 	lw $ra, -32($fp)
 	
 	addi $sp, $sp, 52
@@ -4221,25 +4476,25 @@ L19:
 	sw $a1, -4($fp)
 	sw $a2, -8($fp)
 	sw $ra, -12($fp)
-L1037:
+L1110:
 	lw $a0, 4($fp)
 	lw $a1, -4($fp)
 	lw $a2, -8($fp)
 	jal L17
 	li $t0, 0
-	bne $t0, $v0, L413
-	j L414
-L414:
+	bne $t0, $v0, L414
+	j L415
+L415:
 	lw $a0, 4($fp)
 	lw $a1, -4($fp)
 	lw $a2, -8($fp)
 	jal L18
-L415:
-	j L1036
-L413:
+L416:
+	j L1109
+L414:
 	li $v0, 1
-	j L415
-L1036:
+	j L416
+L1109:
 	lw $ra, -12($fp)
 	
 	addi $sp, $sp, 24
@@ -4257,11 +4512,11 @@ L18:
 	addi $sp, $sp, -16
 	sw $a0, 4($fp)
 	sw $ra, -4($fp)
-L1039:
+L1112:
 	lw $a0, 4($fp)
 	jal L13
-	j L1038
-L1038:
+	j L1111
+L1111:
 	lw $ra, -4($fp)
 	
 	addi $sp, $sp, 16
@@ -4277,26 +4532,26 @@ L17:
 	sw $fp, 0($sp)
 	move $fp, $sp
 	sw $a0, 4($fp)
-L1041:
+L1114:
 	lw $t1, 4($a1)
 	lw $t0, 4($a2)
-	beq $t1, $t0, L410
-	j L411
-L411:
+	beq $t1, $t0, L411
+	j L412
+L412:
 	li $v0, 1
 	lw $t1, 0($a1)
 	lw $t0, 0($a2)
-	beq $t1, $t0, L408
-	j L409
-L409:
-	li $v0, 0
-L408:
-L412:
-	j L1040
+	beq $t1, $t0, L409
+	j L410
 L410:
+	li $v0, 0
+L409:
+L413:
+	j L1113
+L411:
 	li $v0, 1
-	j L412
-L1040:
+	j L413
+L1113:
 	
 	lw $fp, 0($sp)
 	addi $sp, $sp, 16
@@ -4314,7 +4569,7 @@ L16:
 	sw $a1, -4($fp)
 	sw $a2, -8($fp)
 	sw $ra, -16($fp)
-L1043:
+L1116:
 	lw $a0, 4($fp)
 	lw $t0, -4($fp)
 	lw $t1, 4($t0)
@@ -4331,47 +4586,47 @@ L1043:
 	sub $a1, $t1, $t0
 	jal L0
 	li $t0, 2
-	beq $v0, $t0, L397
-	j L398
-L398:
-	li $t0, 0
+	beq $v0, $t0, L398
+	j L399
 L399:
+	li $t0, 0
+L400:
 	li $t1, 0
-	bne $t1, $t0, L405
-	j L406
-L406:
-	li $t0, 1
-	beq $v0, $t0, L402
-	j L403
-L403:
-	li $v0, 0
-L404:
+	bne $t1, $t0, L406
+	j L407
 L407:
-	j L1042
-L397:
+	li $t0, 1
+	beq $v0, $t0, L403
+	j L404
+L404:
+	li $v0, 0
+L405:
+L408:
+	j L1115
+L398:
 	li $t0, 1
 	li $t2, 1
 	lw $t1, -12($fp)
-	beq $t1, $t2, L395
-	j L396
-L396:
+	beq $t1, $t2, L396
+	j L397
+L397:
 	li $t0, 0
-L395:
-	j L399
-L405:
+L396:
+	j L400
+L406:
 	li $v0, 1
-	j L407
-L402:
+	j L408
+L403:
 	li $v0, 1
 	li $t1, 2
 	lw $t0, -12($fp)
-	beq $t0, $t1, L400
-	j L401
-L401:
+	beq $t0, $t1, L401
+	j L402
+L402:
 	li $v0, 0
-L400:
-	j L404
-L1042:
+L401:
+	j L405
+L1115:
 	lw $ra, -16($fp)
 	
 	addi $sp, $sp, 24
@@ -4394,7 +4649,7 @@ L15:
 	lw $t0, 20($a0)
 	sw $t0, 20($fp)
 	sw $ra, -52($fp)
-L1045:
+L1118:
 	lw $t0, 8($fp)
 	lw $t0, 0($t0)
 	sw $t0, -4($fp)
@@ -4413,263 +4668,263 @@ L1045:
 	li $t0, 1
 	li $t2, 0
 	lw $t1, -12($fp)
-	bgt $t1, $t2, L301
-	j L302
-L302:
+	bgt $t1, $t2, L302
+	j L303
+L303:
 	li $t0, 0
-L301:
+L302:
 	sw $t0, -20($fp)
 	li $t0, 1
 	li $t2, 0
 	lw $t1, -12($fp)
-	blt $t1, $t2, L303
-	j L304
+	blt $t1, $t2, L304
+	j L305
+L305:
+	li $t0, 0
 L304:
-	li $t0, 0
-L303:
 	li $t1, 0
-	bne $t1, $t0, L305
-	j L306
-L306:
-	li $v0, 0
+	bne $t1, $t0, L306
+	j L307
 L307:
+	li $v0, 0
+L308:
 	li $t0, 0
-	bne $t0, $v0, L311
-	j L312
-L312:
+	bne $t0, $v0, L312
+	j L313
+L313:
 	li $t1, 0
 	lw $t0, -20($fp)
-	bne $t1, $t0, L308
-	j L309
-L309:
-	li $v0, 0
+	bne $t1, $t0, L309
+	j L310
 L310:
-L313:
+	li $v0, 0
+L311:
+L314:
 	sw $v0, -24($fp)
 	lw $a0, 4($fp)
 	lw $a1, -12($fp)
 	jal L0
 	li $t0, 1
-	beq $v0, $t0, L316
-	j L317
-L317:
-	li $t0, 0
+	beq $v0, $t0, L317
+	j L318
 L318:
+	li $t0, 0
+L319:
 	sw $t0, -32($fp)
 	move $a0, $fp
-	jal L319
+	jal L320
 	sw $v0, -36($fp)
 	li $t1, 0
 	lw $t0, -24($fp)
-	bne $t1, $t0, L392
-	j L393
-L393:
+	bne $t1, $t0, L393
+	j L394
+L394:
 	lw $a0, 4($fp)
 	lw $a1, -12($fp)
 	jal L0
 	li $t0, 2
-	beq $v0, $t0, L349
-	j L350
-L350:
-	li $t0, 0
+	beq $v0, $t0, L350
+	j L351
 L351:
+	li $t0, 0
+L352:
 	li $t1, 0
-	bne $t1, $t0, L389
-	j L390
-L390:
+	bne $t1, $t0, L390
+	j L391
+L391:
 	li $t1, 0
 	lw $t0, -32($fp)
-	bne $t1, $t0, L365
-	j L366
-L366:
-	li $v0, 0
+	bne $t1, $t0, L366
+	j L367
 L367:
+	li $v0, 0
+L368:
 	li $t0, 0
-	bne $t0, $v0, L386
-	j L387
-L387:
+	bne $t0, $v0, L387
+	j L388
+L388:
 	li $t1, 0
 	lw $t0, -32($fp)
-	bne $t1, $t0, L370
-	j L371
-L371:
-	li $t0, 0
+	bne $t1, $t0, L371
+	j L372
 L372:
+	li $t0, 0
+L373:
 	li $t1, 0
-	bne $t1, $t0, L383
-	j L384
-L384:
+	bne $t1, $t0, L384
+	j L385
+L385:
 	lw $a0, 4($fp)
 	lw $a1, -12($fp)
 	jal L0
 	li $t0, 1
-	beq $v0, $t0, L375
-	j L376
-L376:
-	li $t0, 0
+	beq $v0, $t0, L376
+	j L377
 L377:
+	li $t0, 0
+L378:
 	li $t1, 0
-	bne $t1, $t0, L380
-	j L381
-L381:
-	li $v0, 0
+	bne $t1, $t0, L381
+	j L382
 L382:
-L385:
-L388:
-L391:
-L394:
-	j L1044
-L305:
+	li $v0, 0
+L383:
+L386:
+L389:
+L392:
+L395:
+	j L1117
+L306:
 	lw $a0, 4($fp)
 	lw $a1, -8($fp)
 	jal L11
-	j L307
-L311:
+	j L308
+L312:
 	li $v0, 1
-	j L313
-L308:
+	j L314
+L309:
 	lw $a0, 4($fp)
 	lw $a1, -8($fp)
 	jal L12
-	j L310
-L316:
+	j L311
+L317:
 	li $t0, 1
 	sw $t0, -28($fp)
 	lw $a0, 4($fp)
 	lw $a1, -16($fp)
 	jal L0
 	li $t0, 1
-	beq $v0, $t0, L314
-	j L315
-L315:
+	beq $v0, $t0, L315
+	j L316
+L316:
 	li $t0, 0
 	sw $t0, -28($fp)
-L314:
+L315:
 	lw $t0, -28($fp)
-	j L318
-L392:
+	j L319
+L393:
 	li $v0, 0
-	j L394
-L349:
+	j L395
+L350:
 	li $t0, 1
 	li $t2, 0
 	lw $t1, -16($fp)
-	beq $t1, $t2, L347
-	j L348
-L348:
+	beq $t1, $t2, L348
+	j L349
+L349:
 	li $t0, 0
-L347:
-	j L351
-L389:
+L348:
+	j L352
+L390:
 	lw $a0, 4($fp)
 	lw $a1, -8($fp)
 	jal L11
 	li $t0, 0
-	bne $t0, $v0, L354
-	j L355
-L355:
-	li $t0, 0
+	bne $t0, $v0, L355
+	j L356
 L356:
+	li $t0, 0
+L357:
 	li $t1, 0
-	bne $t1, $t0, L362
-	j L363
-L363:
+	bne $t1, $t0, L363
+	j L364
+L364:
 	lw $a0, 4($fp)
 	lw $a1, -8($fp)
 	jal L12
 	li $t0, 0
-	bne $t0, $v0, L359
-	j L360
-L360:
-	li $v0, 0
+	bne $t0, $v0, L360
+	j L361
 L361:
-L364:
-	j L391
-L354:
+	li $v0, 0
+L362:
+L365:
+	j L392
+L355:
 	li $t0, 1
 	lw $t1, 16($fp)
 	lw $t2, 4($t1)
 	li $t1, 1
-	beq $t2, $t1, L352
-	j L353
-L353:
+	beq $t2, $t1, L353
+	j L354
+L354:
 	li $t0, 0
-L352:
-	j L356
-L362:
+L353:
+	j L357
+L363:
 	li $v0, 1
-	j L364
-L359:
+	j L365
+L360:
 	li $v0, 1
 	lw $t0, 16($fp)
 	lw $t1, 4($t0)
 	li $t0, 6
-	beq $t1, $t0, L357
-	j L358
-L358:
+	beq $t1, $t0, L358
+	j L359
+L359:
 	li $v0, 0
-L357:
-	j L361
-L365:
+L358:
+	j L362
+L366:
 	lw $a0, -36($fp)
 	jal tig_not
-	j L367
-L386:
+	j L368
+L387:
 	li $t0, 1
 	sw $t0, -40($fp)
 	lw $a0, 4($fp)
 	lw $a1, -4($fp)
 	lw $a2, 20($fp)
-	jal L28
+	jal L29
 	lw $t0, 4($fp)
 	lw $t0, -36($t0)
-	bne $v0, $t0, L368
-	j L369
-L369:
+	bne $v0, $t0, L369
+	j L370
+L370:
 	li $t0, 0
 	sw $t0, -40($fp)
-L368:
+L369:
 	lw $v0, -40($fp)
-	j L388
-L370:
+	j L389
+L371:
 	lw $t0, -36($fp)
-	j L372
-L383:
+	j L373
+L384:
 	li $v0, 1
-	j L385
-L375:
+	j L386
+L376:
 	li $t0, 1
 	sw $t0, -44($fp)
 	lw $a0, 4($fp)
 	lw $a1, -16($fp)
 	jal L0
 	li $t0, 0
-	beq $v0, $t0, L373
-	j L374
-L374:
+	beq $v0, $t0, L374
+	j L375
+L375:
 	li $t0, 0
 	sw $t0, -44($fp)
-L373:
+L374:
 	lw $t0, -44($fp)
-	j L377
-L380:
+	j L378
+L381:
 	li $t0, 1
 	sw $t0, -48($fp)
 	lw $a0, 4($fp)
 	lw $a1, -4($fp)
 	lw $a2, 20($fp)
-	jal L28
+	jal L29
 	lw $t0, 4($fp)
 	lw $t0, -36($t0)
-	beq $v0, $t0, L378
-	j L379
-L379:
+	beq $v0, $t0, L379
+	j L380
+L380:
 	li $t0, 0
 	sw $t0, -48($fp)
-L378:
+L379:
 	lw $v0, -48($fp)
-	j L382
-L1044:
+	j L383
+L1117:
 	lw $ra, -52($fp)
 	
 	addi $sp, $sp, 64
@@ -4680,14 +4935,14 @@ L1044:
 
 
 
-L319:
+L320:
 	addi $sp, $sp, -8
 	sw $fp, 0($sp)
 	move $fp, $sp
 	addi $sp, $sp, -56
 	sw $a0, 4($fp)
 	sw $ra, -44($fp)
-L1047:
+L1120:
 	li $t0, 0
 	sw $t0, -4($fp)
 	li $t0, 0
@@ -4709,7 +4964,7 @@ L1047:
 	lw $a1, -4($t0)
 	lw $t0, 4($fp)
 	lw $a2, 16($t0)
-	jal L28
+	jal L29
 	lw $t0, 0($v0)
 	sw $t0, -20($fp)
 	lw $t0, 4($fp)
@@ -4729,7 +4984,7 @@ L1047:
 	sw $t0, 4($a2)
 	lw $a0, -32($fp)
 	lw $a1, -28($fp)
-	jal L28
+	jal L29
 	sw $v0, -24($fp)
 	lw $t0, 4($fp)
 	lw $t0, 4($t0)
@@ -4748,111 +5003,111 @@ L1047:
 	sw $t0, 4($a2)
 	lw $a0, -40($fp)
 	lw $a1, -36($fp)
-	jal L28
+	jal L29
 	lw $t0, 4($fp)
 	lw $t0, 4($t0)
 	lw $t1, -36($t0)
 	lw $t0, -24($fp)
-	bne $t0, $t1, L322
-	j L323
-L323:
-	li $t0, 0
+	bne $t0, $t1, L323
+	j L324
 L324:
+	li $t0, 0
+L325:
 	li $t1, 0
-	bne $t1, $t0, L330
-	j L331
-L331:
+	bne $t1, $t0, L331
+	j L332
+L332:
 	lw $t0, 4($fp)
 	lw $t0, 4($t0)
 	lw $t0, -36($t0)
-	bne $v0, $t0, L334
-	j L335
-L335:
-	li $t0, 0
+	bne $v0, $t0, L335
+	j L336
 L336:
+	li $t0, 0
+L337:
 	li $t1, 0
-	bne $t1, $t0, L342
-	j L343
-L343:
+	bne $t1, $t0, L343
+	j L344
+L344:
 	li $t1, 0
 	lw $t0, -4($fp)
-	bne $t1, $t0, L344
-	j L345
-L345:
-	lw $v0, -8($fp)
+	bne $t1, $t0, L345
+	j L346
 L346:
-	j L1046
-L322:
+	lw $v0, -8($fp)
+L347:
+	j L1119
+L323:
 	li $t0, 1
 	li $t2, 0
 	lw $t1, -12($fp)
-	bge $t1, $t2, L320
-	j L321
-L321:
+	bge $t1, $t2, L321
+	j L322
+L322:
 	li $t0, 0
-L320:
-	j L324
-L330:
+L321:
+	j L325
+L331:
 	lw $t0, 4($fp)
 	lw $t0, 8($t0)
 	lw $t0, 32($t0)
 	lw $t1, 0($t0)
 	lw $t0, -12($fp)
-	beq $t1, $t0, L327
-	j L328
-L328:
-	li $t0, 0
+	beq $t1, $t0, L328
+	j L329
 L329:
+	li $t0, 0
+L330:
 	sw $t0, -4($fp)
-	j L331
-L327:
+	j L332
+L328:
 	li $t0, 1
 	lw $t1, -24($fp)
 	lw $t2, 0($t1)
 	lw $t1, -20($fp)
-	bne $t2, $t1, L325
-	j L326
-L326:
+	bne $t2, $t1, L326
+	j L327
+L327:
 	li $t0, 0
-L325:
-	j L329
-L334:
+L326:
+	j L330
+L335:
 	li $t0, 1
 	li $t2, 7
 	lw $t1, -16($fp)
-	ble $t1, $t2, L332
-	j L333
-L333:
+	ble $t1, $t2, L333
+	j L334
+L334:
 	li $t0, 0
-L332:
-	j L336
-L342:
+L333:
+	j L337
+L343:
 	lw $t0, 4($fp)
 	lw $t0, 8($t0)
 	lw $t0, 32($t0)
 	lw $t1, 0($t0)
 	lw $t0, -16($fp)
-	beq $t1, $t0, L339
-	j L340
-L340:
-	li $t0, 0
+	beq $t1, $t0, L340
+	j L341
 L341:
+	li $t0, 0
+L342:
 	sw $t0, -8($fp)
-	j L343
-L339:
+	j L344
+L340:
 	li $t0, 1
 	lw $t2, 0($v0)
 	lw $t1, -20($fp)
-	bne $t2, $t1, L337
-	j L338
-L338:
+	bne $t2, $t1, L338
+	j L339
+L339:
 	li $t0, 0
-L337:
-	j L341
-L344:
+L338:
+	j L342
+L345:
 	li $v0, 1
-	j L346
-L1046:
+	j L347
+L1119:
 	lw $ra, -44($fp)
 	
 	addi $sp, $sp, 56
@@ -4873,33 +5128,33 @@ L14:
 	sw $a2, -8($fp)
 	sw $a3, -12($fp)
 	sw $ra, -24($fp)
-L1049:
+L1122:
 	lw $t1, -8($fp)
 	lw $t0, -12($fp)
-	beq $t1, $t0, L298
-	j L299
-L299:
+	beq $t1, $t0, L299
+	j L300
+L300:
 	li $t0, 1
 	lw $t1, -8($fp)
 	lw $t2, 4($t1)
 	lw $t1, -12($fp)
 	lw $t1, 4($t1)
-	beq $t2, $t1, L285
-	j L286
-L286:
+	beq $t2, $t1, L286
+	j L287
+L287:
 	li $t0, 0
-L285:
+L286:
 	sw $t0, -16($fp)
 	li $t0, 1
 	lw $t1, -8($fp)
 	lw $t2, 0($t1)
 	lw $t1, -12($fp)
 	lw $t1, 0($t1)
-	beq $t2, $t1, L287
-	j L288
-L288:
+	beq $t2, $t1, L288
+	j L289
+L289:
 	li $t0, 0
-L287:
+L288:
 	sw $t0, -20($fp)
 	lw $a0, 4($fp)
 	lw $a1, -8($fp)
@@ -4907,49 +5162,49 @@ L287:
 	jal L13
 	li $t1, 0
 	lw $t0, -16($fp)
-	bne $t1, $t0, L295
-	j L296
-L296:
+	bne $t1, $t0, L296
+	j L297
+L297:
 	li $t1, 0
 	lw $t0, -20($fp)
-	bne $t1, $t0, L292
-	j L293
-L293:
-	li $t0, 0
-	bne $t0, $v0, L289
-	j L290
-L290:
-	li $v0, 0
-L291:
+	bne $t1, $t0, L293
+	j L294
 L294:
-L297:
-L300:
-	j L1048
-L298:
-	li $v0, 1
-	j L300
-L295:
-	move $a0, $fp
-	lw $a1, -4($fp)
-	lw $a2, -8($fp)
-	lw $a3, -12($fp)
-	jal L249
-	j L297
+	li $t0, 0
+	bne $t0, $v0, L290
+	j L291
+L291:
+	li $v0, 0
 L292:
+L295:
+L298:
+L301:
+	j L1121
+L299:
+	li $v0, 1
+	j L301
+L296:
 	move $a0, $fp
 	lw $a1, -4($fp)
 	lw $a2, -8($fp)
 	lw $a3, -12($fp)
 	jal L250
-	j L294
-L289:
+	j L298
+L293:
 	move $a0, $fp
 	lw $a1, -4($fp)
 	lw $a2, -8($fp)
 	lw $a3, -12($fp)
 	jal L251
-	j L291
-L1048:
+	j L295
+L290:
+	move $a0, $fp
+	lw $a1, -4($fp)
+	lw $a2, -8($fp)
+	lw $a3, -12($fp)
+	jal L252
+	j L292
+L1121:
 	lw $ra, -24($fp)
 	
 	addi $sp, $sp, 40
@@ -4960,7 +5215,7 @@ L1048:
 
 
 
-L251:
+L252:
 	addi $sp, $sp, -20
 	sw $fp, 0($sp)
 	move $fp, $sp
@@ -4968,28 +5223,28 @@ L251:
 	sw $a0, 4($fp)
 	sw $a1, -4($fp)
 	sw $ra, -36($fp)
-L1051:
+L1124:
 	lw $t0, 4($a3)
 	sw $t0, -8($fp)
 	lw $t0, 0($a3)
 	lw $t2, 4($a2)
 	lw $t1, -8($fp)
-	blt $t2, $t1, L274
-	j L275
-L275:
+	blt $t2, $t1, L275
+	j L276
+L276:
 	li $t2, 0
 	li $t1, 1
 	sub $t1, $t2, $t1
-L276:
+L277:
 	sw $t1, -12($fp)
 	lw $t1, 0($a2)
-	blt $t1, $t0, L277
-	j L278
-L278:
+	blt $t1, $t0, L278
+	j L279
+L279:
 	li $t1, 0
 	li $t0, 1
 	sub $t0, $t1, $t0
-L279:
+L280:
 	sw $t0, -16($fp)
 	lw $t1, 4($a2)
 	lw $t0, -12($fp)
@@ -5003,18 +5258,18 @@ L279:
 	sw $t0, -28($fp)
 	lw $t1, -20($fp)
 	lw $t0, -8($fp)
-	bne $t1, $t0, L284
-	j L280
-L280:
+	bne $t1, $t0, L285
+	j L281
+L281:
 	lw $v0, -28($fp)
-	j L1050
-L274:
+	j L1123
+L275:
 	li $t1, 1
-	j L276
-L277:
+	j L277
+L278:
 	li $t0, 1
-	j L279
-L284:
+	j L280
+L285:
 	lw $t0, 4($fp)
 	lw $t0, 4($t0)
 	sw $t0, -32($fp)
@@ -5027,13 +5282,13 @@ L284:
 	sw $t0, 4($a2)
 	lw $a0, -32($fp)
 	lw $a1, -4($fp)
-	jal L28
+	jal L29
 	lw $t0, 4($fp)
 	lw $t0, 4($t0)
 	lw $t0, -36($t0)
-	bne $v0, $t0, L281
-	j L282
-L282:
+	bne $v0, $t0, L282
+	j L283
+L283:
 	lw $t1, -20($fp)
 	lw $t0, -12($fp)
 	add $t0, $t1, $t0
@@ -5044,20 +5299,113 @@ L282:
 	sw $t0, -24($fp)
 	lw $t1, -20($fp)
 	lw $t0, -8($fp)
-	bne $t1, $t0, L284
-	j L1053
-L1053:
-	j L280
-L281:
+	bne $t1, $t0, L285
+	j L1126
+L1126:
+	j L281
+L282:
 	li $t0, 0
 	sw $t0, -28($fp)
-	j L280
-L1052:
-	j L282
-L1050:
+	j L281
+L1125:
+	j L283
+L1123:
 	lw $ra, -36($fp)
 	
 	addi $sp, $sp, 48
+	lw $fp, 0($sp)
+	addi $sp, $sp, 20
+	jr $ra
+
+
+
+
+L251:
+	addi $sp, $sp, -20
+	sw $fp, 0($sp)
+	move $fp, $sp
+	addi $sp, $sp, -40
+	sw $a0, 4($fp)
+	sw $a1, -4($fp)
+	sw $ra, -28($fp)
+L1128:
+	lw $t1, 4($a2)
+	lw $t0, 4($a3)
+	ble $t1, $t0, L264
+	j L265
+L265:
+	lw $t0, 4($a3)
+L266:
+	lw $t2, 4($a2)
+	lw $t1, 4($a3)
+	ble $t2, $t1, L267
+	j L268
+L268:
+	lw $t1, 4($a2)
+L269:
+	sw $t1, -8($fp)
+	lw $t1, 0($a2)
+	sw $t1, -12($fp)
+	li $t1, 1
+	sw $t1, -16($fp)
+	addi $t0, $t0, 1
+	sw $t0, -20($fp)
+	li $t1, 1
+	lw $t0, -8($fp)
+	sub $t1, $t0, $t1
+	lw $t0, -20($fp)
+	ble $t0, $t1, L274
+	j L270
+L270:
+	lw $v0, -16($fp)
+	j L1127
+L264:
+	lw $t0, 4($a2)
+	j L266
+L267:
+	lw $t1, 4($a3)
+	j L269
+L274:
+	lw $t0, 4($fp)
+	lw $t0, 4($t0)
+	sw $t0, -24($fp)
+	li $a0, 8
+	jal tig_allocRecord
+	move $a2, $v0
+	lw $t0, -12($fp)
+	sw $t0, 0($a2)
+	lw $t0, -20($fp)
+	sw $t0, 4($a2)
+	lw $a0, -24($fp)
+	lw $a1, -4($fp)
+	jal L29
+	lw $t0, 4($fp)
+	lw $t0, 4($t0)
+	lw $t0, -36($t0)
+	bne $v0, $t0, L271
+	j L272
+L272:
+	lw $t0, -20($fp)
+	addi $t0, $t0, 1
+	sw $t0, -20($fp)
+	li $t1, 1
+	lw $t0, -8($fp)
+	sub $t1, $t0, $t1
+	lw $t0, -20($fp)
+	ble $t0, $t1, L274
+	j L1130
+L1130:
+	j L270
+L271:
+	li $t0, 0
+	sw $t0, -16($fp)
+	j L270
+L1129:
+	j L272
+L1127:
+	lw $ra, -28($fp)
+	
+	addi $sp, $sp, 40
 	lw $fp, 0($sp)
 	addi $sp, $sp, 20
 	jr $ra
@@ -5073,114 +5421,21 @@ L250:
 	sw $a0, 4($fp)
 	sw $a1, -4($fp)
 	sw $ra, -28($fp)
-L1055:
-	lw $t1, 4($a2)
-	lw $t0, 4($a3)
-	ble $t1, $t0, L263
-	j L264
-L264:
-	lw $t0, 4($a3)
-L265:
-	lw $t2, 4($a2)
-	lw $t1, 4($a3)
-	ble $t2, $t1, L266
-	j L267
-L267:
-	lw $t1, 4($a2)
-L268:
-	sw $t1, -8($fp)
-	lw $t1, 0($a2)
-	sw $t1, -12($fp)
-	li $t1, 1
-	sw $t1, -16($fp)
-	addi $t0, $t0, 1
-	sw $t0, -20($fp)
-	li $t1, 1
-	lw $t0, -8($fp)
-	sub $t1, $t0, $t1
-	lw $t0, -20($fp)
-	ble $t0, $t1, L273
-	j L269
-L269:
-	lw $v0, -16($fp)
-	j L1054
-L263:
-	lw $t0, 4($a2)
-	j L265
-L266:
-	lw $t1, 4($a3)
-	j L268
-L273:
-	lw $t0, 4($fp)
-	lw $t0, 4($t0)
-	sw $t0, -24($fp)
-	li $a0, 8
-	jal tig_allocRecord
-	move $a2, $v0
-	lw $t0, -12($fp)
-	sw $t0, 0($a2)
-	lw $t0, -20($fp)
-	sw $t0, 4($a2)
-	lw $a0, -24($fp)
-	lw $a1, -4($fp)
-	jal L28
-	lw $t0, 4($fp)
-	lw $t0, 4($t0)
-	lw $t0, -36($t0)
-	bne $v0, $t0, L270
-	j L271
-L271:
-	lw $t0, -20($fp)
-	addi $t0, $t0, 1
-	sw $t0, -20($fp)
-	li $t1, 1
-	lw $t0, -8($fp)
-	sub $t1, $t0, $t1
-	lw $t0, -20($fp)
-	ble $t0, $t1, L273
-	j L1057
-L1057:
-	j L269
-L270:
-	li $t0, 0
-	sw $t0, -16($fp)
-	j L269
-L1056:
-	j L271
-L1054:
-	lw $ra, -28($fp)
-	
-	addi $sp, $sp, 40
-	lw $fp, 0($sp)
-	addi $sp, $sp, 20
-	jr $ra
-
-
-
-
-L249:
-	addi $sp, $sp, -20
-	sw $fp, 0($sp)
-	move $fp, $sp
-	addi $sp, $sp, -40
-	sw $a0, 4($fp)
-	sw $a1, -4($fp)
-	sw $ra, -28($fp)
-L1059:
+L1132:
 	lw $t1, 0($a2)
 	lw $t0, 0($a3)
-	ble $t1, $t0, L252
-	j L253
-L253:
-	lw $t0, 0($a3)
+	ble $t1, $t0, L253
+	j L254
 L254:
+	lw $t0, 0($a3)
+L255:
 	lw $t2, 0($a2)
 	lw $t1, 0($a3)
-	ble $t2, $t1, L255
-	j L256
-L256:
-	lw $t1, 0($a2)
+	ble $t2, $t1, L256
+	j L257
 L257:
+	lw $t1, 0($a2)
+L258:
 	sw $t1, -8($fp)
 	lw $t1, 4($a2)
 	sw $t1, -12($fp)
@@ -5192,18 +5447,18 @@ L257:
 	lw $t0, -8($fp)
 	sub $t1, $t0, $t1
 	lw $t0, -20($fp)
-	ble $t0, $t1, L262
-	j L258
-L258:
+	ble $t0, $t1, L263
+	j L259
+L259:
 	lw $v0, -16($fp)
-	j L1058
-L252:
+	j L1131
+L253:
 	lw $t0, 0($a2)
-	j L254
-L255:
+	j L255
+L256:
 	lw $t1, 0($a3)
-	j L257
-L262:
+	j L258
+L263:
 	lw $t0, 4($fp)
 	lw $t0, 4($t0)
 	sw $t0, -24($fp)
@@ -5216,13 +5471,13 @@ L262:
 	sw $t0, 4($a2)
 	lw $a0, -24($fp)
 	lw $a1, -4($fp)
-	jal L28
+	jal L29
 	lw $t0, 4($fp)
 	lw $t0, 4($t0)
 	lw $t0, -36($t0)
-	bne $v0, $t0, L259
-	j L260
-L260:
+	bne $v0, $t0, L260
+	j L261
+L261:
 	lw $t0, -20($fp)
 	addi $t0, $t0, 1
 	sw $t0, -20($fp)
@@ -5230,17 +5485,17 @@ L260:
 	lw $t0, -8($fp)
 	sub $t1, $t0, $t1
 	lw $t0, -20($fp)
-	ble $t0, $t1, L262
-	j L1061
-L1061:
-	j L258
-L259:
+	ble $t0, $t1, L263
+	j L1134
+L1134:
+	j L259
+L260:
 	li $t0, 0
 	sw $t0, -16($fp)
-	j L258
-L1060:
-	j L260
-L1058:
+	j L259
+L1133:
+	j L261
+L1131:
 	lw $ra, -28($fp)
 	
 	addi $sp, $sp, 40
@@ -5260,7 +5515,7 @@ L13:
 	sw $a1, -4($fp)
 	sw $a2, -8($fp)
 	sw $ra, -16($fp)
-L1063:
+L1136:
 	lw $a0, 4($fp)
 	lw $t0, -4($fp)
 	lw $t1, 0($t0)
@@ -5278,29 +5533,29 @@ L1063:
 	jal L0
 	li $t0, 1
 	lw $t1, -12($fp)
-	beq $t1, $v0, L242
-	j L243
-L243:
+	beq $t1, $v0, L243
+	j L244
+L244:
 	li $t0, 0
-L242:
+L243:
 	li $t1, 0
-	bne $t1, $t0, L246
-	j L247
-L247:
-	li $v0, 0
+	bne $t1, $t0, L247
+	j L248
 L248:
-	j L1062
-L246:
+	li $v0, 0
+L249:
+	j L1135
+L247:
 	li $v0, 1
 	li $t1, 0
 	lw $t0, -12($fp)
-	bne $t0, $t1, L244
-	j L245
-L245:
+	bne $t0, $t1, L245
+	j L246
+L246:
 	li $v0, 0
-L244:
-	j L248
-L1062:
+L245:
+	j L249
+L1135:
 	lw $ra, -16($fp)
 	
 	addi $sp, $sp, 24
@@ -5316,18 +5571,18 @@ L12:
 	sw $fp, 0($sp)
 	move $fp, $sp
 	sw $a0, 4($fp)
-L1065:
+L1138:
 	li $v0, 1
 	lw $t1, 0($a1)
 	lw $t0, 4($fp)
 	lw $t0, -8($t0)
-	beq $t1, $t0, L240
-	j L241
-L241:
+	beq $t1, $t0, L241
+	j L242
+L242:
 	li $v0, 0
-L240:
-	j L1064
-L1064:
+L241:
+	j L1137
+L1137:
 	
 	lw $fp, 0($sp)
 	addi $sp, $sp, 12
@@ -5341,18 +5596,18 @@ L11:
 	sw $fp, 0($sp)
 	move $fp, $sp
 	sw $a0, 4($fp)
-L1067:
+L1140:
 	li $v0, 1
 	lw $t1, 0($a1)
 	lw $t0, 4($fp)
 	lw $t0, -4($t0)
-	beq $t1, $t0, L238
-	j L239
-L239:
+	beq $t1, $t0, L239
+	j L240
+L240:
 	li $v0, 0
-L238:
-	j L1066
-L1066:
+L239:
+	j L1139
+L1139:
 	
 	lw $fp, 0($sp)
 	addi $sp, $sp, 12
@@ -5366,18 +5621,18 @@ L10:
 	sw $fp, 0($sp)
 	move $fp, $sp
 	sw $a0, 4($fp)
-L1069:
+L1142:
 	li $v0, 1
 	lw $t1, 4($a1)
 	lw $t0, 4($fp)
 	lw $t0, -32($t0)
-	beq $t1, $t0, L236
-	j L237
-L237:
+	beq $t1, $t0, L237
+	j L238
+L238:
 	li $v0, 0
-L236:
-	j L1068
-L1068:
+L237:
+	j L1141
+L1141:
 	
 	lw $fp, 0($sp)
 	addi $sp, $sp, 12
@@ -5391,18 +5646,18 @@ L9:
 	sw $fp, 0($sp)
 	move $fp, $sp
 	sw $a0, 4($fp)
-L1071:
+L1144:
 	li $v0, 1
 	lw $t1, 4($a1)
 	lw $t0, 4($fp)
 	lw $t0, -28($t0)
-	beq $t1, $t0, L234
-	j L235
-L235:
+	beq $t1, $t0, L235
+	j L236
+L236:
 	li $v0, 0
-L234:
-	j L1070
-L1070:
+L235:
+	j L1143
+L1143:
 	
 	lw $fp, 0($sp)
 	addi $sp, $sp, 12
@@ -5416,18 +5671,18 @@ L8:
 	sw $fp, 0($sp)
 	move $fp, $sp
 	sw $a0, 4($fp)
-L1073:
+L1146:
 	li $v0, 1
 	lw $t1, 4($a1)
 	lw $t0, 4($fp)
 	lw $t0, -12($t0)
-	beq $t1, $t0, L232
-	j L233
-L233:
+	beq $t1, $t0, L233
+	j L234
+L234:
 	li $v0, 0
-L232:
-	j L1072
-L1072:
+L233:
+	j L1145
+L1145:
 	
 	lw $fp, 0($sp)
 	addi $sp, $sp, 12
@@ -5441,18 +5696,18 @@ L7:
 	sw $fp, 0($sp)
 	move $fp, $sp
 	sw $a0, 4($fp)
-L1075:
+L1148:
 	li $v0, 1
 	lw $t1, 4($a1)
 	lw $t0, 4($fp)
 	lw $t0, -24($t0)
-	beq $t1, $t0, L230
-	j L231
-L231:
+	beq $t1, $t0, L231
+	j L232
+L232:
 	li $v0, 0
-L230:
-	j L1074
-L1074:
+L231:
+	j L1147
+L1147:
 	
 	lw $fp, 0($sp)
 	addi $sp, $sp, 12
@@ -5466,18 +5721,18 @@ L6:
 	sw $fp, 0($sp)
 	move $fp, $sp
 	sw $a0, 4($fp)
-L1077:
+L1150:
 	li $v0, 1
 	lw $t1, 4($a1)
 	lw $t0, 4($fp)
 	lw $t0, -16($t0)
-	beq $t1, $t0, L228
-	j L229
-L229:
+	beq $t1, $t0, L229
+	j L230
+L230:
 	li $v0, 0
-L228:
-	j L1076
-L1076:
+L229:
+	j L1149
+L1149:
 	
 	lw $fp, 0($sp)
 	addi $sp, $sp, 12
@@ -5491,18 +5746,18 @@ L5:
 	sw $fp, 0($sp)
 	move $fp, $sp
 	sw $a0, 4($fp)
-L1079:
+L1152:
 	li $v0, 1
 	lw $t1, 4($a1)
 	lw $t0, 4($fp)
 	lw $t0, -20($t0)
-	beq $t1, $t0, L226
-	j L227
-L227:
+	beq $t1, $t0, L227
+	j L228
+L228:
 	li $v0, 0
-L226:
-	j L1078
-L1078:
+L227:
+	j L1151
+L1151:
 	
 	lw $fp, 0($sp)
 	addi $sp, $sp, 12
@@ -5518,41 +5773,41 @@ L4:
 	addi $sp, $sp, -24
 	sw $a0, 4($fp)
 	sw $ra, -16($fp)
-L1081:
+L1154:
 	lw $t0, 0($a1)
 	sw $t0, -4($fp)
 	li $t0, 7
 	sw $t0, -8($fp)
 	li $t1, 0
 	lw $t0, -8($fp)
-	bge $t0, $t1, L223
-	j L213
-L213:
-	la $a0, L224
-	jal tig_print
+	bge $t0, $t1, L224
+	j L214
+L214:
 	la $a0, L225
 	jal tig_print
-	j L1080
-L223:
-	la $a0, L214
+	la $a0, L226
 	jal tig_print
+	j L1153
+L224:
 	la $a0, L215
+	jal tig_print
+	la $a0, L216
 	jal tig_print
 	lw $t0, -8($fp)
 	addi $a0, $t0, 49
 	jal tig_chr
 	move $a0, $v0
 	jal tig_print
-	la $a0, L216
+	la $a0, L217
 	jal tig_print
 	li $t0, 0
 	sw $t0, -12($fp)
 	li $t1, 7
 	lw $t0, -12($fp)
-	ble $t0, $t1, L220
-	j L217
-L217:
-	la $a0, L221
+	ble $t0, $t1, L221
+	j L218
+L218:
+	la $a0, L222
 	jal tig_print
 	li $t1, 1
 	lw $t0, -8($fp)
@@ -5560,11 +5815,11 @@ L217:
 	sw $t0, -8($fp)
 	li $t1, 0
 	lw $t0, -8($fp)
-	bge $t0, $t1, L223
-	j L1082
-L1082:
-	j L213
-L220:
+	bge $t0, $t1, L224
+	j L1155
+L1155:
+	j L214
+L221:
 	li $t1, 4
 	lw $t0, -8($fp)
 	mul $t0, $t0, $t1
@@ -5579,19 +5834,19 @@ L220:
 	add $t0, $t2, $t0
 	lw $a1, 0($t0)
 	move $a0, $fp
-	jal L163
-	la $a0, L218
+	jal L164
+	la $a0, L219
 	jal tig_print
 	lw $t0, -12($fp)
 	addi $t0, $t0, 1
 	sw $t0, -12($fp)
 	li $t1, 7
 	lw $t0, -12($fp)
-	ble $t0, $t1, L220
-	j L1083
-L1083:
-	j L217
-L1080:
+	ble $t0, $t1, L221
+	j L1156
+L1156:
+	j L218
+L1153:
 	lw $ra, -16($fp)
 	
 	addi $sp, $sp, 24
@@ -5602,150 +5857,150 @@ L1080:
 
 
 
-L163:
+L164:
 	addi $sp, $sp, -12
 	sw $fp, 0($sp)
 	move $fp, $sp
 	addi $sp, $sp, -8
 	sw $a0, 4($fp)
 	sw $ra, -4($fp)
-L1085:
+L1158:
 	lw $t0, 4($fp)
 	lw $t0, 4($t0)
 	lw $t0, -40($t0)
-	beq $a1, $t0, L210
-	j L211
-L211:
+	beq $a1, $t0, L211
+	j L212
+L212:
 	lw $t0, 4($fp)
 	lw $t0, 4($t0)
 	lw $t0, -44($t0)
-	beq $a1, $t0, L207
-	j L208
-L208:
+	beq $a1, $t0, L208
+	j L209
+L209:
 	lw $t0, 4($fp)
 	lw $t0, 4($t0)
 	lw $t0, -48($t0)
-	beq $a1, $t0, L204
-	j L205
-L205:
+	beq $a1, $t0, L205
+	j L206
+L206:
 	lw $t0, 4($fp)
 	lw $t0, 4($t0)
 	lw $t0, -52($t0)
-	beq $a1, $t0, L201
-	j L202
-L202:
+	beq $a1, $t0, L202
+	j L203
+L203:
 	lw $t0, 4($fp)
 	lw $t0, 4($t0)
 	lw $t0, -56($t0)
-	beq $a1, $t0, L198
-	j L199
-L199:
+	beq $a1, $t0, L199
+	j L200
+L200:
 	lw $t0, 4($fp)
 	lw $t0, 4($t0)
 	lw $t0, -60($t0)
-	beq $a1, $t0, L195
-	j L196
-L196:
+	beq $a1, $t0, L196
+	j L197
+L197:
 	lw $t0, 4($fp)
 	lw $t0, 4($t0)
 	lw $t0, -64($t0)
-	beq $a1, $t0, L192
-	j L193
-L193:
+	beq $a1, $t0, L193
+	j L194
+L194:
 	lw $t0, 4($fp)
 	lw $t0, 4($t0)
 	lw $t0, -68($t0)
-	beq $a1, $t0, L189
-	j L190
-L190:
+	beq $a1, $t0, L190
+	j L191
+L191:
 	lw $t0, 4($fp)
 	lw $t0, 4($t0)
 	lw $t0, -72($t0)
-	beq $a1, $t0, L186
-	j L187
-L187:
+	beq $a1, $t0, L187
+	j L188
+L188:
 	lw $t0, 4($fp)
 	lw $t0, 4($t0)
 	lw $t0, -76($t0)
-	beq $a1, $t0, L183
-	j L184
-L184:
+	beq $a1, $t0, L184
+	j L185
+L185:
 	lw $t0, 4($fp)
 	lw $t0, 4($t0)
 	lw $t0, -80($t0)
-	beq $a1, $t0, L180
-	j L181
-L181:
+	beq $a1, $t0, L181
+	j L182
+L182:
 	lw $t0, 4($fp)
 	lw $t0, 4($t0)
 	lw $t0, -84($t0)
-	beq $a1, $t0, L177
-	j L178
+	beq $a1, $t0, L178
+	j L179
+L179:
+	la $a0, L177
+	jal tig_print
+L180:
+L183:
+L186:
+L189:
+L192:
+L195:
+L198:
+L201:
+L204:
+L207:
+L210:
+L213:
+	j L1157
+L211:
+	la $a0, L165
+	jal tig_print
+	j L213
+L208:
+	la $a0, L166
+	jal tig_print
+	j L210
+L205:
+	la $a0, L167
+	jal tig_print
+	j L207
+L202:
+	la $a0, L168
+	jal tig_print
+	j L204
+L199:
+	la $a0, L169
+	jal tig_print
+	j L201
+L196:
+	la $a0, L170
+	jal tig_print
+	j L198
+L193:
+	la $a0, L171
+	jal tig_print
+	j L195
+L190:
+	la $a0, L172
+	jal tig_print
+	j L192
+L187:
+	la $a0, L173
+	jal tig_print
+	j L189
+L184:
+	la $a0, L174
+	jal tig_print
+	j L186
+L181:
+	la $a0, L175
+	jal tig_print
+	j L183
 L178:
 	la $a0, L176
 	jal tig_print
-L179:
-L182:
-L185:
-L188:
-L191:
-L194:
-L197:
-L200:
-L203:
-L206:
-L209:
-L212:
-	j L1084
-L210:
-	la $a0, L164
-	jal tig_print
-	j L212
-L207:
-	la $a0, L165
-	jal tig_print
-	j L209
-L204:
-	la $a0, L166
-	jal tig_print
-	j L206
-L201:
-	la $a0, L167
-	jal tig_print
-	j L203
-L198:
-	la $a0, L168
-	jal tig_print
-	j L200
-L195:
-	la $a0, L169
-	jal tig_print
-	j L197
-L192:
-	la $a0, L170
-	jal tig_print
-	j L194
-L189:
-	la $a0, L171
-	jal tig_print
-	j L191
-L186:
-	la $a0, L172
-	jal tig_print
-	j L188
-L183:
-	la $a0, L173
-	jal tig_print
-	j L185
-L180:
-	la $a0, L174
-	jal tig_print
-	j L182
-L177:
-	la $a0, L175
-	jal tig_print
-	j L179
-L1084:
+	j L180
+L1157:
 	lw $ra, -4($fp)
 	
 	addi $sp, $sp, 8
@@ -5766,7 +6021,7 @@ L3:
 	sw $a2, -8($fp)
 	sw $a3, -12($fp)
 	sw $ra, -16($fp)
-L1087:
+L1160:
 	lw $a0, 4($fp)
 	lw $t0, -8($fp)
 	lw $t1, 0($t0)
@@ -5778,104 +6033,104 @@ L1087:
 	lw $t1, 4($t0)
 	lw $t0, 4($fp)
 	lw $t0, -32($t0)
-	beq $t1, $t0, L134
-	j L135
-L135:
-	li $t0, 0
+	beq $t1, $t0, L135
+	j L136
 L136:
-	li $t1, 0
-	bne $t1, $t0, L139
-	j L140
-L140:
 	li $t0, 0
+L137:
+	li $t1, 0
+	bne $t1, $t0, L140
+	j L141
 L141:
+	li $t0, 0
+L142:
 	lw $t1, -4($fp)
 	lw $t2, 4($t1)
 	lw $t1, 4($fp)
 	lw $t1, -32($t1)
-	beq $t2, $t1, L144
-	j L145
-L145:
-	li $t1, 0
+	beq $t2, $t1, L145
+	j L146
 L146:
-	li $t2, 0
-	bne $t2, $t1, L149
-	j L150
-L150:
 	li $t1, 0
+L147:
+	li $t2, 0
+	bne $t2, $t1, L150
+	j L151
 L151:
-	li $t2, 0
-	bne $t2, $t1, L160
-	j L161
-L161:
 	li $t1, 0
-	bne $t1, $t0, L157
-	j L158
-L158:
-	la $a0, L154
-	jal tig_print
-	move $a0, $fp
-	lw $a1, -8($fp)
-	jal L129
+L152:
+	li $t2, 0
+	bne $t2, $t1, L161
+	j L162
+L162:
+	li $t1, 0
+	bne $t1, $t0, L158
+	j L159
+L159:
 	la $a0, L155
 	jal tig_print
 	move $a0, $fp
-	lw $a1, -12($fp)
-	jal L129
+	lw $a1, -8($fp)
+	jal L130
 	la $a0, L156
 	jal tig_print
-L159:
-L162:
-	j L1086
-L134:
+	move $a0, $fp
+	lw $a1, -12($fp)
+	jal L130
+	la $a0, L157
+	jal tig_print
+L160:
+L163:
+	j L1159
+L135:
 	li $t0, 1
 	li $t1, 2
-	beq $v0, $t1, L132
-	j L133
-L133:
+	beq $v0, $t1, L133
+	j L134
+L134:
 	li $t0, 0
-L132:
-	j L136
-L139:
+L133:
+	j L137
+L140:
 	li $t0, 1
 	lw $t1, -12($fp)
 	lw $t2, 0($t1)
 	li $t1, 2
-	beq $t2, $t1, L137
-	j L138
-L138:
+	beq $t2, $t1, L138
+	j L139
+L139:
 	li $t0, 0
-L137:
-	j L141
-L144:
+L138:
+	j L142
+L145:
 	li $t1, 1
 	li $t2, 2
-	beq $v0, $t2, L142
-	j L143
-L143:
+	beq $v0, $t2, L143
+	j L144
+L144:
 	li $t1, 0
-L142:
-	j L146
-L149:
+L143:
+	j L147
+L150:
 	li $t1, 1
 	lw $t2, -12($fp)
 	lw $t3, 0($t2)
 	li $t2, 6
-	beq $t3, $t2, L147
-	j L148
-L148:
+	beq $t3, $t2, L148
+	j L149
+L149:
 	li $t1, 0
-L147:
-	j L151
-L160:
-	la $a0, L152
-	jal tig_print
-	j L162
-L157:
+L148:
+	j L152
+L161:
 	la $a0, L153
 	jal tig_print
-	j L159
-L1086:
+	j L163
+L158:
+	la $a0, L154
+	jal tig_print
+	j L160
+L1159:
 	lw $ra, -16($fp)
 	
 	addi $sp, $sp, 24
@@ -5886,7 +6141,7 @@ L1086:
 
 
 
-L129:
+L130:
 	addi $sp, $sp, -12
 	sw $fp, 0($sp)
 	move $fp, $sp
@@ -5894,26 +6149,48 @@ L129:
 	sw $a0, 4($fp)
 	sw $a1, -4($fp)
 	sw $ra, -12($fp)
-L1089:
+L1162:
 	lw $t0, -4($fp)
 	lw $a1, 0($t0)
 	move $a0, $fp
-	jal L130
+	jal L131
 	sw $v0, -8($fp)
 	lw $t0, -4($fp)
 	lw $a1, 4($t0)
 	move $a0, $fp
-	jal L131
+	jal L132
 	move $a1, $v0
 	lw $a0, -8($fp)
 	jal tig_concat
 	move $a0, $v0
 	jal tig_print
-	j L1088
-L1088:
+	j L1161
+L1161:
 	lw $ra, -12($fp)
 	
 	addi $sp, $sp, 20
+	lw $fp, 0($sp)
+	addi $sp, $sp, 12
+	jr $ra
+
+
+
+
+L132:
+	addi $sp, $sp, -12
+	sw $fp, 0($sp)
+	move $fp, $sp
+	addi $sp, $sp, -8
+	sw $a0, 4($fp)
+	sw $ra, -4($fp)
+L1164:
+	addi $a0, $a1, 49
+	jal tig_chr
+	j L1163
+L1163:
+	lw $ra, -4($fp)
+	
+	addi $sp, $sp, 8
 	lw $fp, 0($sp)
 	addi $sp, $sp, 12
 	jr $ra
@@ -5928,33 +6205,11 @@ L131:
 	addi $sp, $sp, -8
 	sw $a0, 4($fp)
 	sw $ra, -4($fp)
-L1091:
-	addi $a0, $a1, 49
-	jal tig_chr
-	j L1090
-L1090:
-	lw $ra, -4($fp)
-	
-	addi $sp, $sp, 8
-	lw $fp, 0($sp)
-	addi $sp, $sp, 12
-	jr $ra
-
-
-
-
-L130:
-	addi $sp, $sp, -12
-	sw $fp, 0($sp)
-	move $fp, $sp
-	addi $sp, $sp, -8
-	sw $a0, 4($fp)
-	sw $ra, -4($fp)
-L1093:
+L1166:
 	addi $a0, $a1, 97
 	jal tig_chr
-	j L1092
-L1092:
+	j L1165
+L1165:
 	lw $ra, -4($fp)
 	
 	addi $sp, $sp, 8
@@ -5972,12 +6227,12 @@ L2:
 	addi $sp, $sp, -12
 	sw $a0, 4($fp)
 	sw $ra, -8($fp)
-L1095:
+L1168:
 	li $a0, 40
 	jal tig_allocRecord
 	sw $v0, -4($fp)
 	move $a0, $fp
-	jal L47
+	jal L48
 	lw $t0, -4($fp)
 	sw $v0, 0($t0)
 	lw $t0, 4($fp)
@@ -6012,8 +6267,8 @@ L1095:
 	lw $t0, -4($fp)
 	sw $t1, 36($t0)
 	lw $v0, -4($fp)
-	j L1094
-L1094:
+	j L1167
+L1167:
 	lw $ra, -8($fp)
 	
 	addi $sp, $sp, 12
@@ -6024,14 +6279,14 @@ L1094:
 
 
 
-L47:
+L48:
 	addi $sp, $sp, -8
 	sw $fp, 0($sp)
 	move $fp, $sp
 	addi $sp, $sp, -44
 	sw $a0, 4($fp)
 	sw $ra, -36($fp)
-L1097:
+L1170:
 	li $a0, 8
 	lw $t0, 4($fp)
 	lw $t0, 4($t0)
@@ -6134,134 +6389,134 @@ L1097:
 	sw $t0, 0($t1)
 	li $t0, 0
 	li $t1, 7
-	ble $t0, $t1, L128
-	j L48
-L48:
-	j L1096
-L128:
-	li $t1, 0
-	li $t2, 7
-	ble $t1, $t2, L126
+	ble $t0, $t1, L129
 	j L49
 L49:
+	j L1169
+L129:
+	li $t1, 0
+	li $t2, 7
+	ble $t1, $t2, L127
+	j L50
+L50:
 	addi $t0, $t0, 1
 	li $t1, 7
-	ble $t0, $t1, L128
-	j L1098
-L1098:
-	j L48
-L126:
+	ble $t0, $t1, L129
+	j L1171
+L1171:
+	j L49
+L127:
 	li $t2, 1
 	li $t3, 0
-	beq $t0, $t3, L50
-	j L51
-L51:
+	beq $t0, $t3, L51
+	j L52
+L52:
 	li $t2, 0
-L50:
+L51:
 	li $t3, 0
-	bne $t3, $t2, L122
-	j L123
-L123:
+	bne $t3, $t2, L123
+	j L124
+L124:
 	li $t2, 1
 	li $t3, 7
-	beq $t0, $t3, L85
-	j L86
+	beq $t0, $t3, L86
+	j L87
+L87:
+	li $t2, 0
 L86:
-	li $t2, 0
-L85:
 	li $t3, 0
-	bne $t3, $t2, L120
-	j L121
-L121:
-	li $t2, 0
-L124:
-	addi $t1, $t1, 1
-	li $t2, 7
-	ble $t1, $t2, L126
-	j L1099
-L1099:
-	j L49
+	bne $t3, $t2, L121
+	j L122
 L122:
 	li $t2, 0
-	beq $t1, $t2, L54
-	j L55
-L55:
+L125:
+	addi $t1, $t1, 1
+	li $t2, 7
+	ble $t1, $t2, L127
+	j L1172
+L1172:
+	j L50
+L123:
+	li $t2, 0
+	beq $t1, $t2, L55
+	j L56
+L56:
 	li $t2, 1
 	li $t3, 7
-	beq $t1, $t3, L52
-	j L53
-L53:
+	beq $t1, $t3, L53
+	j L54
+L54:
 	li $t2, 0
-L52:
-L56:
+L53:
+L57:
 	li $t3, 0
-	bne $t3, $t2, L82
-	j L83
-L83:
+	bne $t3, $t2, L83
+	j L84
+L84:
 	li $t2, 1
-	beq $t1, $t2, L59
-	j L60
-L60:
+	beq $t1, $t2, L60
+	j L61
+L61:
 	li $t2, 1
 	li $t3, 6
-	beq $t1, $t3, L57
-	j L58
-L58:
+	beq $t1, $t3, L58
+	j L59
+L59:
 	li $t2, 0
-L57:
-L61:
+L58:
+L62:
 	li $t3, 0
-	bne $t3, $t2, L79
-	j L80
-L80:
+	bne $t3, $t2, L80
+	j L81
+L81:
 	li $t2, 2
-	beq $t1, $t2, L64
-	j L65
-L65:
+	beq $t1, $t2, L65
+	j L66
+L66:
 	li $t2, 1
 	li $t3, 5
-	beq $t1, $t3, L62
-	j L63
+	beq $t1, $t3, L63
+	j L64
+L64:
+	li $t2, 0
 L63:
-	li $t2, 0
-L62:
-L66:
-	li $t3, 0
-	bne $t3, $t2, L76
-	j L77
-L77:
-	li $t2, 1
-	li $t3, 3
-	beq $t1, $t3, L67
-	j L68
-L68:
-	li $t2, 0
 L67:
 	li $t3, 0
-	bne $t3, $t2, L73
-	j L74
-L74:
+	bne $t3, $t2, L77
+	j L78
+L78:
+	li $t2, 1
+	li $t3, 3
+	beq $t1, $t3, L68
+	j L69
+L69:
+	li $t2, 0
+L68:
+	li $t3, 0
+	bne $t3, $t2, L74
+	j L75
+L75:
 	li $t2, 1
 	li $t3, 4
-	beq $t1, $t3, L69
-	j L70
+	beq $t1, $t3, L70
+	j L71
+L71:
+	li $t2, 0
 L70:
-	li $t2, 0
-L69:
 	li $t3, 0
-	bne $t3, $t2, L71
-	j L72
-L72:
+	bne $t3, $t2, L72
+	j L73
+L73:
 	li $t2, 0
-L75:
-L78:
-L81:
-L84:
-	j L124
-L54:
-	li $t2, 1
-	j L56
+L76:
+L79:
 L82:
+L85:
+	j L125
+L55:
+	li $t2, 1
+	j L57
+L83:
 	lw $t2, 4($fp)
 	lw $t2, 4($t2)
 	lw $t4, -44($t2)
@@ -6276,11 +6531,11 @@ L82:
 	add $t2, $t3, $t2
 	sw $t4, 0($t2)
 	li $t2, 0
-	j L84
-L59:
+	j L85
+L60:
 	li $t2, 1
-	j L61
-L79:
+	j L62
+L80:
 	lw $t2, 4($fp)
 	lw $t2, 4($t2)
 	lw $t4, -48($t2)
@@ -6295,11 +6550,11 @@ L79:
 	add $t2, $t3, $t2
 	sw $t4, 0($t2)
 	li $t2, 0
-	j L81
-L64:
+	j L82
+L65:
 	li $t2, 1
-	j L66
-L76:
+	j L67
+L77:
 	lw $t2, 4($fp)
 	lw $t2, 4($t2)
 	lw $t4, -52($t2)
@@ -6314,8 +6569,8 @@ L76:
 	add $t2, $t3, $t2
 	sw $t4, 0($t2)
 	li $t2, 0
-	j L78
-L73:
+	j L79
+L74:
 	lw $t2, 4($fp)
 	lw $t2, 4($t2)
 	lw $t4, -56($t2)
@@ -6330,8 +6585,8 @@ L73:
 	add $t2, $t3, $t2
 	sw $t4, 0($t2)
 	li $t2, 0
-	j L75
-L71:
+	j L76
+L72:
 	lw $t2, 4($fp)
 	lw $t2, 4($t2)
 	lw $t4, -60($t2)
@@ -6345,88 +6600,88 @@ L71:
 	addi $t2, $t2, 4
 	add $t2, $t3, $t2
 	sw $t4, 0($t2)
-	j L72
-L120:
+	j L73
+L121:
 	li $t2, 0
-	beq $t1, $t2, L89
-	j L90
-L90:
+	beq $t1, $t2, L90
+	j L91
+L91:
 	li $t2, 1
 	li $t3, 7
-	beq $t1, $t3, L87
-	j L88
-L88:
+	beq $t1, $t3, L88
+	j L89
+L89:
 	li $t2, 0
-L87:
-L91:
+L88:
+L92:
 	li $t3, 0
-	bne $t3, $t2, L117
-	j L118
-L118:
+	bne $t3, $t2, L118
+	j L119
+L119:
 	li $t2, 1
-	beq $t1, $t2, L94
-	j L95
-L95:
+	beq $t1, $t2, L95
+	j L96
+L96:
 	li $t2, 1
 	li $t3, 6
-	beq $t1, $t3, L92
-	j L93
-L93:
+	beq $t1, $t3, L93
+	j L94
+L94:
 	li $t2, 0
-L92:
-L96:
+L93:
+L97:
 	li $t3, 0
-	bne $t3, $t2, L114
-	j L115
-L115:
+	bne $t3, $t2, L115
+	j L116
+L116:
 	li $t2, 2
-	beq $t1, $t2, L99
-	j L100
-L100:
+	beq $t1, $t2, L100
+	j L101
+L101:
 	li $t2, 1
 	li $t3, 5
-	beq $t1, $t3, L97
-	j L98
+	beq $t1, $t3, L98
+	j L99
+L99:
+	li $t2, 0
 L98:
-	li $t2, 0
-L97:
-L101:
-	li $t3, 0
-	bne $t3, $t2, L111
-	j L112
-L112:
-	li $t2, 1
-	li $t3, 3
-	beq $t1, $t3, L102
-	j L103
-L103:
-	li $t2, 0
 L102:
 	li $t3, 0
-	bne $t3, $t2, L108
-	j L109
-L109:
+	bne $t3, $t2, L112
+	j L113
+L113:
+	li $t2, 1
+	li $t3, 3
+	beq $t1, $t3, L103
+	j L104
+L104:
+	li $t2, 0
+L103:
+	li $t3, 0
+	bne $t3, $t2, L109
+	j L110
+L110:
 	li $t2, 1
 	li $t3, 4
-	beq $t1, $t3, L104
-	j L105
+	beq $t1, $t3, L105
+	j L106
+L106:
+	li $t2, 0
 L105:
-	li $t2, 0
-L104:
 	li $t3, 0
-	bne $t3, $t2, L106
-	j L107
-L107:
+	bne $t3, $t2, L107
+	j L108
+L108:
 	li $t2, 0
-L110:
-L113:
-L116:
-L119:
-	j L121
-L89:
-	li $t2, 1
-	j L91
+L111:
+L114:
 L117:
+L120:
+	j L122
+L90:
+	li $t2, 1
+	j L92
+L118:
 	lw $t2, 4($fp)
 	lw $t2, 4($t2)
 	lw $t4, -68($t2)
@@ -6441,11 +6696,11 @@ L117:
 	add $t2, $t3, $t2
 	sw $t4, 0($t2)
 	li $t2, 0
-	j L119
-L94:
+	j L120
+L95:
 	li $t2, 1
-	j L96
-L114:
+	j L97
+L115:
 	lw $t2, 4($fp)
 	lw $t2, 4($t2)
 	lw $t4, -72($t2)
@@ -6460,11 +6715,11 @@ L114:
 	add $t2, $t3, $t2
 	sw $t4, 0($t2)
 	li $t2, 0
-	j L116
-L99:
+	j L117
+L100:
 	li $t2, 1
-	j L101
-L111:
+	j L102
+L112:
 	lw $t2, 4($fp)
 	lw $t2, 4($t2)
 	lw $t4, -76($t2)
@@ -6479,8 +6734,8 @@ L111:
 	add $t2, $t3, $t2
 	sw $t4, 0($t2)
 	li $t2, 0
-	j L113
-L108:
+	j L114
+L109:
 	lw $t2, 4($fp)
 	lw $t2, 4($t2)
 	lw $t4, -80($t2)
@@ -6495,8 +6750,8 @@ L108:
 	add $t2, $t3, $t2
 	sw $t4, 0($t2)
 	li $t2, 0
-	j L110
-L106:
+	j L111
+L107:
 	lw $t2, 4($fp)
 	lw $t2, 4($t2)
 	lw $t4, -84($t2)
@@ -6510,8 +6765,8 @@ L106:
 	addi $t2, $t2, 4
 	add $t2, $t3, $t2
 	sw $t4, 0($t2)
-	j L107
-L1096:
+	j L108
+L1169:
 	lw $ra, -36($fp)
 	
 	addi $sp, $sp, 44
@@ -6527,33 +6782,33 @@ L1:
 	sw $fp, 0($sp)
 	move $fp, $sp
 	sw $a0, 4($fp)
-L1101:
+L1174:
 	lw $t0, 0($a3)
-	beq $a1, $t0, L41
-	j L42
-L42:
-	li $t0, 0
+	beq $a1, $t0, L42
+	j L43
 L43:
+	li $t0, 0
+L44:
 	li $t1, 0
-	bne $t1, $t0, L44
-	j L45
-L45:
-	li $v0, 0
+	bne $t1, $t0, L45
+	j L46
 L46:
-	j L1100
-L41:
+	li $v0, 0
+L47:
+	j L1173
+L42:
 	li $t0, 1
 	lw $t1, 4($a3)
-	beq $a2, $t1, L39
-	j L40
-L40:
+	beq $a2, $t1, L40
+	j L41
+L41:
 	li $t0, 0
-L39:
-	j L43
-L44:
+L40:
+	j L44
+L45:
 	li $v0, 1
-	j L46
-L1100:
+	j L47
+L1173:
 	
 	lw $fp, 0($sp)
 	addi $sp, $sp, 20
@@ -6568,20 +6823,20 @@ L0:
 	move $fp, $sp
 	sw $a0, 4($fp)
 	move $v0, $a1
-L1103:
+L1176:
 	li $t0, 0
-	blt $v0, $t0, L36
-	j L37
-L37:
+	blt $v0, $t0, L37
+	j L38
 L38:
-	j L1102
-L36:
+L39:
+	j L1175
+L37:
 	li $t1, 0
 	li $t0, 1
 	sub $t0, $t1, $t0
 	mul $v0, $v0, $t0
-	j L38
-L1102:
+	j L39
+L1175:
 	
 	lw $fp, 0($sp)
 	addi $sp, $sp, 12
