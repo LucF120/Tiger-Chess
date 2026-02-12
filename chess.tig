@@ -31,6 +31,10 @@ let
                  turn: int,
 		 whiteKingLoc: coordinate,
                  blackKingLoc: coordinate,
+		 whiteCanShortCastle: bool,
+		 blackCanShortCastle: bool,
+		 whiteCanLongCastle: bool,
+		 blackCanLongCastle: bool,
 		 enPassantable: coordinate,
 		 fiftyMoveCounter: int}
 
@@ -156,6 +160,7 @@ let
 	    - White pawns on the 2nd rank, black pawns on the 7th rank
 	    - Rank 1 contains white: rook, knight, bishop, queen, king, bishop, knight, rook
 	    - Rank 8 contains black: rook, knight, bishop, queen, king, bishop, knight, rook
+	    - White and black can still castle short or long 
 	 */ 
 	 function initBoard () : board =
 		 /* Need to make the rows here so they dont point to same object */
@@ -204,6 +209,10 @@ let
 	            turn=WHITE,
 		    whiteKingLoc=E1,
 		    blackKingLoc=E8,
+		    whiteCanShortCastle=1,
+		    blackCanShortCastle=1,
+		    whiteCanLongCastle=1,
+		    blackCanLongCastle=1,
 		    enPassantable=NO_COORD,
 		    fiftyMoveCounter=0}
 	   end 
@@ -538,18 +547,92 @@ let
 		       setPiece(b, fromC, EMPTY);
 		       setPiece(b, toC, p);
 		       setPiece(b, captureC, EMPTY)
-                   end 
-					 
+                   end
+
+                function isCastling() : bool =
+		    let var horizontal := fromC.file - toC.file
+		        var isKing := p.piece = KING
+	            in
+		        isKing & abs(horizontal) = 2
+		    end 			
+			
+                function moveCastling() =
+		    let var horizontal := fromC.file - toC.file 
+		    in
+		        /* White king long castling case */ 
+			if p = WHITE_KING & horizontal = -2
+			   then (setPiece(b, C1, WHITE_KING);
+			         setPiece(b, D1, WHITE_ROOK);
+				 setPiece(b, A1, EMPTY);
+				 setPiece(b, E1, EMPTY))
+
+                        /* White king short castling */ 
+			else if p = WHITE_KING & horizontal = 2
+			   then (setPiece(b, G1, WHITE_KING);
+			         setPiece(b, F1, WHITE_ROOK);
+				 setPiece(b, H1, EMPTY);
+				 setPiece(b, E1, EMPTY))
+
+                        /* Black king long castling case */ 
+			else if p = BLACK_KING & horizontal = -2
+			   then (setPiece(b, C8, BLACK_KING);
+			         setPiece(b, D8, BLACK_ROOK);
+				 setPiece(b, A8, EMPTY);
+				 setPiece(b, E8, EMPTY))
+
+                        /* Black king short castling */ 
+			else if p = BLACK_KING & horizontal = 2
+			   then (setPiece(b, G8, BLACK_KING);
+			         setPiece(b, F8, BLACK_ROOK);
+				 setPiece(b, H8, EMPTY);
+				 setPiece(b, E8, EMPTY))
+                     end 			  
+		    
+                /* The king can never castle short or long IF:
+		     - The king moved (either normally or by castling)
+		   The king can never castle short IF:
+		     - The h file rook moved 
+		   The king can never castle long IF:
+		     - The a file rook moved 
+		 */
+                function updateCanCastle() =
+		    let var color := p.color
+		        var kingMoved := p.piece = KING
+			var rookMoved := p.piece = ROOK
+			var canStillCastle := g.whiteCanShortCastle | g.whiteCanLongCastle
+			                    | g.blackCanShortCastle | g.blackCanLongCastle 
+	            in
+		        /* Only need to check this if any of the canStillCastle
+			   bools are true */ 
+		        if canStillCastle then 
+			    (if color = WHITE
+			       then (if kingMoved then (g.whiteCanShortCastle := 0;
+							g.whiteCanLongCastle := 0)
+				     else if rookMoved & fromC = A1
+					 then g.whiteCanLongCastle := 0
+				     else if rookMoved & fromC = H1
+					 then g.whiteCanShortCastle := 0);
+			    if color = BLACK
+			       then (if kingMoved then (g.blackCanShortCastle := 0;
+							g.blackCanLongCastle := 0)
+				     else if rookMoved & fromC = A8
+					 then g.blackCanLongCastle := 0
+				     else if rookMoved & fromC = H8
+					 then g.blackCanShortCastle := 0))
+                     end 				  
 		                                         
 	   in 
                if legalMove(g, fromC, toC)
 	           then (if isEnPassant()
 			    then moveEnPassant()
-			    else 
-                            	 (setPiece(b, toC, p);
-		         	  setPiece(b, fromC, EMPTY));
+			 else if isCastling()
+			    then moveCastling()
+			 else
+			    (setPiece(b, toC, p);
+		             setPiece(b, fromC, EMPTY));
 		         
 			 updateEnPassantable();
+			 updateCanCastle(); 
 			 printMove(fromC, toC);
 			 printBoard(g))			
 
@@ -579,7 +662,23 @@ in
 	 move(g, H2, H4);
 	 move(g, H4, H5);
 	 move(g, G7, G5);
-	 move(g, H5, G6)
+	 move(g, H5, G6);
+
+         /* Reset
+	 ***************/
+	 g := initGame();
+
+         /*  Try illegal en passants 
+	 **************************/
+	 move(g, E2, E4);
+	 move(g, E4, F5);
+	 move(g, F7, F5);
+	 move(g, F5, F4);
+	 move(g, E4, F5);
+
+         /* Legal en passant */
+	 move(g, G2, G4);
+	 move(g, F4, G3)
      end 
 end
   	
