@@ -22,6 +22,7 @@ let
     ************************/
     type bool = int 
     type coordinate = {file: int, rank: int}
+    type moveCoords = {fromC : coordinate, toC : coordinate}
     type piece = {color: int, piece: int}
 
     type row = array of piece    
@@ -791,93 +792,188 @@ let
 
                    else (print("\nInvalid Move: ");
              	         printMove(p, fromC, toC))
-            end 
-		        
+            end
+
+            /****************************************
+	      Main Game Loop Helper Functions
+	     ****************************************/
+	     function printTurnMessage (g : game) =
+	         if g.turn = WHITE then print("White to move: ")
+		                   else print("Black to move: ")
+
+
+             function validMoveStr (fromFile : string, fromRank : string,
+	                            toFile : string, toRank : string) : bool =
+                 let function validFileChar (f : string) : bool =
+		         let var num : int := ord(f)
+			     var upper := (num >= 65) & (num <= 72)
+			     var lower := (num >= 97) & (num <= 104)
+			 in
+			     upper | lower
+			 end
+
+                    
+		     function validRankChar (r : string) : bool =
+		         let var num := ord(r)
+			 in
+			    (num >= 49) & (num <= 56)
+			 end
+			 
+	          in
+                     validFileChar(fromFile) & validRankChar(fromRank) &
+		     validFileChar(toFile) & validRankChar(toRank)
+		  end
+
+
+             function strToCoordinate (f : string, r : string) : coordinate =
+                 let function fileCharToInt (f : string) : int =
+	                 let var num := ord(f)
+		         in
+		             if (num >= 65) & (num <= 72)
+		             then num - 65
+			     else num - 97
+	                 end 
+
+                     function rankCharToInt (r : string) : int = ord(r) - 49
+
+		     var file := fileCharToInt(f)
+		     var rank := rankCharToInt(r)
+		 in
+		     coordinate{file=file, rank=rank}
+		 end 
+
+
+             function readMove () : moveCoords =
+	         let var buffer : string := ""
+		     
+		     function skipto() =
+		         (buffer := getchar();
+                          while buffer=" " | buffer="\n"
+                            do buffer := getchar())
+
+                     var fromFile := (skipto(); buffer)
+		     var fromRank := (skipto(); buffer)
+		     var toFile := (skipto(); buffer)
+		     var toRank := (skipto(); buffer)
+		 in
+		     if validMoveStr(fromFile, fromRank, toFile, toRank)
+		         then moveCoords{fromC=strToCoordinate(fromFile, fromRank),
+				         toC=strToCoordinate(toFile, toRank)}
+			 else (print("Invalid input. Try again:\n");
+			       readMove());
+		    
+		 end
+
+             /* Useful test function */ 
+             function testChess () =
+	     let var g := initGame()
+		 in     
+		    printBoard(g);
+		    move(g, E2, E4);
+		    move(g, E7, E5);
+		    move(g, B1, C3);
+
+		    /* Illegal moves
+		    ******************/
+		    move(g, F1, H3);
+		    move(g, E4, E5);
+		    move(g, D1, D3);
+		    move(g, D1, G1);
+		    /****************/
+
+		    /* Trying en passant
+		    ********************/
+		    move(g, H2, H4);
+		    move(g, H4, H5);
+		    move(g, G7, G5);
+		    move(g, H5, G6);
+
+		    /* Reset
+		    ***************/
+		    g := initGame();
+
+		    /*  Try illegal en passants 
+		    **************************/
+		    move(g, E2, E4);
+		    move(g, E4, F5);
+		    move(g, F7, F5);
+		    move(g, F5, F4);
+		    move(g, E4, F5);
+
+		    /* Legal en passant */
+		    move(g, G2, G4);
+		    move(g, F4, G3);
+
+		    /* Reset and try to get 50 move draw. 
+		    ***********************************/
+		    /*
+		    g := initGame();
+		    for i:= 0 to 24 do 
+			(move(g, B1, C3);
+			 move(g, B8, C6);
+			 move(g, C3, B1);
+			 move(g, C6, B8))
+		    */
+
+		    /* Entire opera game */
+		    g := initGame();
+		    (move(g, E2, E4);
+		     move(g, E7, E5);
+		     move(g, G1, F3);
+		     move(g, D7, D6);
+		     move(g, D2, D4);
+		     move(g, C8, G4);
+		     move(g, D4, E5);
+		     move(g, G4, F3);
+		     move(g, D1, F3);
+		     move(g, D6, E5);
+		     move(g, F1, C4);
+		     move(g, G8, F6);
+		     move(g, F3, B3);
+		     move(g, D8, E7);
+		     move(g, B1, C3);
+		     move(g, C7, C6);
+		     move(g, C1, G5);
+		     move(g, B7, B5);
+		     move(g, C3, B5);
+		     move(g, C6, B5);
+		     move(g, C4, B5);
+		     move(g, B8, D7);
+		     move(g, E1, C1);
+		     move(g, A8, D8);
+		     move(g, D1, D7);
+		     move(g, D8, D7);
+		     move(g, H1, D1);
+		     move(g, E7, E6);
+		     move(g, B5, D7);
+		     move(g, F6, D7);
+		     move(g, B3, B8);
+		     move(g, D7, B8);
+		     move(g, D1, D8))
+		end 
+
+
+
+            /*********************************************************
+	              Time to play Chess! 
+	    *********************************************************/
+	    function playGame () =
+	        let var g := initGame()
+		    var turn := WHITE
+		in
+		    print("Welcome! To make a move, type two space-separated coordinates.\nFor example: e2 e4\n");
+		    
+		    while 1 do
+		        let var turnMsg := printTurnMessage(g)
+			    var moveCoordinates : moveCoords := readMove()
+			    var fromC := moveCoordinates.fromC
+			    var toC := moveCoordinates.toC  
+			in
+			    print("GOT TO HERE\n")
+			end 
+	        end
 		   
 in
-     let var g := initGame()
-     in     
-         printBoard(g);
-	 move(g, E2, E4);
-	 move(g, E7, E5);
-	 move(g, B1, C3);
-	 
-	 /* Illegal moves
-	 ******************/
-	 move(g, F1, H3);
-	 move(g, E4, E5);
-	 move(g, D1, D3);
-	 move(g, D1, G1);
-	 /****************/
-
-         /* Trying en passant
-	 ********************/
-	 move(g, H2, H4);
-	 move(g, H4, H5);
-	 move(g, G7, G5);
-	 move(g, H5, G6);
-
-         /* Reset
-	 ***************/
-	 g := initGame();
-
-         /*  Try illegal en passants 
-	 **************************/
-	 move(g, E2, E4);
-	 move(g, E4, F5);
-	 move(g, F7, F5);
-	 move(g, F5, F4);
-	 move(g, E4, F5);
-
-         /* Legal en passant */
-	 move(g, G2, G4);
-	 move(g, F4, G3);
-
-         /* Reset and try to get 50 move draw. 
-	 ***********************************/
-	 /*
-	 g := initGame();
-	 for i:= 0 to 24 do 
-	     (move(g, B1, C3);
-	      move(g, B8, C6);
-	      move(g, C3, B1);
-	      move(g, C6, B8))
-	 */
-
-         /* Entire opera game */
-	 g := initGame();
-	 (move(g, E2, E4);
-	  move(g, E7, E5);
-	  move(g, G1, F3);
-	  move(g, D7, D6);
-	  move(g, D2, D4);
-	  move(g, C8, G4);
-	  move(g, D4, E5);
-	  move(g, G4, F3);
-	  move(g, D1, F3);
-	  move(g, D6, E5);
-	  move(g, F1, C4);
-	  move(g, G8, F6);
-	  move(g, F3, B3);
-	  move(g, D8, E7);
-	  move(g, B1, C3);
-	  move(g, C7, C6);
-	  move(g, C1, G5);
-	  move(g, B7, B5);
-	  move(g, C3, B5);
-	  move(g, C6, B5);
-	  move(g, C4, B5);
-	  move(g, B8, D7);
-	  move(g, E1, C1);
-	  move(g, A8, D8);
-	  move(g, D1, D7);
-	  move(g, D8, D7);
-	  move(g, H1, D1);
-	  move(g, E7, E6);
-	  move(g, B5, D7);
-	  move(g, F6, D7);
-	  move(g, B3, B8);
-	  move(g, D7, B8);
-	  move(g, D1, D8))
-     end 
+    /* testChess() */
+    playGame()
 end
