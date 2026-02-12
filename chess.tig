@@ -488,10 +488,11 @@ let
 	       var horizontal := fromC.file - toC.file
 	       var castledShort := abs(horizontal) = 2 & vertical = 0 & toC.file = 6
 	       var castledLong := abs(horizontal) = 2 & vertical = 0 & toC.file = 2
-	       var regularMove := abs(vertical) = 1 & abs(horizontal) = 1
+	       var regularMove := abs(vertical) = 1 & abs(horizontal) = 1	       
 	       var inCheck := if color = WHITE then whiteInCheck(g)
 	                                       else blackInCheck(g)
-           in
+           in    
+	       
 	       if      castledShort & not(inCheck)  then legalShortCastle(color)
 	       else if castledLong & not(inCheck)   then legalLongCastle(color)
 	       else if regularMove
@@ -555,8 +556,7 @@ let
                for rank := 0 to 7 do
 	           for file := 0 to 7 do
 	               if attackingWhiteKing(g, coordinate{file=file, rank=rank})
-		           then (res := 1; break);
-
+		           then res := 1;
                res
            end
 
@@ -566,8 +566,7 @@ let
                for rank := 0 to 7 do
 	           for file := 0 to 7 do
 	               if attackingBlackKing(g, coordinate{file=file, rank=rank})
-		           then (res := 1; break);
-
+		           then res := 1;
                res
            end 	       
 			   
@@ -579,8 +578,13 @@ let
                var exposes := 0
 	       var p := getPiece(g.board, fromC)
 	       var destP := getPiece(g.board, toC)
+	       var oldWhiteKingLoc := g.whiteKingLoc
+	       var oldBlackKingLoc := g.blackKingLoc 
              in
-	     
+
+                 if p = WHITE_KING then g.whiteKingLoc := toC;
+		 if p = BLACK_KING then g.blackKingLoc := toC;
+		 
 	       /* The below logic tries moving the piece at fromC to toC, and then
 		  checks if the king is in check as a result */
 
@@ -610,7 +614,10 @@ let
 			exposes := blackInCheck(g);
 			setPiece(g.board, fromC, p);
 			setPiece(g.board, toC, destP));
-			
+
+               g.whiteKingLoc := oldWhiteKingLoc;
+	       g.blackKingLoc := oldBlackKingLoc;
+	       
 	       exposes
 	   end
 				    
