@@ -455,6 +455,78 @@ let
        /* TODO: IMPLEMENT THIS */ 
        function legalKingMove (b : board, p : piece, fromC : coordinate, toC : coordinate) : bool =
            0
+       
+
+       function attackingWhiteKing(g : game, c : coordinate) : bool =
+           let var p := getPiece(g.board, c)
+	   in
+	       /* This will return false for empty squares and squares with
+	          white pieces */ 
+	       if p.color = BLACK 
+	           then canSeeSquare(g.board, c, g.whiteKingLoc)
+	       else 0
+	   end 
+
+       
+       function attackingBlackKing(g : game, c : coordinate) : bool =
+           let var p := getPiece(g.board, c)
+	   in
+	       /* This will return false for empty squares and squares with
+	          black pieces */ 
+	       if p.color = WHITE
+	           then canSeeSquare(g.board, c, g.blackKingLoc)
+	       else 0
+	   end
+
+       /* Iterates through all squares, and checks if they are attacking the
+          white king
+          - This is slightly inefficient. A better way would be to get all
+	    the squares that can see the whiteKingLoc, and then only iterate
+	    through those coordinates. 
+        */
+       function whiteInCheck(g : game) : bool =
+           let var res : bool := 0
+	   in 
+               for rank := 0 to 7 do
+	           for file := 0 to 7 do
+	               if attackingWhiteKing(g, coordinate{file=file, rank=rank})
+		           then (res := 1; break);
+
+               res
+           end
+
+       function blackInCheck(g : game) : bool =
+           let var res : bool := 0
+	   in 
+               for rank := 0 to 7 do
+	           for file := 0 to 7 do
+	               if attackingBlackKing(g, coordinate{file=file, rank=rank})
+		           then (res := 1; break);
+
+               res
+           end 	       
+			   
+	           
+       function movingExposesMyKing(g : game, c : coordinate, color : int) : bool =
+           let var canSeeMyKing := if color = WHITE
+	                              then canSeeSquare(g.board, c, g.whiteKingLoc)
+	                              else canSeeSquare(g.board, c, g.blackKingLoc)
+               var exposes := 0
+	       var p := getPiece(g.board, c)
+           in
+	       if canSeeMyKing & color = WHITE
+	          then (setPiece(g.board, c, EMPTY); /* Temp remove the piece */
+		        exposes := whiteInCheck(g);
+			setPiece(g.board, c, p) /* Insert the piece back */)
+			
+	       else if canSeeMyKing & color = BLACK
+	                then (setPiece(g.board, c, EMPTY);
+		              exposes := blackInCheck(g);
+			      setPiece(g.board, c, p));
+
+               exposes
+           end 			      
+				    
 
 	   
        function legalMove(g : game, fromC : coordinate, toC : coordinate) : bool =
@@ -473,10 +545,7 @@ let
 	                canSeeSquare(b, fromC, toC) = 0)  then 0
  
                /* FAIL: Moving gets YOUR king killed */
-	       /* TODO: IMPLEMENT THIS 
-               else if (canSeeMyKing(b, fromC, pFrom.color) &
-	                movingExposesKing(b, fromC, pFrom.color)) then 0
-	       */
+               else if movingExposesMyKing(g, fromC, pFrom.color) then 0
 
 	       else if isRook(pFrom)    then legalRookMove(fromC, toC)
 	       else if isKnight(pFrom)  then legalKnightMove(fromC, toC)
@@ -619,8 +688,11 @@ let
 					 then g.blackCanLongCastle := 0
 				     else if rookMoved & fromC = H8
 					 then g.blackCanShortCastle := 0))
-                     end 				  
-		                                         
+                     end
+                 
+                 function updateKingLoc() = 
+		     if      p = WHITE_KING then g.whiteKingLoc := toC
+		     else if p = BLACK_KING then g.blackKingLoc := toC 
 	   in 
                if legalMove(g, fromC, toC)
 	           then (if isEnPassant()
@@ -632,7 +704,8 @@ let
 		             setPiece(b, fromC, EMPTY));
 		         
 			 updateEnPassantable();
-			 updateCanCastle(); 
+			 updateCanCastle();
+			 updateKingLoc(); 
 			 printMove(fromC, toC);
 			 printBoard(g))			
 
