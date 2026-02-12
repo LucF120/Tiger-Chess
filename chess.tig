@@ -603,10 +603,7 @@ let
 			   
 	           
        function movingExposesMyKing(g : game, fromC : coordinate, toC : coordinate, color : int) : bool =
-           let var canSeeMyKing := if color = WHITE
-	                              then canSeeSquare(g.board, fromC, g.whiteKingLoc)
-	                              else canSeeSquare(g.board, fromC, g.blackKingLoc)
-               var exposes := 0
+           let var exposes := 0
 	       var p := getPiece(g.board, fromC)
 	       var destP := getPiece(g.board, toC)
 	       var oldWhiteKingLoc := g.whiteKingLoc
@@ -632,14 +629,14 @@ let
 		  In other words, it's okay to not temporarily delete the captured
 		  pawn in an en passant. 
 	       */
-	       if canSeeMyKing & color = WHITE then 
+	       if color = WHITE then 
 			(setPiece(g.board, fromC, EMPTY); /* Temp remove the piece */
 			 setPiece(g.board, toC, p);
 			 exposes := whiteInCheck(g);
 			 setPiece(g.board, fromC, p); /* Insert the moved piece back */
 			 setPiece(g.board, toC, destP)) /* Insert the captured piece back */
 
-	       else if canSeeMyKing & color = BLACK then 
+	       else if color = BLACK then 
 		       (setPiece(g.board, fromC, EMPTY);
 			setPiece(g.board, toC, p);
 			exposes := blackInCheck(g);
