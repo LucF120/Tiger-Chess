@@ -366,7 +366,7 @@ let
 	                 res 
 	             end
 	   in 
-               if fromC = toC then 0   /* Pieces can't move to themselves */
+               if fromC = toC then 1
 	       else
 	           let var horizontal := fromC.rank = toC.rank
 	               var vertical   := fromC.file = toC.file
@@ -467,8 +467,8 @@ let
            isDiagonal(fromC, toC)
 
        function legalQueenMove (fromC : coordinate, toC : coordinate) : bool =
-           legalRookMove(fromC, toC) | legalBishopMove(fromC, toC)
-
+           legalRookMove(fromC, toC) | legalBishopMove(fromC, toC)	       
+       
        function legalKingMove (g : game, p : piece, fromC : coordinate, toC : coordinate) : bool =
            let
 	       /* Check that the king isn't passing through danger on the E, F or G files. */
@@ -497,7 +497,7 @@ let
 	       else if regularMove
 	           then not(movingExposesMyKing(g, fromC, toC, color))
 	       else 0
-           end       
+           end
            
 
        function attackingWhiteKing(g : game, c : coordinate) : bool =
@@ -520,7 +520,29 @@ let
 	           then legalMove(g, c, g.blackKingLoc)
 	       else 0
 	   end
-
+       	   
+        /* This is pretty inefficent, but gets the job done */ 
+       function hasAMove(g : game) : bool =
+           let var res := 0
+	   in
+               (for fromR := 0 to 7 do
+	          ((for fromF := 0 to 7 do
+		     ((for toR := 0 to 7 do
+		        ((for toF := 0 to 7 do
+			    let var fromCoord := coordinate{file=fromF, rank=fromR}
+			        var toCoord := coordinate{file=toF, rank=toR}				
+		            in
+			        if legalMove(g, fromCoord, toCoord)
+			            then (res := 1; break)
+			    end);
+			 if res = 1 then break));
+		      if res = 1 then break));
+		   if res = 1 then break));
+		   
+		res
+            end 
+				
+       
        /* Iterates through all squares, and checks if they are attacking the
           white king
           - This is slightly inefficient. A better way would be to get all
@@ -557,72 +579,81 @@ let
                var exposes := 0
 	       var p := getPiece(g.board, fromC)
 	       var destP := getPiece(g.board, toC)
-           in
+             in
+	     
 	       /* The below logic tries moving the piece at fromC to toC, and then
-	          checks if the king is in check as a result */
+		  checks if the king is in check as a result */
 
-               /* The only "weird" moves to account for here are castling and en
-	          passant. Castling logic is handled specially in the
+	       /* The only "weird" moves to account for here are castling and en
+		  passant. Castling logic is handled specially in the
 		  legalKingMove function.
 
-                  It is NEVER possible for an en passant to expose a line to
+		  It is NEVER possible for an en passant to expose a line to
 		  the king where the captured pawn was, since this would mean
 		  the king could have been captured on the previous term. So,
 		  we don't need to do the special en passant move logic here
 		  when trying the move!
 
-                  In other words, it's okay to not temporarily delete the captured
+		  In other words, it's okay to not temporarily delete the captured
 		  pawn in an en passant. 
 	       */
-	       if canSeeMyKing & color = WHITE
-	          then (setPiece(g.board, fromC, EMPTY); /* Temp remove the piece */
-		        setPiece(g.board, toC, p);
-		        exposes := whiteInCheck(g);
-			setPiece(g.board, fromC, p); /* Insert the moved piece back */
-			setPiece(g.board, toC, destP)) /* Insert the captured piece back */ 
-			
-	       else if canSeeMyKing & color = BLACK
-	                then (setPiece(g.board, fromC, EMPTY);
-			      setPiece(g.board, toC, p);
-		              exposes := blackInCheck(g);
-			      setPiece(g.board, fromC, p);
-                              setPiece(g.board, toC, destP));
+	       if canSeeMyKing & color = WHITE then 
+			(setPiece(g.board, fromC, EMPTY); /* Temp remove the piece */
+			 setPiece(g.board, toC, p);
+			 exposes := whiteInCheck(g);
+			 setPiece(g.board, fromC, p); /* Insert the moved piece back */
+			 setPiece(g.board, toC, destP)) /* Insert the captured piece back */
 
-               exposes
-           end 			      
+	       else if canSeeMyKing & color = BLACK then 
+		       (setPiece(g.board, fromC, EMPTY);
+			setPiece(g.board, toC, p);
+			exposes := blackInCheck(g);
+			setPiece(g.board, fromC, p);
+			setPiece(g.board, toC, destP));
+			
+	       exposes
+	   end
 				    
 
 	   
        function legalMove(g : game, fromC : coordinate, toC : coordinate) : bool =
            let var b := g.board
-	       var pFrom := getPiece(b, fromC)
-	       var pTo   := getPiece(b, toC)
 	   in
-	       /* FAIL: From square is empty */ 
-	       if      (pFrom = EMPTY) then 0
+	       /* Fail: Index out of bounds */ 
+	       if fromC.file < 0 | toC.file < 0 | fromC.rank < 0 | toC.rank < 0
+	          | fromC.file > 7 | toC.file > 7 | fromC.file > 7 | toC.rank > 7
+		  then 0
+	      else
+	       let 
+	          var pFrom := getPiece(b, fromC)
+	          var pTo   := getPiece(b, toC)
+	       in
+		  /* FAIL: From square is empty */ 
+		  if      (pFrom = EMPTY) then 0
 
-               /* FAIL: Trying to move the opponent's piece */
-	       else if (pFrom.color <> g.turn) then 0
-	       
-               /* FAIL: Trying to capture your own piece */ 
-               else if (pFrom.color = pTo.color) then 0
+		  /* FAIL: Trying to move the opponent's piece */
+		  else if (pFrom.color <> g.turn) then 0
 
-               /* FAIL: From piece is not a knight, and can't see dest. square */
-	       else if (not(isKnight(pFrom)) & canSeeSquare(b, fromC, toC) = 0)
-	             then 0
- 
-               /* FAIL: Moving gets YOUR king killed */
-               else if movingExposesMyKing(g, fromC, toC, pFrom.color) then 0
+		  /* FAIL: Trying to capture your own piece */ 
+		  else if (pFrom.color = pTo.color) then 0
 
-	       else if isRook(pFrom)    then legalRookMove(fromC, toC)
-	       else if isKnight(pFrom)  then legalKnightMove(fromC, toC)
-	       else if isBishop(pFrom)  then legalBishopMove(fromC, toC)
-	       else if isQueen(pFrom)   then legalQueenMove(fromC, toC)
-	       else if isPawn(pFrom)    then legalPawnMove(g, pFrom, fromC, toC)
-	       else if isKing(pFrom)    then legalKingMove(g, pFrom, fromC, toC)
+		  /* FAIL: From piece is not a knight, and can't see dest. square */
+		  else if (not(isKnight(pFrom)) & canSeeSquare(b, fromC, toC) = 0)
+			then 0
 
-	       else 0
-	   end
+		  /* FAIL: Moving gets YOUR king killed */
+		  else if movingExposesMyKing(g, fromC, toC, pFrom.color) then 0
+
+		  else if isRook(pFrom)    then legalRookMove(fromC, toC)
+		  else if isKnight(pFrom)  then legalKnightMove(fromC, toC)
+		  else if isBishop(pFrom)  then legalBishopMove(fromC, toC)
+		  else if isQueen(pFrom)   then legalQueenMove(fromC, toC)
+		  else if isPawn(pFrom)    then legalPawnMove(g, pFrom, fromC, toC)
+		  else if isKing(pFrom)    then legalKingMove(g, pFrom, fromC, toC)
+
+		  else 0
+	      end
+	  end 
 
        /****************************************
                        Moving Pieces
@@ -882,13 +913,30 @@ let
 		    print("Welcome! To make a move, type two space-separated coordinates.\nFor example: e2 e4\n");
 		    
 		    while 1 do
-		        let var turnMsg := printTurnMessage(g)
-			    var moveCoordinates : moveCoords := readMove()
-			    var fromC := moveCoordinates.fromC
-			    var toC := moveCoordinates.toC  
+		        let var noMoves := not(hasAMove(g))
 			in
-			    move(g, fromC, toC)
-			end 
+			    /* White checkmated case */
+			    if noMoves & g.turn = WHITE & whiteInCheck(g)
+			        then (print("Checkmate! Black is the winner!\n");
+				      break)
+		            /* Black checkmated case */ 
+			    else if noMoves & g.turn = BLACK & blackInCheck(g)
+			        then (print("Checkmate! White is the winner!\n");
+				      break)
+                            /* Stalemate */ 				
+			    else if noMoves
+			        then (print("Draw by stalemate!\n");
+				      break)
+			    else
+			      let 
+			          var turnMsg := printTurnMessage(g)
+				  var moveCoordinates : moveCoords := readMove()
+				  var fromC := moveCoordinates.fromC
+				  var toC := moveCoordinates.toC  
+			      in
+				  move(g, fromC, toC)
+			      end
+			 end 
 	        end
 		   
 in
