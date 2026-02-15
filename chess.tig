@@ -323,7 +323,7 @@ let
 	       		var res := 1
 	    	     in
                	        for file := (low + 1) to (high - 1) do
-	           	    if getPiece(b, coordinate{file=file, rank=rank}) <> EMPTY
+	           	    if b[rank][file] <> EMPTY
 		       	       then (res := 0; break);
 	       		res			
                	     end
@@ -335,7 +335,7 @@ let
 	                 var res := 1
 	             in
                          for rank := (low + 1) to (high - 1) do
-	                     if getPiece(b, coordinate{file=file, rank=rank}) <> EMPTY
+	                     if b[rank][file] <> EMPTY
 		                 then (res := 0; break);
 	                 res
 	             end
@@ -358,7 +358,7 @@ let
 	                 var res := 1
 	             in
                          while fromRank <> toRank do
-	                     (if getPiece(b, coordinate{file=fromFile, rank=fromRank}) <> EMPTY
+	                     (if b[fromRank][fromFile] <> EMPTY
 		                 then (res :=0; break);
 		              fromRank := fromRank + vertStep;
 		              fromFile := fromFile + horizStep);
@@ -400,10 +400,8 @@ let
 		       var rightFile := fromC.file + 1
 		       var currPiece := getPiece(b, fromC)
 		       var currColor := currPiece.color
-		       var leftPiece := getPiece(b, coordinate{file=leftFile,
-							       rank=fromC.rank})
-                       var rightPiece := getPiece(b, coordinate{file=rightFile,
-							        rank=fromC.rank})
+		       var leftPiece := b[fromC.rank][leftFile]
+                       var rightPiece := b[fromC.rank][rightFile]
 							       
 		   in 
 	               if leftPiece <> EMPTY & leftFile >= 0
@@ -557,14 +555,19 @@ let
         /* This is pretty inefficent, but gets the job done */ 
        function hasAMove(g : game) : bool =
            let var res := 0
+	       var fromCoord := coordinate{file=0, rank=0}
+	       var toCoord := coordinate{file=0, rank=0}
 	   in
                (for fromR := 0 to 7 do
 	          ((for fromF := 0 to 7 do
 		     ((for toR := 0 to 7 do
 		        ((for toF := 0 to 7 do
-			    let var fromCoord := coordinate{file=fromF, rank=fromR}
-			        var toCoord := coordinate{file=toF, rank=toR}				
+			    let 
 		            in
+			        fromCoord.file := fromF;
+				fromCoord.rank := fromR;
+				toCoord.file := toF;
+				toCoord.rank := toR;
 			        if legalMove(g, fromCoord, toCoord)
 			            then (res := 1; break)
 			    end);
@@ -626,21 +629,27 @@ let
         */
        function whiteInCheck(g : game) : bool =
            let var res : bool := 0
+	       var coord := coordinate{file=0, rank=0}
 	   in 
                for rank := 0 to 7 do
 	           for file := 0 to 7 do
-	               if attackingWhiteKing(g, coordinate{file=file, rank=rank})
-		           then res := 1;
+		       (coord.file := file;
+		        coord.rank := rank;
+	                if attackingWhiteKing(g, coord)
+		           then res := 1);
                res
            end
 
        function blackInCheck(g : game) : bool =
            let var res : bool := 0
+	       var coord := coordinate{file=0, rank=0}
 	   in 
                for rank := 0 to 7 do
 	           for file := 0 to 7 do
-	               if attackingBlackKing(g, coordinate{file=file, rank=rank})
-		           then res := 1;
+		       (coord.file := file;
+		        coord.rank := rank;
+	                if attackingBlackKing(g, coord)
+		           then res := 1);
                res
            end 	       
 			   
