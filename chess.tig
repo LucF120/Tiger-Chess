@@ -488,7 +488,8 @@ let
 	       var horizontal := fromC.file - toC.file
 	       var castledShort := abs(horizontal) = 2 & vertical = 0 & toC.file = 6
 	       var castledLong := abs(horizontal) = 2 & vertical = 0 & toC.file = 2
-	       var regularMove := abs(vertical) = 1 & abs(horizontal) = 1	       
+	       var regularMove := abs(vertical) <= 1 & abs(horizontal) <= 1 
+               	   	           & not(vertical = 0 & horizontal = 0)
 	       var inCheck := if color = WHITE then whiteInCheck(g)
 	                                       else blackInCheck(g)
            in    
