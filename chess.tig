@@ -1052,6 +1052,7 @@ let
 		    while 1 do
 		            if not(sufficientMaterial(g)) then (print("Draw by insufficient material\n");
 			                                       break)
+                            else if g.fiftyMoveCounter = 100 then break 
                             else
 			        let 
 				    var noMoves := not(hasAMove(g))
