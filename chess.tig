@@ -878,10 +878,54 @@ let
 			     then g.fiftyMoveCounter := 1
 			     else g.fiftyMoveCounter := g.fiftyMoveCounter + 1
                      end
+		     
 	       function updateTurn() =
 	             if g.turn = WHITE then g.turn := BLACK
-		                       else g.turn := WHITE 
-		 
+		                       else g.turn := WHITE
+
+		       
+               function handlePawnPromo() =
+	             if p = WHITE_PAWN & toC.rank=7 then
+		         (print("Enter to promote pawn: Q, R, B, N\n");
+			  let var buffer := getchar()
+			      function skipto() =
+		              (buffer := getchar();
+                                while buffer=" " | buffer="\n"
+                                do buffer := getchar())
+			  in
+			      skipto();
+			      while 1 do
+			          let var num := ord(buffer)
+				  in				  
+			              if num = 81 | num = 113 then (setPiece(b, toC, WHITE_QUEEN); break)
+				      else if num = 82 | num = 114 then (setPiece(b, toC, WHITE_ROOK); break)
+				      else if num = 66 | num = 98 then (setPiece(b, toC, WHITE_BISHOP); break)
+				      else if num = 78 | num = 110 then (setPiece(b, toC, WHITE_KNIGHT); break)
+				      else (print("Invalid input, try again:\n"); skipto())
+				  end 
+                          end)
+		     else if p = BLACK_PAWN & toC.rank=0 then
+			     (print("Enter to promote pawn: Q, R, B, N\n");
+			      let var buffer := getchar()
+			          function skipto() =
+				    (buffer := getchar();
+				      while buffer=" " | buffer="\n"
+				      do buffer := getchar())
+			      in
+			          skipto();
+				  while 1 do
+			          let var num := ord(buffer)
+				  in				  
+			              if num = 81 | num = 113 then (setPiece(b, toC, BLACK_QUEEN); break)
+				      else if num = 82 | num = 114 then (setPiece(b, toC, BLACK_ROOK); break)
+				      else if num = 66 | num = 98 then (setPiece(b, toC, BLACK_BISHOP); break)
+				      else if num = 78 | num = 110 then (setPiece(b, toC, BLACK_KNIGHT); break)
+				      else (print("Invalid input, try again:\n"); skipto())
+				  end
+			      end)
+
+				
+			  
 	   in 
                if legalMove(g, fromC, toC)
 	           then (if isEnPassant()
@@ -899,8 +943,9 @@ let
 		         
 			 updateEnPassantable();
 			 updateCanCastle();
-			 updateKingLoc();			
-			 updateTurn(); 
+			 updateKingLoc();
+			 updateTurn();
+			 handlePawnPromo();
 			 printMove(p, fromC, toC);
 			 printBoard(g);
 			 updateFiftyMoves();
