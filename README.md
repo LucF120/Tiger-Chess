@@ -3,6 +3,8 @@
 Chess application created in the Tiger language. Created to showcase the
 performance of my Tiger Compiler, which translates source code to MIPS R2000.
 
+<a href="https://lucferrara.com/#/compiler">https://lucferrara.com/#/compiler</a>
+
 This is an inefficient (but hopefully bug free) implementation of chess.
 This is mostly intentional, as I expressed the logic in a very verbose way to
 test the limits of my compiler.
