@@ -27,7 +27,8 @@ let
 
     type row = array of piece    
     type board = array of row
-
+    type hashes = array of int 
+    
     type game = {board: board,
                  turn: int,
 		 whiteKingLoc: coordinate,
@@ -37,7 +38,9 @@ let
 		 whiteCanLongCastle: bool,
 		 blackCanLongCastle: bool,
 		 enPassantable: coordinate,
-		 fiftyMoveCounter: int}
+		 fiftyMoveCounter: int,
+		 moveNum: int,
+		 hashes: hashes}
 
     /****************************
         Piece Constants
@@ -142,12 +145,6 @@ let
      function abs(x : int) : int =
          if x < 0 then x * -1 else x
 	 
-     /* Checks if file and rank are equal to a coordiante */ 
-     function isSquare (file : int, rank : int, square : coordinate) : bool =
-         if (file = square.file & rank = square.rank)
-	     then 1
-	     else 0
-
      /* Initially,
         - the pieces are on their starting squares,
         - it is white's turn. The kings are on e1 and e8,
@@ -205,6 +202,9 @@ let
 
 		 b 	/* Returns the updated board */ 
 	     end
+	       /* Initialized with the hash of the starting position
+	          in case the first few moves result in a three-fold */ 
+	       var hashes := hashes [1000] of 417543998
            in
 	       game{board=initBoard(),
 	            turn=WHITE,
@@ -215,7 +215,9 @@ let
 		    whiteCanLongCastle=1,
 		    blackCanLongCastle=1,
 		    enPassantable=NO_COORD,
-		    fiftyMoveCounter=0}
+		    fiftyMoveCounter=0,
+		    moveNum=0,
+		    hashes=hashes}
 	   end 
 
 
@@ -753,6 +755,47 @@ let
        /* Index into board to set a piece at a coord */
        function setPiece(b : board, c : coordinate, p : piece) =
            b[c.rank][c.file] := p
+
+       /* Creates a hash index for the position to use for three fold
+          repetition checks.
+          Note: Castling rights are not included in this hash calculation,
+	  but this is just a rudimentary calculation anyway that has
+	  potential collision risks. 
+        */
+       function hashPosition(g : game) = 
+	   let var h := 0
+	   in	      
+	       for r := 0 to 7 do
+		   for c := 0 to 7 do
+		    let var p := g.board[r][c]
+		    in 
+                     if p <> EMPTY then
+                        let var color := p.color
+                            var typ := p.piece
+                            var square := (r * 8) + c
+                            var pieceNum := color * 6 + typ
+                            var num := (square * 7919 + pieceNum * 997) * (square + 1)
+                        in
+                            h := h + num;
+                            if h < 0 then h := 1000000000 - h  /* Handle overflow */
+                        end
+		    end;
+
+	       /* printi(h); /* Used this to get starting hash */ */
+	       g.moveNum := g.moveNum + 1;
+	       g.hashes[g.moveNum] := h
+	       
+	   end
+
+       function isThreeFold (g : game) : bool =
+           let var currHash := g.hashes[g.moveNum]
+	       var count := 0 
+	   in
+	       for i := 0 to g.moveNum do 
+	           if g.hashes[i] = currHash then count := count + 1;
+	      
+	       count >= 3
+	   end
 	   
        function move(g : game, fromC : coordinate, toC : coordinate) =
            let var b := g.board
@@ -873,11 +916,7 @@ let
 					 then g.blackCanLongCastle := 0
 				     else if rookMoved & fromC = H8
 					 then g.blackCanShortCastle := 0))
-                     end
-                 
-               function updateKingLoc() = 
-		     if      p = WHITE_KING then g.whiteKingLoc := toC
-		     else if p = BLACK_KING then g.blackKingLoc := toC
+                     end                 		     
                
 	       
                function updateFiftyMoves() =
@@ -889,21 +928,11 @@ let
 			     else g.fiftyMoveCounter := g.fiftyMoveCounter + 1
                      end
 		     
-	       function updateTurn() =
-	             if g.turn = WHITE then g.turn := BLACK
-		                       else g.turn := WHITE
-
-		       
                function handlePawnPromo() =
 	             if p = WHITE_PAWN & toC.rank=7 then
 		         (print("Enter to promote pawn: Q, R, B, N\n");
-			  let var buffer := getchar()
-			      function skipto() =
-		              (buffer := getchar();
-                                while buffer=" " | buffer="\n"
-                                do buffer := getchar())
+			  let var buffer := skipto()
 			  in
-			      skipto();
 			      while 1 do
 			          let var num := ord(buffer)
 				  in				  
@@ -911,18 +940,13 @@ let
 				      else if num = 82 | num = 114 then (setPiece(b, toC, WHITE_ROOK); break)
 				      else if num = 66 | num = 98 then (setPiece(b, toC, WHITE_BISHOP); break)
 				      else if num = 78 | num = 110 then (setPiece(b, toC, WHITE_KNIGHT); break)
-				      else (print("Invalid input, try again:\n"); skipto())
+				      else (print("Invalid input, try again:\n"); buffer := skipto())
 				  end 
                           end)
 		     else if p = BLACK_PAWN & toC.rank=0 then
 			     (print("Enter to promote pawn: Q, R, B, N\n");
-			      let var buffer := getchar()
-			          function skipto() =
-				    (buffer := getchar();
-				      while buffer=" " | buffer="\n"
-				      do buffer := getchar())
+			      let var buffer := skipto()
 			      in
-			          skipto();
 				  while 1 do
 			          let var num := ord(buffer)
 				  in				  
@@ -930,7 +954,7 @@ let
 				      else if num = 82 | num = 114 then (setPiece(b, toC, BLACK_ROOK); break)
 				      else if num = 66 | num = 98 then (setPiece(b, toC, BLACK_BISHOP); break)
 				      else if num = 78 | num = 110 then (setPiece(b, toC, BLACK_KNIGHT); break)
-				      else (print("Invalid input, try again:\n"); skipto())
+				      else (print("Invalid input, try again:\n"); buffer := skipto())
 				  end
 			      end)
 
@@ -953,12 +977,20 @@ let
 		         
 			 updateEnPassantable();
 			 updateCanCastle();
-			 updateKingLoc();
-			 updateTurn();
+
+			 /* Update king position */ 
+			 if      p = WHITE_KING then g.whiteKingLoc := toC
+		     	 else if p = BLACK_KING then g.blackKingLoc := toC;
+		     
 			 handlePawnPromo();
 			 printMove(p, fromC, toC);
 			 printBoard(g);
 			 updateFiftyMoves();
+			 hashPosition(g);
+
+ 			 /* Update turn */ 
+			 if g.turn = WHITE then g.turn := BLACK
+		                       else g.turn := WHITE;
 
                          /* We check at 100 since the 50 move rule happens when
 			    both players moved 50 times without a pawn move or
@@ -1018,18 +1050,19 @@ let
 		 end 
 
 
+             function skipto() : string =
+	         let var buffer := getchar()
+		 in 
+		   while buffer=" " | buffer="\n"
+		      do buffer := getchar();
+		   buffer
+		 end 
+				
              function readMove () : moveCoords =
-	         let var buffer : string := ""
-		     
-		     function skipto() =
-		         (buffer := getchar();
-                          while buffer=" " | buffer="\n"
-                            do buffer := getchar())
-
-                     var fromFile := (skipto(); buffer)
-		     var fromRank := (skipto(); buffer)
-		     var toFile := (skipto(); buffer)
-		     var toRank := (skipto(); buffer)
+	         let var fromFile := skipto()
+		     var fromRank := skipto()
+		     var toFile := skipto()
+		     var toRank := skipto()
 		 in
 		     if validMoveStr(fromFile, fromRank, toFile, toRank)
 		         then moveCoords{fromC=strToCoordinate(fromFile, fromRank),
@@ -1047,12 +1080,18 @@ let
 	        let var g := initGame()
 		in
 		    printBoard(g);
-		    print("Welcome! To make a move, type two space-separated coordinates.\nFor example: e2 e4\n");
+		    print("Welcome! To make a move, type two space-separated coordinates.\nFor example: e2 e4\n");		    
 		    
 		    while 1 do
+		            /* Draw by insufficient material */ 
 		            if not(sufficientMaterial(g)) then (print("Draw by insufficient material\n");
 			                                       break)
-                            else if g.fiftyMoveCounter = 100 then break 
+                            /* Draw by 50 move rule */
+                            else if g.fiftyMoveCounter = 100 then break
+
+                            /* Draw by three-fold repetition */ 
+			    else if isThreeFold(g) then (print("Draw by three-fold repetition\n");
+			                                 break)
                             else
 			        let 
 				    var noMoves := not(hasAMove(g))
