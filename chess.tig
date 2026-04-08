@@ -395,32 +395,29 @@ let
 	       var wrongDirection := (goingDown & isWhite(p)) | (goingUp & isBlack(p))
 	       var capturing := abs(vertical) = 1 & abs(horizontal) = 1	       
 	       
-	       function nextToEnPassantable () : bool =
-	           let var leftLegal := 0
-		       var rightLegal := 0
-		       var leftFile := fromC.file - 1
+	       function enPassantable () : bool =
+	           let var leftFile := fromC.file - 1
 		       var rightFile := fromC.file + 1
 		       var currPiece := getPiece(b, fromC)
 		       var currColor := currPiece.color
 		       var leftPiece := b[fromC.rank][leftFile]
                        var rightPiece := b[fromC.rank][rightFile]
+		       var correctRank := if currColor = WHITE then toC.rank = 5
+		                                               else toC.rank = 2
 							       
 		   in 
-	               if leftPiece <> EMPTY & leftFile >= 0
-		           then leftLegal :=
-			       (g.enPassantable.file = leftFile 
-			        & leftPiece.color <> currColor);
+	               if toC.file = leftFile & correctRank
+		           then g.enPassantable.file = leftFile
+			        & leftPiece.color <> currColor
 				
-		       if rightPiece <> EMPTY & rightFile <= 7
-		           then rightLegal :=
-			       (g.enPassantable.file = rightFile 
-			        & rightPiece.color <> currColor);
+		       else if toC.file = rightFile & correctRank 
+		           then g.enPassantable.file = rightFile 
+			        & rightPiece.color <> currColor
 
-                       /* True if an en passantable pawn is on the left or right */ 
-                       leftLegal | rightLegal
+		       else 0 
 		   end
 		   
-	       var canEnPassant := nextToEnPassantable()
+	       var canEnPassant := enPassantable()
 		
 		       
 
