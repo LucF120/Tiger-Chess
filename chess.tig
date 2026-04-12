@@ -778,7 +778,12 @@ let
                         end
 		    end;
 
-	       /* printi(h); /* Used this to get starting hash */ */
+	       /* printi(h); */ /* Used this to get starting hash */ 
+	       /* If it's black's turn next (i.e., it is currently white's turn),
+	          make the hash negative, since according to three-fold rules,
+		  a position is only equal if it's the same color's turn */
+	       if g.turn = WHITE then h := h * -1;
+	       
 	       g.moveNum := g.moveNum + 1;
 	       g.hashes[g.moveNum] := h
 	       

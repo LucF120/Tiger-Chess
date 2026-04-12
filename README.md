@@ -34,6 +34,11 @@ The chess logic is complete with:
 - Try entering the following games. The program will correctly process each move
   even when all moves are sent at the same time. 
 
+Simple three-fold repetition. 
+```
+e2e4 e7e5 e1e2 e8e7 e2d3 e7e8 d3e3 e8e7 e3e2 e7e8 e2e1 e8e7 e1e2 e7e8 e2e1 e8e7 e1e2
+```
+
 The opera game (Paul Morphy vs Duke Karl of Brunswick and Count Isouard)
 ```
 e2e4 e7e5 g1f3 d7d6 d2d4 c8g4 d4e5 g4f3 d1f3 d6e5 f1c4 g8f6 f3b3 d8e7 b1c3 c7c6
